@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/dang-nhap', [AuthController::class, 'dangNhapView'])->name('dang-nhap');
+Route::get('/dang-ky', [AuthController::class, 'dangKyView'])->name('dang-ky');
+Route::post('/dang-ky', [AuthController::class, 'handleDangKy'])->name('handle-dang-ky');
