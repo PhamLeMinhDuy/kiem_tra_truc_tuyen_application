@@ -16,7 +16,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2">
                 <div class="flex items-center col-span-1">
                     <div class="p-4 bg-white shadow-lg border w-[360px] rounded z-10">
-                        <form action="submit">
+                        <form action="submit" id="form-dang-nhap">
                             <div class="flex justify-between items-end mb-8">
                                 <h2 class="text-xl font-semibold">Đăng nhập</h2>
                                 <span class="font-normal"><a href="{{ route('dang-ky') }}">Đăng ký</a></span>
@@ -40,5 +40,36 @@
     </div>
 </body>
 </html>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ asset('plugins/axios/axios.min.js') }}"></script>
+<script src="{{ asset('js/sweetalert2.bundle.js') }}"></script>
+<script type="text/javascript">
+    $('#form-dang-nhap').on('submit', function(event){
+        event.preventDefault();
+        axios.post("{{ route('handle-dang-nhap') }}", {
+            email: $('#email-dang-nhap').val(),
+            matKhau: $('#mat-khau-dang-nhap').val(),
+        })
+        .then(function (response) {
+            if (response.data.success) {
+                window.location.replace(response.data.redirect);
+                return;
+            }
+
+            Swal.fire({
+                icon: response.data.type,
+                title: response.data.message,
+                showConfirmButton: false,
+                timer: 1000
+            })
+        })
+        .catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        });
+    })
+</script>

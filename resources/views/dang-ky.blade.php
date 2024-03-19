@@ -24,12 +24,15 @@
                             </div>
                             <div class="form-group mt-4">
                                 <input type="text" name="ten-nguoi-dung-dang-ky" id="ten-nguoi-dung-dang-ky" placeholder="Họ tên" class="border outline-none rounded w-full py-1 px-2 h-10">
+                                
                             </div>
                             <div class="form-group mt-4">
                                 <input type="text" name="email-dang-ky" id="email-dang-ky" placeholder="Email đăng nhập" class="border outline-none rounded w-full py-1 px-2 h-10">
+                                
                             </div>
                             <div class="form-group mt-4">
                                 <input type="password" name="mat-khau-dang-ky" id="mat-khau-dang-ky" placeholder="Mật khẩu" class="border outline-none rounded w-full py-1 px-2 h-10">
+                               
                             </div>
                             <div class="form-group mt-4">
                                 <input type="password" name="xac-nhan-mat-khau-dang-ky" id="xac-nhan-mat-khau-dang-ky" placeholder="Xác nhận mật khẩu" class="border outline-none rounded w-full py-1 px-2 h-10">

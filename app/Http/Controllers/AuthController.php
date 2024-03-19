@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\NguoiDung;
 use Illuminate\Http\Request;
+use App\Http\Requests\SignUpRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     public function dangNhapView() {
@@ -17,8 +20,25 @@ class AuthController extends Controller
     }
 
     public function handleDangKy(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'ten' => 'regex:/^[A-Za-z\s]+$/',
+            'email' => 'email',
+            'matKhau' => 'min:8|regex:/^[a-zA-Z0-9]+$/',
+        ], [
+            'ten.regex' => 'Tên người dùng phải là kiểu chữ và không có ký tự đặc biệt.',
+            'email.email' => 'Địa chỉ email không hợp lệ.',
+            'matKhau.min' => 'Mật khấu phải lớn hơn 8 ký tự.',
+            'matKhau.regex' => 'Mật khẩu không được chứa ký tự đặc biệt.',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => $validator->errors()->first(),
+            ]);
+        }
 
-        dd("A");
         if (empty($request->ten)) {
             return response()->json([
                 'success'   => false,
@@ -26,12 +46,22 @@ class AuthController extends Controller
                 'message'   => 'Vui lòng nhập họ tên!'
             ]);
         }
+        
 
         if (empty($request->email)) {
             return response()->json([
                 'success'   => false,
                 'type'      => 'error',
                 'message'   => 'Vui lòng nhập email!'
+            ]);
+        }
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => $validator->errors()->second(),
+                'timer'     => 5000 
             ]);
         }
 
@@ -50,8 +80,6 @@ class AuthController extends Controller
                 'message'   => 'Vui lòng nhập mật khẩu xác nhận!'
             ]);
         }
-
-        
 
         if($request->xacNhanMatKhau != $request->matKhau){
             return response()->json([
@@ -79,6 +107,42 @@ class AuthController extends Controller
         return response()->json([
             'success'   => true,
             'redirect'   => route('dang-nhap')
+        ]);
+    }
+    public function handleDangNhap(Request $request) {
+
+        if (empty($request->email)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Vui lòng nhập email!'
+            ]);
+        }
+
+        if (empty($request->matKhau)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Vui lòng nhập mật khẩu!'
+            ]);
+        }
+
+        if ($request->filled(['email', 'matKhau'])) {
+            $nguoiDung = NguoiDung::where('email', $request->email)->first();
+            if ($nguoiDung && Hash::check($request->matKhau, $nguoiDung->mat_khau)) {
+                Auth::login($nguoiDung);
+    
+                return response()->json([
+                    'success'   => true,
+                    'redirect'  => route('home') 
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success'   => false,
+            'type'      => 'error',
+            'message'   => 'Thông tin đăng nhập không hợp lệ.'
         ]);
     }
 }
