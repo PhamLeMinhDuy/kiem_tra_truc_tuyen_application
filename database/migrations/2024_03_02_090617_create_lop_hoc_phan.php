@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('ma_lop_hoc_phan');
             $table->string('ten_mon_hoc');
+            $table->string('ma_lop_nganh');
+            $table->string('ma_lop_mon');
             $table->string('ma_giang_vien');
             $table->datetime('thoi_gian_bat_dau');
             $table->datetime('thoi_gian_ket_thuc');
