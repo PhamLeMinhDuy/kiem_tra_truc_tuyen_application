@@ -26,4 +26,18 @@
 <script src="{{ asset('js/sweetalert2.bundle.js') }}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/3.0.7/metisMenu.min.js" integrity="sha512-o36qZrjup13zLM13tqxvZTaXMXs+5i4TL5UWaDCsmbp5qUcijtdCFuW9a/3qnHGfWzFHBAln8ODjf7AnUNebVg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    function adjustMargin() {
+        var screenWidth = window.innerWidth;
+        var mainContent = document.getElementById('main-content');
+        
+        if (screenWidth <= 640) {
+            mainContent.style.marginLeft = '0';
+        } else {
+            mainContent.style.marginLeft = '255px';
+        }
+    }
+    adjustMargin();
+    window.addEventListener('resize', adjustMargin);
+</script>
 @yield('page-js')
