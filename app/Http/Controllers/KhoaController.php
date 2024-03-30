@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Khoa;
+use App\Models\Nganh;
 use App\Models\MonHoc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -21,6 +22,7 @@ class KhoaController extends Controller
         }
         $danhSachKhoa = Khoa::all();
         $danhSachMon = MonHoc::all();
+        $danhSachNganh = Nganh::all();
         return view('admin.quan-ly.khoa.index', [
             'title' => 'Danh sách khoa',
             'danhSachCot' => $danhSachCot,
@@ -28,6 +30,7 @@ class KhoaController extends Controller
             'danhSachCotDb' => $danhSachCotDb,
             'danhSachMon' => $danhSachMon,
             'danhSachKhoa' => $danhSachKhoa,
+            'danhSachNganh' => $danhSachNganh,
             'modalCapNhat' => 'modal-cap-nhat-khoa',
             'modalThem' => 'modal-them-khoa',
             'modalXoa' => 'modal-xoa-khoa',
@@ -37,13 +40,40 @@ class KhoaController extends Controller
     public function handleCapNhatKhoa(Request $request) {
         $id = (int)$request->id_khoa;
         $khoa = Khoa::find($id);
+        if ((!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_khoa) || $request->ma_khoa !== $khoa->ma_khoa)) {
+            $existingMaKhoa = SinhVien::where('ma_khoa', $request->ma_khoa)->first();
+            if ($existingMaKhoa) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã khoa đã tồn tại!'
+                ]);
+            }
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Mã khoa chỉ được chứa chữ cái và số.'
+            ]);
+        }
+        if ($request->ten_khoa !== $khoa->ten_khoa) {
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_khoa)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Tên khoa không được chứa ký tự đặc biệt và số.'
+                ]);
+            }
+        }
         if ($khoa) {
             $khoa->ma_khoa = $request->ma_khoa;
             $khoa->ten_khoa = $request->ten_khoa;
             $khoa->save();
+            $request->session()->flash('success_message', 'Cập nhật khoa thành công!');
 
             return response()->json([
                 'success'   => true,
+                'type'      => 'success',
+                'message'   => 'Cập nhật khoa thành công!',
                 'redirect'   => route('admin.quan-ly.khoa.quan-ly-khoa')
             ]);
         } else {
@@ -55,14 +85,37 @@ class KhoaController extends Controller
         }
     }
     public function handleThemKhoa(Request $request) {
+        if (empty($request->ma_khoa) || empty($request->ten_khoa)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Vui lòng điền đầy đủ thông tin!'
+            ]);
+        }
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_khoa)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Mã khoa chỉ được chứa chữ cái và số.'
+            ]);
+        }
+        if (preg_match('/[^\p{L}\s]/u', $request->ten_khoa)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Tên khoa không được chứa ký tự đặc biệt và số.'
+            ]);
+        }
         $khoa = new Khoa;
         if ($khoa) {
             $khoa->ma_khoa = $request->ma_khoa;
             $khoa->ten_khoa = $request->ten_khoa;
             $khoa->save();
-
+            $request->session()->flash('success_message', 'Thêm khoa thành công!');
             return response()->json([
                 'success'   => true,
+                'type'      => 'success',
+                'message'   => 'Thêm khoa thành công!',
                 'redirect'   => route('admin.quan-ly.khoa.quan-ly-khoa')
             ]);
         } else {
@@ -78,8 +131,7 @@ class KhoaController extends Controller
     public function handleXoaKhoa(Request $request) {
         $id = (int)$request->id_khoa;
         $khoa = Khoa::find($id);
-        
-        // Nếu không tìm thấy giảng viên, trả về thông báo lỗi
+
         if (!$khoa) {
             return response()->json([
                 'success'   => false,
@@ -88,10 +140,8 @@ class KhoaController extends Controller
             ]);
         }
         
-        // Nếu tìm thấy giảng viên, tiến hành xóa
         $khoa->delete();
 
-        // Trả về thông báo thành công và redirect về trang danh sách giảng viên
         return response()->json([
             'success'   => true,
             'redirect'   => route('admin.quan-ly.khoa.quan-ly-khoa')

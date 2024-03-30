@@ -9,11 +9,11 @@
         <form id="form-cap-nhat-sinh-vien">
             <div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                  <label class="col-span-1" for="">Mã giảng viên:</label>
+                  <label class="col-span-1" for="">Mã sinh viên:</label>
                   <input id="input-ma-sinh-vien-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-sinh-vien" type="text">
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                  <label class="col-span-1" for="">Tên giảng viên:</label>
+                  <label class="col-span-1" for="">Tên sinh viên:</label>
                   <input id="input-ten-sinh-vien-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-sinh-vien" type="text">
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
@@ -29,9 +29,21 @@
                   <input id="input-ngay-sinh-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-sinh-vien" type="text">
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                  <label class="col-span-1" for="">Mã khoa:</label>
-                  <input id="input-ma-khoa-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-sinh-vien" type="text">
+                  <label class="col-span-1" for="">Khoa:</label>
+                  <select name="" id="input-ma-khoa-cap-nhat" class="input-cap-nhat-sinh-vien col-span-2 border rounded-sm px-2 py-1" >
+                    @foreach ($danhSachKhoa as $khoa)
+                        <option value="{{ $khoa->ma_khoa }}">{{ $khoa->ten_khoa }}</option>
+                    @endforeach
+                  </select>
               </div>
+              <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                <label class="col-span-1" for="">Ngành:</label>
+                <select name="" id="input-ma-nganh-cap-nhat" class="input-cap-nhat-sinh-vien col-span-2 border rounded-sm px-2 py-1" >
+                    @foreach ($danhSachNganh as $nganh)
+                        <option value="{{ $nganh->ma_nganh }}">{{ $nganh->ten_nganh }}</option>
+                    @endforeach
+                </select>
+            </div>
             </div>
             <div class="flex justify-between mt-5">
                 <button  type="submit" class="mr-3 border border-emerald-400 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
@@ -65,10 +77,11 @@
       var email = $('#input-email-cap-nhat').val();
       var ngay_sinh = $('#input-ngay-sinh-cap-nhat').val();
       var ma_khoa = $('#input-ma-khoa-cap-nhat').val();
+      var ma_nganh = $('#input-ma-nganh-cap-nhat').val();
   
-      if (ma_sinh_vien && ten_sinh_vien && so_dien_thoai && email && ngay_sinh && ma_khoa) {
+      if (ma_sinh_vien && ten_sinh_vien && so_dien_thoai && email && ngay_sinh && ma_khoa && ma_nganh) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.post("{{ route('admin.quan-ly.sinh-vien.handle-cap-nhat-sinh-vien') }}", {
+        axios.put("{{ route('admin.quan-ly.sinh-vien.handle-cap-nhat-sinh-vien') }}", {
             id_sinh_vien: $('#data-id').val(),
             ma_sinh_vien: ma_sinh_vien,
             ten_sinh_vien: ten_sinh_vien,
@@ -76,6 +89,7 @@
             email: email,
             ngay_sinh: ngay_sinh,
             ma_khoa: ma_khoa,
+            ma_nganh: ma_nganh,
         })
         .then(function (response) {
             if (response.data.success) {
@@ -86,7 +100,7 @@
                 icon: response.data.type,
                 title: response.data.message,
                 showConfirmButton: false,
-                timer: 1000
+                timer: 1500
             })
         })
         .catch(function (error) {
@@ -106,6 +120,17 @@
             timer: 1500
         });
       }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        // Kiểm tra Session để hiển thị thông báo
+        @if(Session::has('success_message'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ Session::get('success_message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        @endif
     });
 </script>
   

@@ -13,15 +13,21 @@
         </div> 
     </div>
 @endsection
-
 @section('content')
     <div class="p-2">
-        @include('components.datatable', [$danhSachCot, $danhSachDuLieu])
+        @if ($dataType = 'lop_hoc_phan')
+            @include('components.datatable', [$danhSachCot, $danhSachDuLieu, $danhSachMon, $danhSachSinhVienAll])    
+        @else 
+            @include('components.datatable', [$danhSachCot, $danhSachDuLieu, $danhSachMon])    
+        @endif
     </div>
 @endsection
 @include('admin.quan-ly.lop-hoc-phan.create-modal')
 @include('admin.quan-ly.lop-hoc-phan.update-modal')
 @include('admin.quan-ly.lop-hoc-phan.delete-modal')
+@include('admin.quan-ly.lop-hoc-phan.sinh-vien-modal')
+@include('admin.quan-ly.lop-hoc-phan.giang-vien-modal')
+@include('admin.quan-ly.lop-hoc-phan.bai-thi-modal')
 @section('page-js')
      <script type="text/javascript">
     </script> 

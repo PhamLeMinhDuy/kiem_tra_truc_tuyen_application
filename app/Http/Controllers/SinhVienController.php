@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Khoa;
+use App\Models\Nganh;
 use App\Models\MonHoc;
 use App\Models\SinhVien;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ class SinhVienController extends Controller
         }
         $danhSachKhoa = Khoa::all();
         $danhSachMon = MonHoc::all();
+        $danhSachNganh = Nganh::all();
         return view('admin.quan-ly.sinh-vien.index', [
             'title' => 'Danh sách sinh viên',
             'danhSachCot' => $danhSachCot,
@@ -29,6 +31,7 @@ class SinhVienController extends Controller
             'danhSachCotDb' => $danhSachCotDb,
             'danhSachMon' => $danhSachMon,
             'danhSachKhoa' => $danhSachKhoa,
+            'danhSachNganh' => $danhSachNganh,
             'modalCapNhat' => 'modal-cap-nhat-sinh-vien',
             'modalThem' => 'modal-them-sinh-vien',
             'modalXoa' => 'modal-xoa-sinh-vien',
@@ -38,6 +41,74 @@ class SinhVienController extends Controller
     public function handleCapNhatSinhVien(Request $request) {
         $id = (int)$request->id_sinh_vien;
         $sinhVien = SinhVien::find($id);
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_sinh_vien) || $request->ma_sinh_vien !== $sinhVien->ma_sinh_vien) {
+            $existingMaSinhVien = SinhVien::where('ma_sinh_vien', $request->ma_sinh_vien)->first();
+            if ($existingMaSinhVien) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã sinh viên đã tồn tại!'
+                ]);
+            }
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Mã sinh viên chỉ được chứa chữ cái và số.'
+            ]);
+        }
+        if ($request->ten_sinh_vien !== $sinhVien->ten_sinh_vien) {
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_sinh_vien)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Tên sinh viên không được chứa ký tự đặc biệt và số.'
+                ]);
+            }
+        }
+        if ($request->so_dien_thoai !== $sinhVien->so_dien_thoai || !preg_match('/^\d{10,11}$/', $request->so_dien_thoai)) {
+            if (!preg_match('/^\d{10,11}$/', $request->so_dien_thoai)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Số điện thoại phải có từ 10 đến 11 số.'
+                ]);
+            }
+            $existingNumberPhone = SinhVien::where('so_dien_thoai', $request->so_dien_thoai)->first();
+            if ($existingNumberPhone) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Số điện thoại đã tồn tại!'
+                ]);
+            }
+        }
+        if ($request->email !== $sinhVien->email) {
+            $existingEmail = SinhVien::where('email', $request->email)->first();
+            if ($existingEmail) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Email đã tồn tại!'
+                ]);
+            }
+
+            if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)|| !filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Email không đúng định dạng.'
+                ]);
+            }
+        }
+        if ($request->ngay_sinh !== $sinhVien->ngay_sinh) {
+            if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/', $request-> ngay_sinh)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Ngày sinh phải có định dạng YYYY-MM-DD.'
+                ]);
+            }
+        }
         if ($sinhVien) {
             $sinhVien->ma_sinh_vien = $request->ma_sinh_vien;
             $sinhVien->ten_sinh_vien = $request->ten_sinh_vien;
@@ -45,11 +116,13 @@ class SinhVienController extends Controller
             $sinhVien->email = $request->email;
             $sinhVien->ngay_sinh = $request->ngay_sinh;
             $sinhVien->ma_khoa = $request->ma_khoa;
-            $sinhVien->cac_mon_sinh_day = $request->cac_mon;
+            $sinhVien->ma_nganh = $request->ma_nganh;
             $sinhVien->save();
-
+            $request->session()->flash('success_message', 'Cập nhật sinh viên thành công!');
             return response()->json([
                 'success'   => true,
+                'type'      => 'success',
+                'message'   => 'Cập nhật sinh viên thành công!',
                 'redirect'   => route('admin.quan-ly.sinh-vien.quan-ly-sinh-vien')
             ]);
         } else {
@@ -61,6 +134,72 @@ class SinhVienController extends Controller
         }
     }
     public function handleThemSinhVien(Request $request) {
+        if (empty($request->ma_sinh_vien) || empty($request->ten_sinh_vien) || empty($request->so_dien_thoai) || empty($request->email) || empty($request->ngay_sinh) || empty($request->ma_khoa)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Vui lòng điền đầy đủ thông tin!'
+            ]);
+        }
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_sinh_vien)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Mã sinh viên chỉ được chứa chữ cái và số.'
+            ]);
+        }
+        $existingSinhVien = SinhVien::where('ma_sinh_vien', $request->ma_sinh_vien)->first();
+        if ($existingSinhVien) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Mã sinh viên đã tồn tại!'
+            ]);
+        }
+        if (preg_match('/[^\p{L}\s]/u', $request->ten_sinh_vien)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Tên sinh viên không được chứa ký tự đặc biệt và số.'
+            ]);
+        }
+        $existingNumberPhone = SinhVien::where('so_dien_thoai', $request->so_dien_thoai)->first();
+        if ($existingNumberPhone) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Số điện thoại đã tồn tại!'
+            ]);
+        }
+        if (!preg_match('/^\d{10,11}$/', $request->so_dien_thoai)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Số điện thoại phải có từ 10 đến 11 số.'
+            ]);
+        }
+        $existingEmail = SinhVien::where('email', $request->email)->first();
+        if ($existingEmail) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Email đã tồn tại!'
+            ]);
+        }
+        if (!filter_var($request-> email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Email không đúng định dạng.'
+            ]);
+        }
+        if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/', $request-> ngay_sinh)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Ngày sinh phải có định dạng YYYY-MM-DD.'
+            ]);
+        }
         $sinhVien = new SinhVien;
         if ($sinhVien) {
             $sinhVien->ma_sinh_vien = $request->ma_sinh_vien;
@@ -71,9 +210,11 @@ class SinhVienController extends Controller
             $sinhVien->ma_khoa = $request->ma_khoa;
             $sinhVien->ma_nganh = $request->ma_nganh;
             $sinhVien->save();
-
+            $request->session()->flash('success_message', 'Thêm sinh viên thành công!');
             return response()->json([
                 'success'   => true,
+                'type'      => 'success',
+                'message'   => 'Thêm sinh viên thành công!',
                 'redirect'   => route('admin.quan-ly.sinh-vien.quan-ly-sinh-vien')
             ]);
         } else {
@@ -90,19 +231,16 @@ class SinhVienController extends Controller
         $id = (int)$request->id_sinh_vien;
         $sinhVien = SinhVien::find($id);
         
-        // Nếu không tìm thấy giảng viên, trả về thông báo lỗi
         if (!$sinhVien) {
             return response()->json([
                 'success'   => false,
                 'type'      => 'error',
-                'message'   => 'Không tìm thấy giảng viên để xóa!'
+                'message'   => 'Không tìm thấy sinh viên để xóa!'
             ]);
         }
         
-        // Nếu tìm thấy giảng viên, tiến hành xóa
         $sinhVien->delete();
 
-        // Trả về thông báo thành công và redirect về trang danh sách giảng viên
         return response()->json([
             'success'   => true,
             'redirect'   => route('admin.quan-ly.sinh-vien.quan-ly-sinh-vien')

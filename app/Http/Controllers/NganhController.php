@@ -22,6 +22,7 @@ class NganhController extends Controller
         }
         $danhSachKhoa = Khoa::all();
         $danhSachMon = MonHoc::all();
+        $danhSachNganh = Nganh::all();
         return view('admin.quan-ly.nganh.index', [
             'title' => 'Danh sách ngành',
             'danhSachCot' => $danhSachCot,
@@ -29,6 +30,7 @@ class NganhController extends Controller
             'danhSachCotDb' => $danhSachCotDb,
             'danhSachMon' => $danhSachMon,
             'danhSachKhoa' => $danhSachKhoa,
+            'danhSachNganh' => $danhSachNganh,
             'modalCapNhat' => 'modal-cap-nhat-nganh',
             'modalThem' => 'modal-them-nganh',
             'modalXoa' => 'modal-xoa-nganh',
@@ -38,11 +40,36 @@ class NganhController extends Controller
     public function handleCapNhatNganh(Request $request) {
         $id = (int)$request->id_nganh;
         $nganh = Nganh::find($id);
+        if ((!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_nganh) || $request->ma_nganh !== $nganh->ma_nganh)) {
+            $existingMaNganh = SinhVien::where('ma_nganh', $request->ma_nganh)->first();
+            if ($existingMaNganh) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã ngành đã tồn tại!'
+                ]);
+            }
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Mã ngành chỉ được chứa chữ cái và số.'
+            ]);
+        }
+        if ($request->ten_nganh !== $nganh->ten_nganh) {
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_nganh)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Tên ngành không được chứa ký tự đặc biệt và số.'
+                ]);
+            }
+        }
         if ($nganh) {
             $nganh->ma_nganh = $request->ma_nganh;
             $nganh->ten_nganh = $request->ten_nganh;
             $nganh->ma_khoa = $request->ma_khoa;
             $nganh->save();
+            $request->session()->flash('success_message', 'Cập nhật ngành thành công!');
 
             return response()->json([
                 'success'   => true,
@@ -57,13 +84,34 @@ class NganhController extends Controller
         }
     }
     public function handleThemNganh(Request $request) {
+        if (empty($request->ma_nganh) || empty($request->ten_nganh)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Vui lòng điền đầy đủ thông tin!'
+            ]);
+        }
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_nganh)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Mã ngành chỉ được chứa chữ cái và số.'
+            ]);
+        }
+        if (preg_match('/[^\p{L}\s]/u', $request->ten_nganh)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Tên ngành không được chứa ký tự đặc biệt và số.'
+            ]);
+        }
         $nganh = new nganh;
         if ($nganh) {
             $nganh->ma_nganh = $request->ma_nganh;
             $nganh->ten_nganh = $request->ten_nganh;
             $nganh->ma_khoa = $request->ma_khoa;
             $nganh->save();
-
+            $request->session()->flash('success_message', 'Thêm ngành thành công!');
             return response()->json([
                 'success'   => true,
                 'redirect'   => route('admin.quan-ly.nganh.quan-ly-nganh')

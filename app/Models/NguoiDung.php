@@ -16,6 +16,7 @@ class NguoiDung extends Model implements Authenticatable
         'ho_ten',
         'email',
         'mat_khau',
+        'role',
     ];
     public function getAuthIdentifierName()
     {

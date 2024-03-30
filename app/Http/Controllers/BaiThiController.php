@@ -4,16 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Khoa;
 use App\Models\Nganh;
+
+use App\Models\BaiThi;
 use App\Models\MonHoc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
-class MonHocController extends Controller
+class BaiThiController extends Controller
 {
     public function index(){
-        $danhSachSinhVien = MonHoc::all();
-        $columnNames = Schema::getColumnListing('mon_hoc');
-        $danhSachTenCot = ['ID', 'Mã môn học', 'Tên môn học'];
+        $danhSachSinhVien = BaiThi::all();
+        $columnNames = Schema::getColumnListing('bai_thi');
+        $danhSachTenCot = ['ID', 'Mã bài thi', 'Tên bài thi'];
         $danhSachCot = [];
         $danhSachCotDb = [];
         for ($i = 0; $i < sizeof($danhSachTenCot); $i++) {
@@ -23,58 +25,58 @@ class MonHocController extends Controller
         $danhSachKhoa = Khoa::all();
         $danhSachMon = MonHoc::all();
         $danhSachNganh = Nganh::all();
-        return view('admin.quan-ly.mon-hoc.index', [
-            'title' => 'Danh sách môn học',
+        return view('admin.quan-ly.bai-thi.index', [
+            'title' => 'Danh sách bài thi',
             'danhSachCot' => $danhSachCot,
             'danhSachDuLieu' => $danhSachSinhVien,
             'danhSachCotDb' => $danhSachCotDb,
             'danhSachMon' => $danhSachMon,
             'danhSachKhoa' => $danhSachKhoa,
             'danhSachNganh' => $danhSachNganh,
-            'modalCapNhat' => 'modal-cap-nhat-mon-hoc',
-            'modalThem' => 'modal-them-mon-hoc',
-            'modalXoa' => 'modal-xoa-mon-hoc',
-            'dataType' => 'mon_hoc',
+            'modalCapNhat' => 'modal-cap-nhat-bai-thi',
+            'modalThem' => 'modal-them-bai-thi',
+            'modalXoa' => 'modal-xoa-bai-thi',
+            'dataType' => 'bai_thi',
         ]);
     }
-    public function handleCapNhatMonHoc(Request $request) {
-        $id = (int)$request->id_mon_hoc;
-        $monHoc = MonHoc::find($id);
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_mon_hoc) || ($request->ma_mon_hoc !== $monHoc->ma_mon_hoc)) {
-            $existingMaMonHoc = MonHoc::where('ma_mon_hoc', $request->ma_mon_hoc)->first();
-            if ($existingMaMonHoc) {
+    public function handleCapNhatBaiThi(Request $request) {
+        $id = (int)$request->id_bai_thi;
+        $baiThi = BaiThi::find($id);
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $request->ma_bai_thi) || ($request->ma_bai_thi !== $baiThi->ma_bai_thi)) {
+            $existingMaBaiThi = BaiThi::where('ma_bai_thi', $request->ma_bai_thi)->first();
+            if ($existingMaBaiThi) {
                 return response()->json([
                     'success'   => false,
                     'type'      => 'error',
-                    'message'   => 'Mã môn học đã tồn tại!'
+                    'message'   => 'Mã bài thi đã tồn tại!'
                 ]);
             }
         
             return response()->json([
                 'success'   => false,
                 'type'      => 'error',
-                'message'   => 'Mã môn học chỉ được chứa chữ cái và số.'
+                'message'   => 'Mã bài thi chỉ được chứa chữ cái và số.'
             ]);
         }
-        if ($request->ten_mon_hoc !== $monHoc->ten_mon_hoc) {
-            if (preg_match('/[^\p{L}\s]/u', $request->ten_mon_hoc)) {
+        if ($request->ten_bai_thi !== $baiThi->ten_bai_thi) {
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_bai_thi)) {
                 return response()->json([
                     'success'   => false,
                     'type'      => 'error',
-                    'message'   => 'Tên môn học không được chứa ký tự đặc biệt và số.'
+                    'message'   => 'Tên bài thi không được chứa ký tự đặc biệt và số.'
                 ]);
             }
         }
-        if ($monHoc) {
-            $monHoc->ma_mon_hoc = $request->ma_mon_hoc;
-            $monHoc->ten_mon_hoc = $request->ten_mon_hoc;
-            $monHoc->save();
-            $request->session()->flash('success_message', 'Cập nhật môn học thành công!');
+        if ($baiThi) {
+            $baiThi->ma_bai_thi = $request->ma_bai_thi;
+            $baiThi->ten_bai_thi = $request->ten_bai_thi;
+            $baiThi->save();
+            $request->session()->flash('success_message', 'Cập nhật bài thi thành công!');
             return response()->json([
                 'success'   => true,
                 'type'      => 'success',
                 'message'   => 'Cập nhật môn học thành công!',
-                'redirect'   => route('admin.quan-ly.mon-hoc.quan-ly-mon-hoc')
+                'redirect'   => route('admin.quan-ly.bai-thi.quan-ly-bai-thi')
             ]);
         } else {
             return response()->json([
@@ -84,8 +86,9 @@ class MonHocController extends Controller
             ]);
         }
     }
-    public function handleThemMonHoc(Request $request) {
-        if (empty($request->ma_mon_hoc) || empty($request->ten_mon_hoc) ) {
+
+    public function handleThemBaiThi(Request $request) {
+        if (empty($request->ma_bai_thi) || empty($request->ten_bai_thi) ) {
             return response()->json([
                 'success'   => false,
                 'type'      => 'error',
@@ -93,33 +96,33 @@ class MonHocController extends Controller
             ]);
         }
 
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_mon_hoc)) {
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $request->ma_bai_thi)) {
             return response()->json([
                 'success'   => false,
                 'type'      => 'error',
-                'message'   => 'Mã môn học chỉ được chứa chữ cái và số.'
+                'message'   => 'Mã bài thi chỉ được chứa chữ cái và số.'
             ]);
         }
 
-        if (preg_match('/[^\p{L}\s]/u', $request->ten_mon_hoc)) {
+        if (preg_match('/[^\p{L}\s]/u', $request->ten_bai_thi)) {
             return response()->json([
                 'success'   => false,
                 'type'      => 'error',
-                'message'   => 'Tên môn học không được chứa ký tự đặc biệt và số.'
+                'message'   => 'Tên bài thi không được chứa ký tự đặc biệt và số.'
             ]);
         }
-        $monHoc = new MonHoc;
-        if ($monHoc) {
-            $monHoc->ma_mon_hoc = $request->ma_mon_hoc;
-            $monHoc->ten_mon_hoc = $request->ten_mon_hoc;
-            $monHoc->save();
-            $request->session()->flash('success_message', 'Thêm môn học thành công!');
+        $baiThi = new BaiThi;
+        if ($baiThi) {
+            $baiThi->ma_bai_thi = $request->ma_bai_thi;
+            $baiThi->ten_bai_thi = $request->ten_bai_thi;
+            $baiThi->save();
+            $request->session()->flash('success_message', 'Thêm bài thi thành công!');
 
             return response()->json([
                 'success'   => true,
                 'type'      => 'success',
-                'message'   => 'Thêm môn học thành công!',
-                'redirect'   => route('admin.quan-ly.mon-hoc.quan-ly-mon-hoc')
+                'message'   => 'Thêm bài thi thành công!',
+                'redirect'   => route('admin.quan-ly.bai-thi.quan-ly-bai-thi')
             ]);
         } else {
             return response()->json([
@@ -131,22 +134,23 @@ class MonHocController extends Controller
        
     }
 
-    public function handleXoaMonHoc(Request $request) {
-        $id = (int)$request->id_mon_hoc;
-        $monHoc = MonHoc::find($id);
+    public function handleXoaBaiThi(Request $request) {
+        $id = (int)$request->id_bai_thi;
+        $baiThi = BaiThi::find($id);
         
-        if (!$monHoc) {
+        if (!$baiThi) {
             return response()->json([
                 'success'   => false,
                 'type'      => 'error',
-                'message'   => 'Không tìm thấy môn học để xóa!'
+                'message'   => 'Không tìm thấy bài thi để xóa!'
             ]);
         }
         
-        $monHoc->delete();
+        $baiThi->delete();
         return response()->json([
             'success'   => true,
-            'redirect'   => route('admin.quan-ly.mon-hoc.quan-ly-mon-hoc')
+            'redirect'   => route('admin.quan-ly.bai-thi.quan-ly-bai-thi')
         ]);
     }
+
 }

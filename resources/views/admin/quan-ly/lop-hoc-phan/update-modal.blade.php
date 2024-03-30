@@ -21,28 +21,16 @@
                 <input id="input-mon-hoc-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="text">
             </div>
             <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                <label class="col-span-1" for="">Giảng viên:</label>
-                <input id="input-ma-giang-vien-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="text">
-            </div>
-            <div class="form-group grid grid-cols-3 gap-4 mb-2">
                 <label class="col-span-1" for="">Thời gian bắt đầu:</label>
-                <input id="input-bat-dau-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="text">
+                <input id="input-bat-dau-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="date" placeholder="Chọn thời gian bắt đầu">
             </div>
             <div class="form-group grid grid-cols-3 gap-4 mb-2">
                 <label class="col-span-1" for="">Thời gian kết thúc:</label>
-                <input id="input-ket-thuc-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="text">
-            </div>
-            <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                <label class="col-span-1" for="">Danh sách sinh viên:</label>
-                <input id="input-danh-sach-sinh-vien-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="text">
-            </div>
-            <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                <label class="col-span-1" for="">Danh sách bài thi:</label>
-                <input id="input-danh-sach-bai-thi-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="text">
+                <input id="input-ket-thuc-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="date" placeholder="Chọn thời gian kết thúc">
             </div>
             </div>
             <div class="flex justify-between mt-5">
-                <button onclick="cap-nhat()" type="submit" class="mr-3 border-2 border-cyan-500 py-2 px-4 rounded inline-flex items-center hover:bg-cyan-500 font-bold hover:text-white">
+                <button  type="submit" class="mr-3 border-2 border-cyan-500 py-2 px-4 rounded inline-flex items-center hover:bg-cyan-500 font-bold hover:text-white">
                 Thêm
               </button>
               <button id="btn-huy-cap-nhat" type='button' class="mr-3 border-2 border-rose-500 py-2 px-4 rounded inline-flex items-center hover:bg-rose-500 font-bold hover:text-white">
@@ -72,20 +60,16 @@
       var ma_mon_hoc = $('#input-mon-hoc-lop-hoc-phan-cap-nhat').val();
       var thoi_gian_dat_dau = $('#input-bat-dau-lop-hoc-phan-cap-nhat').val();
       var thoi_gian_ket_thuc = $('#input-ket-thuc-lop-hoc-phan-cap-nhat').val();
-      var danh_sach_sinh_vien = $('#input-danh-sach-sinh-vien-lop-hoc-phan-cap-nhat').val();
-      var danh_sach_bai_thi = $('#input-danh-sach-giang-vien-lop-hoc-phan-cap-nhat').val();
   
-      if (ma_lop_hoc_phan && ten_lop_hoc_phan && ma_mon_hoc && thoi_gian_dat_dau && thoi_gian_ket_thuc && danh_sach_bai_thi && danh_sach_sinh_vien) {
+      if (ma_lop_hoc_phan && ten_lop_hoc_phan && ma_mon_hoc && thoi_gian_dat_dau && thoi_gian_ket_thuc ) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.post("{{ route('admin.quan-ly.lop-hoc-phan.handle-cap-nhat-lop-hoc-phan') }}", {
+        axios.put("{{ route('admin.quan-ly.lop-hoc-phan.handle-cap-nhat-lop-hoc-phan') }}", {
             id_lop_hoc_phan: $('#data-id').val(),
             ma_lop_hoc_phan: ma_lop_hoc_phan,
             ten_lop_hoc_phan: ten_lop_hoc_phan,
             ma_mon_hoc: ma_mon_hoc,
             thoi_gian_dat_dau: thoi_gian_dat_dau,
             thoi_gian_ket_thuc: thoi_gian_ket_thuc,
-            danh_sach_sinh_vien: danh_sach_sinh_vien,
-            danh_sach_bai_thi: danh_sach_bai_thi,
             
         })
         .then(function (response) {
@@ -97,7 +81,7 @@
                 icon: response.data.type,
                 title: response.data.message,
                 showConfirmButton: false,
-                timer: 1000
+                timer: 1500
             })
         })
         .catch(function (error) {
@@ -109,7 +93,6 @@
             })
         });
       } else {
-        // Nếu có trường chưa được nhập, hiển thị thông báo lỗi
         Swal.fire({
             icon: 'error',
             title: 'Vui lòng nhập đầy đủ thông tin.',
@@ -117,6 +100,17 @@
             timer: 1500
         });
       }
+    });
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        @if(Session::has('success_message'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ Session::get('success_message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        @endif
     });
 </script>
   
