@@ -1,4 +1,5 @@
 <div class="fixed top-0 left-0 inset-0 overflow-y-auto bg-gray-600 bg-opacity-50 w-screen h-screen" style="display: none; z-index:100;" id="modal-them-giang-vien">
+    
     <div class="bg-white rounded p-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div class="modal-title mb-6">
           <h4 class="text-lg font-semibold">
@@ -10,6 +11,7 @@
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Mã giảng viên:</label>
                   <input id="input-ma-giang-vien-them" class="input-them-giang-vien col-span-2 border rounded-sm px-2 py-1" type="text">
+                  <span id="error-ma-giang-vien" class="text-red-500"></span>
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Tên giảng viên:</label>
@@ -35,10 +37,6 @@
                     @endforeach
                   </select>
               </div>
-              <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                <label class="col-span-1" for="">Ngành:</label>
-                <input id="input-ma-nganh-them" class="input-them-giang-vien col-span-2 border rounded-sm px-2 py-1" type="text">
-            </div>
             </div>
             <div class="flex justify-between mt-5">
                 <button onclick="them()" type="submit" class="mr-3 border border-cyan-400 py-2 px-4 mt-4 rounded inline-flex items-center hover:bg-cyan-500 font-bold hover:text-white">
@@ -60,8 +58,6 @@
             inputList[i].value = '';
         }
     })
-
-  function them() {
     $('#form-them-giang-vien').on('submit', function(event){
         event.preventDefault();
         axios.post("{{ route('admin.quan-ly.giang-vien.handle-them-giang-vien') }}", {
@@ -82,7 +78,7 @@
                 icon: response.data.type,
                 title: response.data.message,
                 showConfirmButton: false,
-                timer: 1000
+                timer: 1500
             })
         })
         .catch(function (error) {
@@ -94,5 +90,15 @@
             })
         });
     })
-  }
+    document.addEventListener("DOMContentLoaded", function() {
+        // Kiểm tra Session để hiển thị thông báo
+        @if(Session::has('success_message'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ Session::get('success_message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        @endif
+    });
 </script>

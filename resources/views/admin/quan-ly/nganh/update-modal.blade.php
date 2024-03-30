@@ -17,8 +17,12 @@
                   <input id="input-ten-nganh-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-nganh" type="text">
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                  <label class="col-span-1" for="">Mã khoa:</label>
-                  <input id="input-ma-khoa-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-nganh" type="text">
+                  <label class="col-span-1" for=""> Khoa:</label>
+                  <select name="" id="input-ma-khoa-cap-nhat" class="input-cap-nhat-nganh col-span-2 border rounded-sm px-2 py-1" >
+                    @foreach ($danhSachKhoa as $khoa)
+                        <option value="{{ $khoa->ma_khoa }}">{{ $khoa->ten_khoa }}</option>
+                    @endforeach
+                </select>
               </div>
             </div>
             <div class="flex justify-between mt-5">
@@ -53,7 +57,7 @@
   
       if (ma_nganh && ten_nganh && ma_khoa) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.post("{{ route('admin.quan-ly.nganh.handle-cap-nhat-nganh') }}", {
+        axios.put("{{ route('admin.quan-ly.nganh.handle-cap-nhat-nganh') }}", {
             id_nganh: $('#data-id').val(),
             ma_nganh: ma_nganh,
             ten_nganh: ten_nganh,
@@ -88,6 +92,17 @@
             timer: 1500
         });
       }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        // Kiểm tra Session để hiển thị thông báo
+        @if(Session::has('success_message'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ Session::get('success_message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        @endif
     });
 </script>
   

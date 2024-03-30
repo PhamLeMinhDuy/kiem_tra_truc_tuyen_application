@@ -16,10 +16,6 @@
                   <label class="col-span-1" for="">Tên môn học:</label>
                   <input id="input-ten-mon-hoc-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-mon-hoc" type="text">
               </div>
-              <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                  <label class="col-span-1" for="">Mã ngành:</label>
-                  <input id="input-ma-nganh-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-mon-hoc" type="text">
-              </div>
             </div>
             <div class="flex justify-between mt-5">
                 <button  type="submit" class="mr-3 border border-emerald-400 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
@@ -49,15 +45,13 @@
       // Kiểm tra các trường nhập liệu
       var ma_mon_hoc = $('#input-ma-mon-hoc-cap-nhat').val();
       var ten_mon_hoc = $('#input-ten-mon-hoc-cap-nhat').val();
-      var ma_nganh = $('#input-ma-nganh-cap-nhat').val();
   
-      if (ma_mon_hoc && ten_mon_hoc && ma_nganh) {
+      if (ma_mon_hoc && ten_mon_hoc) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.post("{{ route('admin.quan-ly.mon-hoc.handle-cap-nhat-mon-hoc') }}", {
+        axios.put("{{ route('admin.quan-ly.mon-hoc.handle-cap-nhat-mon-hoc') }}", {
             id_mon_hoc: $('#data-id').val(),
             ma_mon_hoc: ma_mon_hoc,
             ten_mon_hoc: ten_mon_hoc,
-            ma_nganh: ma_nganh,
         })
         .then(function (response) {
             if (response.data.success) {
@@ -68,7 +62,7 @@
                 icon: response.data.type,
                 title: response.data.message,
                 showConfirmButton: false,
-                timer: 1000
+                timer: 1500
             })
         })
         .catch(function (error) {
@@ -80,7 +74,6 @@
             })
         });
       } else {
-        // Nếu có trường chưa được nhập, hiển thị thông báo lỗi
         Swal.fire({
             icon: 'error',
             title: 'Vui lòng nhập đầy đủ thông tin.',
@@ -88,6 +81,17 @@
             timer: 1500
         });
       }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        // Kiểm tra Session để hiển thị thông báo
+        @if(Session::has('success_message'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ Session::get('success_message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        @endif
     });
 </script>
   

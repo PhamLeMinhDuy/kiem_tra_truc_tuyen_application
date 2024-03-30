@@ -29,15 +29,23 @@
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Khoa:</label>
-                  <input id="input-ma-khoa-them" class="input-them-sinh-vien col-span-2 border rounded-sm px-2 py-1" type="text">
+                  <select name="" id="input-ma-khoa-them" class="input-them-sinh-vien col-span-2 border rounded-sm px-2 py-1" >
+                    @foreach ($danhSachKhoa as $khoa)
+                        <option value="{{ $khoa->ma_khoa }}">{{ $khoa->ten_khoa }}</option>
+                    @endforeach
+                  </select>
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                 <label class="col-span-1" for="">Ngành:</label>
-                <input id="input-ma-nganh-them" class="input-them-sinh-vien col-span-2 border rounded-sm px-2 py-1" type="text">
+                <select name="" id="input-ma-nganh-them" class="input-them-sinh-vien col-span-2 border rounded-sm px-2 py-1" >
+                    @foreach ($danhSachNganh as $nganh)
+                        <option value="{{ $nganh->ma_nganh }}">{{ $nganh->ten_nganh }}</option>
+                    @endforeach
+                  </select>
             </div>
             </div>
             <div class="flex justify-between mt-5">
-                <button onclick="them()" type="submit" class="mr-3 border border-emerald-400 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
+                <button type="submit" class="mr-3 border border-emerald-400 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
                     Thêm
                   </button>
                   <button id="btn-huy-them" type='button' class="mr-3 border border-rose-400 py-2 px-4 rounded inline-flex items-center hover:bg-rose-500 font-bold hover:text-white">
@@ -56,8 +64,6 @@
             inputList[i].value = '';
         }
     })
-
-  function them() {
     $('#form-them-sinh-vien').on('submit', function(event){
         event.preventDefault();
         axios.post("{{ route('admin.quan-ly.sinh-vien.handle-them-sinh-vien') }}", {
@@ -78,7 +84,7 @@
                 icon: response.data.type,
                 title: response.data.message,
                 showConfirmButton: false,
-                timer: 1000
+                timer: 1500
             })
         })
         .catch(function (error) {
@@ -90,5 +96,15 @@
             })
         });
     })
-  }
+  document.addEventListener("DOMContentLoaded", function() {
+        // Kiểm tra Session để hiển thị thông báo
+        @if(Session::has('success_message'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ Session::get('success_message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        @endif
+    });
 </script>

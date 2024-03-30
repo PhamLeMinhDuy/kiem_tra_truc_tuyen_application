@@ -36,10 +36,6 @@
                     @endforeach
                   </select>
               </div>
-              <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                  <label class="col-span-1" for="">Các môn đang dạy:</label>
-                  <input id="input-cac-mon-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-giang-vien" type="text">
-              </div>
             </div>
             <div class="flex justify-between mt-5">
                 <button  type="submit" class="mr-3 border border-emerald-400 py-2 px-4 mt-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
@@ -75,9 +71,9 @@
       var ma_khoa = $('#input-ma-khoa-cap-nhat').val();
       var cac_mon = $('#input-cac-mon-cap-nhat').val();
   
-      if (ma_giang_vien && ten_giang_vien && so_dien_thoai && email && ngay_sinh && ma_khoa && cac_mon) {
+      if (ma_giang_vien && ten_giang_vien && so_dien_thoai && email && ngay_sinh && ma_khoa) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.post("{{ route('admin.quan-ly.giang-vien.handle-cap-nhat-giang-vien') }}", {
+        axios.put("{{ route('admin.quan-ly.giang-vien.handle-cap-nhat-giang-vien') }}", {
             id_giang_vien: $('#data-id').val(),
             ma_giang_vien: ma_giang_vien,
             ten_giang_vien: ten_giang_vien,
@@ -85,7 +81,6 @@
             email: email,
             ngay_sinh: ngay_sinh,
             ma_khoa: ma_khoa,
-            cac_mon: cac_mon,
         })
         .then(function (response) {
             if (response.data.success) {
@@ -96,7 +91,7 @@
                 icon: response.data.type,
                 title: response.data.message,
                 showConfirmButton: false,
-                timer: 1000
+                timer: 1500
             })
         })
         .catch(function (error) {
@@ -116,6 +111,17 @@
             timer: 1500
         });
       }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        // Kiểm tra Session để hiển thị thông báo
+        @if(Session::has('success_message'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ Session::get('success_message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        @endif
     });
 </script>
   

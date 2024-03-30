@@ -17,7 +17,7 @@
               </div>
             </div>
             <div class="flex justify-between mt-5">
-                <button onclick="them()" type="submit" class="mr-3 border border-cyan-400 py-2 px-4 rounded inline-flex items-center hover:bg-cyan-500 font-bold hover:text-white">
+                <button  type="submit" class="mr-3 border border-cyan-400 py-2 px-4 rounded inline-flex items-center hover:bg-cyan-500 font-bold hover:text-white">
                 Thêm
               </button>
               <button id="btn-huy-them" type='button' class="mr-3 border border-rose-400 py-2 px-4 rounded inline-flex items-center hover:bg-rose-500 font-bold hover:text-white">
@@ -37,7 +37,6 @@
         }
     })
 
-  function them() {
     $('#form-them-khoa').on('submit', function(event){
         event.preventDefault();
         axios.post("{{ route('admin.quan-ly.khoa.handle-them-khoa') }}", {
@@ -54,7 +53,7 @@
                 icon: response.data.type,
                 title: response.data.message,
                 showConfirmButton: false,
-                timer: 1000
+                timer: 1500
             })
         })
         .catch(function (error) {
@@ -66,5 +65,15 @@
             })
         });
     })
-  }
+    document.addEventListener("DOMContentLoaded", function() {
+        // Kiểm tra Session để hiển thị thông báo
+        @if(Session::has('success_message'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ Session::get('success_message') }}',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        @endif
+    });
 </script>
