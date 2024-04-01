@@ -67,7 +67,7 @@
                         @endif
 
                         @if ($dataType === 'bai_thi')
-                        <button onclick="" title="Thêm câu hỏi">
+                        <button onclick="showCauHoi()" type="button" title="Thêm câu hỏi">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="#a3e635" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                             </svg>
@@ -445,6 +445,17 @@
             }
         })
         danhSachBaiThiAllBlock.innerHTML = innerHTMl;
+    }
+
+    function showCauHoi() {
+        var button = event.target;
+        var parentTr = button.closest('tr');
+        var id = parentTr.id.split('-')[1];
+
+        var url = "{{ route('admin.quan-ly.bai-thi.quan-ly-bai-thi-cau-hoi', ':id') }}";
+        url = url.replace(':id', id);
+        window.location.href = url;
+        
     }
 
     // Gọi hàm toggleColumns khi trang được tải hoặc kích thước màn hình thay đổi
