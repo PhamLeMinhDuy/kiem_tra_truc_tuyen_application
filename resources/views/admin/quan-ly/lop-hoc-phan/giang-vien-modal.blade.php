@@ -326,15 +326,4 @@
         });
     })
 
-    document.addEventListener("DOMContentLoaded", function() {
-        // Kiểm tra Session để hiển thị thông báo
-        @if(Session::has('success_message'))
-            Swal.fire({
-                icon: 'success',
-                title: '{{ Session::get('success_message') }}',
-                showConfirmButton: false,
-                timer: 1500
-            });
-        @endif
-    });
 </script>

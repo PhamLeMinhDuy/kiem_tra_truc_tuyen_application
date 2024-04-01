@@ -187,11 +187,8 @@ class LopHocPhanController extends Controller
         $lopHocPhan = LopHocPhan::find($request->id);
         $lopHocPhan->danh_sach_sinh_vien = $request->danh_sach_sinh_vien;
         $lopHocPhan->save();
-        $request->session()->flash('success_message', 'Cập nhật danh sách sinh viên thành công!');
         return response()->json([
             'success'   => true,
-            'type'      => 'success',
-            'message'   => 'Cập nhật danh sách sinh viên thành công!',
             'redirect'   => route('admin.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan')
         ]);
     }
@@ -201,11 +198,8 @@ class LopHocPhanController extends Controller
         $lopHocPhan = LopHocPhan::find($request->id);
         $lopHocPhan->danh_sach_giang_vien = $request->danh_sach_giang_vien;
         $lopHocPhan->save();
-        $request->session()->flash('success_message', 'Cập nhật danh sách giảng viên thành công!');
         return response()->json([
             'success'   => true,
-            'type'      => 'success',
-            'message'   => 'Cập nhật danh sách giảng viên thành công!',
             'redirect'   => route('admin.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan')
         ]);
     }
@@ -215,12 +209,10 @@ class LopHocPhanController extends Controller
         $lopHocPhan = LopHocPhan::find($request->id);
         $lopHocPhan->danh_sach_bai_thi = $request->danh_sach_bai_thi;
         $lopHocPhan->save();
-        $request->session()->flash('success_message', 'Cập nhật danh sách bài thi thành công!');
         return response()->json([
             'success'   => true,
-            'type'      => 'success',
-            'message'   => 'Cập nhật danh sách bài thi thành công!',
             'redirect'   => route('admin.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan')
         ]);
     }
+
 }

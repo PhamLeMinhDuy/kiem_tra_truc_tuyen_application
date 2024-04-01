@@ -24,10 +24,10 @@
                 
             </div>
             <div class="flex justify-end mt-8">
-                <button onclick="xoa()" type="submit" class="mr-3 border-2 border-emerald-500 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
+                <button type="submit" class="mr-3 border-2 border-emerald-500 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
                     Xác nhận
                 </button>
-                <button onclick="tatModal()" class=" border-2 border-rose-500 py-2 px-4 rounded inline-flex items-center hover:bg-rose-500 font-bold hover:text-white">
+                <button id="btn-huy-sinh-vien" class=" border-2 border-rose-500 py-2 px-4 rounded inline-flex items-center hover:bg-rose-500 font-bold hover:text-white">
                     Hủy
                 </button>
             </div>
@@ -297,6 +297,9 @@
         })
         danhSachSinhVienAllBlock.innerHTML = innerHTMl;
     }
+    $('#btn-huy-sinh-vien').on('click', function(event){
+        document.getElementById('modal-sinh-vien').style.display = 'none';
+    })
 
     $('#form-danh-sach-sinh-vien-lop-hoc-phan').on('submit', function(event){
         event.preventDefault();
@@ -325,16 +328,4 @@
             })
         });
     })
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // Kiểm tra Session để hiển thị thông báo
-        @if(Session::has('success_message'))
-            Swal.fire({
-                icon: 'success',
-                title: '{{ Session::get('success_message') }}',
-                showConfirmButton: false,
-                timer: 1500
-            });
-        @endif
-    });
 </script>

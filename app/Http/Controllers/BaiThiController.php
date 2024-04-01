@@ -152,5 +152,24 @@ class BaiThiController extends Controller
             'redirect'   => route('admin.quan-ly.bai-thi.quan-ly-bai-thi')
         ]);
     }
+    public function handleCauHoi(Request $request, $id) { 
+        $baiThi = BaiThi::find($id);
+        return view('admin.quan-ly.bai-thi.cau-hoi', [
+            'title' =>$baiThi->ten_bai_thi ,
+            'id' => $id,
+        ]);
+        
+    }
 
+    public function handleThemCauHoi(Request $request) {
+        $cauHoi = BaiThi::find((int)$request->cauHoiId);
+        $cauHoi->danh_sach_cau_hoi = $request->data;
+        $cauHoi->save();
+        
+        return response()->json([
+            'success'   => true,
+            'redirect'   => route('admin.quan-ly.bai-thi.quan-ly-bai-thi')
+        ]);
+    }
 }
+

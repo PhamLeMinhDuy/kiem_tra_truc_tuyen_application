@@ -77,9 +77,11 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
         });
         Route::group(['prefix' => 'bai-thi', 'as'=>'bai-thi.'], function() {
             Route::get('/quan-ly-bai-thi', [BaiThiController::class, 'index'])->name('quan-ly-bai-thi');
+            Route::get('/quan-ly-bai-thi-cau-hoi/{id}', [BaiThiController::class, 'handleCauHoi'])->name('quan-ly-bai-thi-cau-hoi');
             Route::put('/quan-ly-bai-thi-cap-nhat', [BaiThiController::class, 'handleCapNhatBaiThi'])->name('handle-cap-nhat-bai-thi');
             Route::post('/quan-ly-bai-thi-them', [BaiThiController::class, 'handleThemBaiThi'])->name('handle-them-bai-thi');
             Route::post('/quan-ly-bai-thi-xoa', [BaiThiController::class, 'handleXoaBaiThi'])->name('handle-xoa-bai-thi');
+            Route::post('/quan-ly-bai-thi-them-cau-hoi', [BaiThiController::class, 'handleThemCauHoi'])->name('handle-them-bai-thi-cau-hoi');
         });
         Route::group(['prefix' => 'nguoi-dung', 'as'=>'nguoi-dung.'], function() {
             Route::get('/quan-ly-nguoi-dung', [NguoiDungController::class, 'index'])->name('quan-ly-nguoi-dung');
