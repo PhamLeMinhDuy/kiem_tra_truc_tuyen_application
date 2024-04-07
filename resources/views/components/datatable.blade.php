@@ -30,6 +30,9 @@
                         <input type="hidden" name="" class="danh-sach-giang-vien-lop-hoc-phan" value="{{ $duLieu['danh_sach_giang_vien'] }}">
                         <input type="hidden" name="" class="danh-sach-bai-thi-lop-hoc-phan" value="{{ $duLieu['danh_sach_bai_thi'] }}">
                     @endif
+                    @if ($dataType === 'danh_sach_cau_hoi')
+                        <input type="hidden" name="" class="danh-sach-cau-hoi-bai-thi" value="{{ $duLieu['danh_sach_cau_hoi'] }}">
+                    @endif
                     <td class="flex items-center px-6 py-4">
                         <button onclick="showModalChiTiet('{{ $modalCapNhat }}')" class="mr-4" title="Cập nhật">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hover:cursor-pointer" viewBox="0 0 512 512">

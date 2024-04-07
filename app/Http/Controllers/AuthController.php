@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SinhVien;
 use App\Models\NguoiDung;
 use Illuminate\Http\Request;
 use App\Http\Requests\SignUpRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Auth\Authenticatable;
+
 class AuthController extends Controller
 {
     public function dangNhapView() {
@@ -129,13 +131,30 @@ class AuthController extends Controller
 
         if ($request->filled(['email', 'matKhau'])) {
             $nguoiDung = NguoiDung::where('email', $request->email)->first();
+            
             if ($nguoiDung && Hash::check($request->matKhau, $nguoiDung->mat_khau)) {
                 Auth::login($nguoiDung);
-    
-                return response()->json([
-                    'success'   => true,
-                    'redirect'  => route('home') 
-                ]);
+        
+                // Kiểm tra xem người dùng có phải là sinh viên không
+                $sinhVien = SinhVien::where('email', $request->email)->first();
+        
+                if ($sinhVien) {
+                    // Nếu người dùng là sinh viên, chuyển hướng đến trang sinh viên và truyền ID của sinh viên
+                    return response()->json([
+                        'success'   => true,
+                        'redirect'  => route('sinh-vien.quan-ly.trang-chu.trang-sinh-vien', ['id' => $sinhVien->id])
+                    ]);
+                } elseif ($nguoiDung->role == 'Admin') {
+                    return response()->json([
+                        'success'   => true,
+                        'redirect'  => route('admin.quan-ly.giang-vien.quan-ly-giang-vien')
+                    ]);
+                } else {
+                    return response()->json([
+                        'success'   => true,
+                        'redirect'  => route('home')
+                    ]);
+                }
             }
         }
 

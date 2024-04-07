@@ -5,7 +5,7 @@
 @section('page-title')
     <div class="flex items-center justify-between">
         <div class="mr-5">
-            Danh lóp học phần
+            Danh lớp học phần
 
         </div>
         <div class="font-normal text-sm mr-5 mt-6">

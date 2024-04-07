@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SinhVien;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -12,9 +13,15 @@ class HomeController extends Controller
         return view('layouts.master', $this->data);
     }
 
-    public function sinhVienHome(){
-        $this->data['title'] = 'Trang chủ sinh viên';
-        return view('sinhvien.layouts.master', $this->data);
+    public function sinhVienHome($id) {
+        $sinhVien = SinhVien::find($id);
+        if ($sinhVien) {
+            $tenSinhVien = $sinhVien->ten_sinh_vien;
+            $this->data['title'] = 'Trang chủ sinh viên';
+            $this->data['tenSinhVien'] = $tenSinhVien;
+            $this->data['id'] = $id;
+            return view('sinhvien.layouts.master', $this->data);
+        } 
     }
 
     public function adminQuanLyGiangVien(){

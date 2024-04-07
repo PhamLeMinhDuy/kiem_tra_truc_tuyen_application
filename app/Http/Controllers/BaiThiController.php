@@ -15,7 +15,7 @@ class BaiThiController extends Controller
     public function index(){
         $danhSachSinhVien = BaiThi::all();
         $columnNames = Schema::getColumnListing('bai_thi');
-        $danhSachTenCot = ['ID', 'Mã bài thi', 'Tên bài thi'];
+        $danhSachTenCot = ['ID', 'Mã bài thi', 'Tên bài thi', 'Thời gian bắt đầu', 'Thời gian kết thúc'];
         $danhSachCot = [];
         $danhSachCotDb = [];
         for ($i = 0; $i < sizeof($danhSachTenCot); $i++) {
@@ -70,6 +70,8 @@ class BaiThiController extends Controller
         if ($baiThi) {
             $baiThi->ma_bai_thi = $request->ma_bai_thi;
             $baiThi->ten_bai_thi = $request->ten_bai_thi;
+            $baiThi->thoi_gian_bat_dau = $request->thoi_gian_bat_dau;
+            $baiThi->thoi_gian_ket_thuc = $request->thoi_gian_ket_thuc;
             $baiThi->save();
             $request->session()->flash('success_message', 'Cập nhật bài thi thành công!');
             return response()->json([
@@ -115,6 +117,8 @@ class BaiThiController extends Controller
         if ($baiThi) {
             $baiThi->ma_bai_thi = $request->ma_bai_thi;
             $baiThi->ten_bai_thi = $request->ten_bai_thi;
+            $baiThi->thoi_gian_bat_dau = $request->thoi_gian_bat_dau;
+            $baiThi->thoi_gian_ket_thuc = $request->thoi_gian_ket_thuc;
             $baiThi->save();
             $request->session()->flash('success_message', 'Thêm bài thi thành công!');
 
