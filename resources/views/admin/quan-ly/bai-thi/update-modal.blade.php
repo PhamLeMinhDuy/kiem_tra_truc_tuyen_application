@@ -8,14 +8,22 @@
         </div>
         <form id="form-cap-nhat-bai-thi">
             <div>
-              <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                  <label class="col-span-1" for="">Mã bài thi:</label>
-                  <input id="input-ma-bai-thi-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-bai-thi" type="text">
-              </div>
-              <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                  <label class="col-span-1" for="">Tên bài thi:</label>
-                  <input id="input-ten-bai-thi-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-bai-thi" type="text">
-              </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label class="col-span-1" for="">Mã bài thi:</label>
+                    <input id="input-ma-bai-thi-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-bai-thi" type="text">
+                </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label class="col-span-1" for="">Tên bài thi:</label>
+                    <input id="input-ten-bai-thi-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-bai-thi" type="text">
+                </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label class="col-span-1" for="">Thời gian bắt đầu:</label>
+                    <input id="input-thoi-gian-bat-dau-bai-thi-cap-nhat" class="input-cap-nhat-bai-thi col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian bắt đầu">
+                </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label class="col-span-1" for="">Thời gian kết thúc:</label>
+                    <input id="input-thoi-gian-ket-thuc-bai-thi-cap-nhat" class="input-cap-nhat-bai-thi col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian kết thúc">
+                </div>
             </div>
             <div class="flex justify-between mt-5">
                 <button  type="submit" class="mr-3 border border-emerald-400 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
@@ -45,6 +53,8 @@
       // Kiểm tra các trường nhập liệu
       var ma_bai_thi = $('#input-ma-bai-thi-cap-nhat').val();
       var ten_bai_thi = $('#input-ten-bai-thi-cap-nhat').val();
+      var thoi_gian_bat_dau = $('#input-thoi-gian-bat-dau-bai-thi-cap-nhat').val();
+      var thoi_gian_ket_thuc = $('#input-thoi-gian-ket-thuc-bai-thi-cap-nhat').val();
   
       if (ma_bai_thi && ten_bai_thi) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
@@ -52,6 +62,8 @@
             id_bai_thi: $('#data-id').val(),
             ma_bai_thi: ma_bai_thi,
             ten_bai_thi: ten_bai_thi,
+            thoi_gian_bat_dau: thoi_gian_bat_dau,
+            thoi_gian_ket_thuc: thoi_gian_ket_thuc,
         })
         .then(function (response) {
             if (response.data.success) {

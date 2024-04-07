@@ -26,11 +26,11 @@
             </div>
             <div class="form-group grid grid-cols-3 gap-4 mb-2">
                 <label class="col-span-1" for="">Thời gian bắt đầu:</label>
-                <input id="input-bat-dau-lop-hoc-phan-them" class="input-them-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="date" placeholder="Chọn thời gian bắt đầu">
+                <input id="input-bat-dau-lop-hoc-phan-them" class="input-them-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian bắt đầu">
             </div>
             <div class="form-group grid grid-cols-3 gap-4 mb-2">
                 <label class="col-span-1" for="">Thời gian kết thúc:</label>
-                <input id="input-ket-thuc-lop-hoc-phan-them" class="input-them-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="date" placeholder="Chọn thời gian kết thúc">
+                <input id="input-ket-thuc-lop-hoc-phan-them" class="input-them-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian kết thúc">
             </div>
             </div>
             <div class="flex justify-between mt-5">

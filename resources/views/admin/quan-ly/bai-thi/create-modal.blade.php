@@ -7,14 +7,22 @@
         </div>
         <form id="form-them-bai-thi">
             <div>
-              <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Mã bài thi:</label>
                   <input id="input-ma-bai-thi-them" class="input-them-bai-thi col-span-2 border rounded-sm px-2 py-1" type="text">
-              </div>
-              <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Tên bài thi:</label>
                   <input id="input-ten-bai-thi-them" class="input-them-bai-thi col-span-2 border rounded-sm px-2 py-1" type="text">
-              </div>
+                </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label class="col-span-1" for="">Thời gian bắt đầu:</label>
+                    <input id="input-thoi-gian-bat-dau-bai-thi-them" class="input-them-bai-thi col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian bắt đầu">
+                </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label class="col-span-1" for="">Thời gian kết thúc:</label>
+                    <input id="input-thoi-gian-ket-thuc-bai-thi-them" class="input-them-bai-thi col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian kết thúc">
+                </div>
             </div>
             <div class="flex justify-between mt-5">
                 <button type="submit" class="mr-3 border border-cyan-400 py-2 px-4 rounded inline-flex items-center hover:bg-cyan-500 font-bold hover:text-white">
@@ -42,6 +50,8 @@
         axios.post("{{ route('admin.quan-ly.bai-thi.handle-them-bai-thi') }}", {
             ma_bai_thi: $('#input-ma-bai-thi-them').val(),
             ten_bai_thi: $('#input-ten-bai-thi-them').val(),
+            thoi_gian_bat_dau: $('#input-thoi-gian-bat-dau-bai-thi-them').val(),
+            thoi_gian_ket_thuc: $('#input-thoi-gian-ket-thuc-bai-thi-them').val(),
         })
         .then(function (response) {
             if (response.data.success) {

@@ -146,7 +146,7 @@ class NguoiDungController extends Controller
         if ($nguoiDung) {
             $nguoiDung->ho_ten = $request->ho_ten;
             $nguoiDung->email = $request->email;
-            $nguoiDung->mat_khau = $request->mat_khau;
+            $nguoiDung->mat_khau = Hash::make($request->mat_khau);
             $nguoiDung->role = $request->role;
             $nguoiDung->save();
             $request->session()->flash('success_message', 'Thêm người dùng thành công!');

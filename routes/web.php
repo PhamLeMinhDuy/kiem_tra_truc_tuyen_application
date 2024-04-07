@@ -10,8 +10,10 @@ use App\Http\Controllers\MonHocController;
 use App\Http\Controllers\SinhVienController;
 use App\Http\Controllers\GiangVienController;
 use App\Http\Controllers\HomeAdminController;
-use App\Http\Controllers\LopHocPhanController;
 use App\Http\Controllers\NguoiDungController;
+use App\Http\Controllers\LopHocPhanController;
+use App\Http\Controllers\BaiThiSinhVienController;
+use App\Http\Controllers\DashboardSinhVienController;
 
 
 /*
@@ -27,7 +29,6 @@ use App\Http\Controllers\NguoiDungController;
 
 
 Route::get('/admin', [HomeController::class, 'adminHome'])->name('trang-admin');
-Route::get('/sinh-vien', [HomeController::class, 'sinhVienHome'])->name('trang-sinh-vien');
 Route::get('/dang-nhap', [AuthController::class, 'dangNhapView'])->name('dang-nhap');
 Route::get('/dang-ky', [AuthController::class, 'dangKyView'])->name('dang-ky');
 Route::post('/dang-ky', [AuthController::class, 'handleDangKy'])->name('handle-dang-ky');
@@ -71,7 +72,7 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
             Route::put('/quan-ly-lop-hoc-phan-cap-nhat', [LopHocPhanController::class, 'handleCapNhatLopHocPhan'])->name('handle-cap-nhat-lop-hoc-phan');
             Route::put('/quan-ly-lop-hoc-phan-cap-nhat-danh-sach-sinh-vien', [LopHocPhanController::class, 'handleCapNhatDanhSachSinhVienLopHocPhan'])->name('handle-cap-nhat-danh-sach-sinh-vien-lop-hoc-phan');
             Route::put('/quan-ly-lop-hoc-phan-cap-nhat-danh-sach-giang-vien', [LopHocPhanController::class, 'handleCapNhatDanhSachGiangVienLopHocPhan'])->name('handle-cap-nhat-danh-sach-giang-vien-lop-hoc-phan');
-            Route::put('/quan-ly-lop-hoc-phan-cap-nhat-danh-sach-bai-thi', [LopHocPhanController::class, 'handleCapNhatDanhSachGiangVienLopHocPhan'])->name('handle-cap-nhat-danh-sach-bai-thi-lop-hoc-phan');
+            Route::put('/quan-ly-lop-hoc-phan-cap-nhat-danh-sach-bai-thi', [LopHocPhanController::class, 'handleCapNhatDanhSachBaiThiLopHocPhan'])->name('handle-cap-nhat-danh-sach-bai-thi-lop-hoc-phan');
             Route::post('/quan-ly-lop-hoc-phan-them', [LopHocPhanController::class, 'handleThemLopHocPhan'])->name('handle-them-lop-hoc-phan');
             Route::post('/quan-ly-lop-hoc-phan-xoa', [LopHocPhanController::class, 'handleXoaLopHocPhan'])->name('handle-xoa-lop-hoc-phan');
         });
@@ -89,5 +90,15 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
             Route::post('/quan-ly-nguoi-dung-them', [NguoiDungController::class, 'handleThemNguoiDung'])->name('handle-them-nguoi-dung');
             Route::post('/quan-ly-nguoi-dung-xoa', [NguoiDungController::class, 'handleXoaNguoiDung'])->name('handle-xoa-nguoi-dung');
         });
+    });
+});
+
+Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
+    Route::group(['prefix' => 'quan-ly', 'as'=>'quan-ly.'], function() {
+        Route::group(['prefix' => '', 'as'=>'trang-chu.'], function() {
+            Route::get('/sinh-vien/{id}', [HomeController::class, 'sinhVienHome'])->name('trang-sinh-vien');
+        });
+        Route::get('/quan-ly-dashboard/{id}', [DashboardSinhVienController::class, 'index'])->name('quan-ly-dashboard');
+        Route::get('/quan-ly-bai-thi-sinh-vien/{id}', [BaiThiSinhVienController::class, 'index'])->name('quan-ly-bai-thi-sinh-vien');
     });
 });
