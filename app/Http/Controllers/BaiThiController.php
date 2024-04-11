@@ -9,11 +9,12 @@ use App\Models\BaiThi;
 use App\Models\MonHoc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 class BaiThiController extends Controller
 {
     public function index(){
-        $danhSachSinhVien = BaiThi::all();
+        $danhSachSinhVien = BaiThi::paginate(10);
         $columnNames = Schema::getColumnListing('bai_thi');
         $danhSachTenCot = ['ID', 'Mã bài thi', 'Tên bài thi', 'Thời gian bắt đầu', 'Thời gian kết thúc'];
         $danhSachCot = [];

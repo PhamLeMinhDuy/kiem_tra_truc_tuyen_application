@@ -8,11 +8,12 @@ use App\Models\MonHoc;
 use App\Models\SinhVien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 class SinhVienController extends Controller
 {
     public function index(){
-        $danhSachSinhVien = SinhVien::all();
+        $danhSachSinhVien = SinhVien::paginate(10);
         $columnNames = Schema::getColumnListing('sinh_vien');
         $danhSachTenCot = ['ID', 'Mã sinh viên', 'Tên sinh viên', 'Số điện thoại', 'Email', 'Ngày sinh', 'Mã khoa','Mã ngành'];
         $danhSachCot = [];

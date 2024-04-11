@@ -7,6 +7,7 @@ use App\Models\BaiThi;
 use App\Models\SinhVien;
 use App\Models\LopHocPhan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BaiThiSinhVienController extends Controller
 {
@@ -61,6 +62,92 @@ class BaiThiSinhVienController extends Controller
             'tenSinhVien' => $tenSinhVien,
             'id' => $id,
             'thongTinBaiThi' => $thongTinBaiThi,
+        ]);
+    }
+
+    public function lamBaiThi($id, $maBaiThi){
+        $sinhVien = SinhVien::find($id);
+        $tenSinhVien = $sinhVien->ten_sinh_vien;
+        $maSinhVien = $sinhVien->ma_sinh_vien;
+        $baiThi = BaiThi::where('ma_bai_thi', $maBaiThi)->first();
+
+        // Kiểm tra xem bài thi có tồn tại hay không
+        if ($baiThi) {
+            // Trích xuất thông tin về bài thi
+            $tenBaiThi = $baiThi->ten_bai_thi;
+            $thoiGianBatDau = $baiThi->thoi_gian_bat_dau;
+            $thoiGianKetThuc = $baiThi->thoi_gian_ket_thuc;
+            $thoiGianBatDauThi = Carbon::parse($baiThi->thoi_gian_bat_dau);
+            $thoiGianKetThucThi = Carbon::parse($baiThi->thoi_gian_ket_thuc);
+            //Tính thòi gian
+            $thoiGianLamBai = $thoiGianBatDauThi->diffInMinutes($thoiGianKetThucThi);
+            $sogio = floor($thoiGianLamBai / 60);
+            $sophut = $thoiGianLamBai % 60;
+            // Truyền thông tin vào view
+            return view('sinhvien.lam-bai-thi.index', [
+                'title' => 'Bài thi',
+                'tenSinhVien' => $tenSinhVien,
+                'id' => $id,
+                'tenBaiThi' => $tenBaiThi,
+                'thoiGianBatDau' => $thoiGianBatDau,
+                'thoiGianKetThuc' => $thoiGianKetThuc,
+                'thoiGianLamBai' => $thoiGianLamBai,
+                'thoiGianKetThucThi' => $thoiGianKetThucThi,
+                'sogio' => $sogio,
+                'sophut' => $sophut,
+                'maBaiThi' => $maBaiThi,
+            ]);
+        } else {
+            // Xử lý trường hợp không tìm thấy bài thi
+            return redirect()->back()->with('error', 'Không tìm thấy thông tin bài thi');
+        }
+    }
+
+    public function lamBaiThiTracNghiem($id, $maBaiThi) {
+        $sinhVien = SinhVien::find($id);
+        $tenSinhVien = $sinhVien->ten_sinh_vien;
+        $maSinhVien = $sinhVien->ma_sinh_vien;
+        $baiThi = BaiThi::where('ma_bai_thi', $maBaiThi)->first();
+        $tenBaiThi = $baiThi->ten_bai_thi;
+        $thoiGianBatDau = $baiThi->thoi_gian_bat_dau;
+        $thoiGianKetThuc = $baiThi->thoi_gian_ket_thuc;
+        $thoiGianBatDauThi = Carbon::parse($baiThi->thoi_gian_bat_dau);
+        $thoiGianKetThucThi = Carbon::parse($baiThi->thoi_gian_ket_thuc);
+            //Tính thòi gian
+        $thoiGianLamBai = $thoiGianBatDauThi->diffInMinutes($thoiGianKetThucThi);
+        
+        $danhSachCauHoi = json_decode($baiThi->danh_sach_cau_hoi, true);
+        $totalQuestions = count($danhSachCauHoi);
+        $totalPages = ceil($totalQuestions / 5);
+
+        $maLopHocPhan = null;
+        $danhSachBaiThi = DB::table('lop_hoc_phan')
+            ->whereJsonContains('danh_sach_bai_thi', ['ma_bai_thi' => $maBaiThi])
+            ->pluck('ma_lop_hoc_phan')
+            ->first();
+
+        if ($danhSachBaiThi) {
+            $maLopHocPhan = $danhSachBaiThi;
+
+            //Lấy tên lớp
+            $tenLopHocPhan = DB::table('lop_hoc_phan')
+            ->where('ma_lop_hoc_phan', $maLopHocPhan)
+            ->value('ten_lop_hoc_phan');
+        }
+        return view('sinhvien.lam-bai-thi.lam-bai-thi',[
+            'title' => 'Làm bài thi trắc nghiệm',
+            'id' => $id,
+            'maBaiThi' => $maBaiThi,
+            'tenBaiThi' => $tenBaiThi,
+            'thoiGianBatDau' => $thoiGianBatDau,
+            'thoiGianKetThuc' => $thoiGianKetThuc,
+            'thoiGianLamBai' => $thoiGianLamBai,
+            'thoiGianKetThucThi' => $thoiGianKetThucThi,
+            'maLopHocPhan' => $maLopHocPhan,
+            'tenLopHocPhan' => $tenLopHocPhan,
+            'danhSachCauHoi' => $danhSachCauHoi,
+            'totalQuestions' => $totalQuestions,
+            'totalPages' => $totalPages,
         ]);
     }
     

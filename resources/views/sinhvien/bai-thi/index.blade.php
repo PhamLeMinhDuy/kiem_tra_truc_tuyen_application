@@ -3,10 +3,11 @@
     {{ $title }}
 @endsection
 @section('page-title')
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between font-bold">
         <div class="mr-5">
             Bài thi
         </div>
+    </div>
 @endsection
 @section('content')
     <div class="p-2">
@@ -22,7 +23,7 @@
                         <p class="mt-2 text-gray-600">Thời gian kết thúc: {{ $baiThi['thoi_gian_ket_thuc'] }}</p>
                     </div>
                     <!-- Liên kết chi tiết nằm bên phải -->
-                    <a href="#" class="self-end text-blue-500 hover:underline mt-auto">Làm Bài</a>
+                    <a href="{{ route('sinh-vien.quan-ly.bai-thi.quan-ly-lam-bai-thi-sinh-vien', ['id' => $id, 'maBaiThi' => $baiThi['ma_bai_thi']]) }}" class="self-end text-blue-500 hover:underline mt-auto">Làm Bài</a>
                 </div>
                 @endforeach
             </div>

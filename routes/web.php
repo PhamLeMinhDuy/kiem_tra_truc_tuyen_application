@@ -29,10 +29,10 @@ use App\Http\Controllers\DashboardSinhVienController;
 
 
 Route::get('/admin', [HomeController::class, 'adminHome'])->name('trang-admin');
-Route::get('/dang-nhap', [AuthController::class, 'dangNhapView'])->name('dang-nhap');
+Route::get('/', [AuthController::class, 'dangNhapView'])->name('dang-nhap');
 Route::get('/dang-ky', [AuthController::class, 'dangKyView'])->name('dang-ky');
 Route::post('/dang-ky', [AuthController::class, 'handleDangKy'])->name('handle-dang-ky');
-Route::post('/dang-nhap', [AuthController::class, 'handleDangNhap'])->name('handle-dang-nhap');
+Route::post('/', [AuthController::class, 'handleDangNhap'])->name('handle-dang-nhap');
 
 Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
     Route::group(['prefix' => 'quan-ly', 'as'=>'quan-ly.'], function() {
@@ -98,7 +98,13 @@ Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
         Route::group(['prefix' => '', 'as'=>'trang-chu.'], function() {
             Route::get('/sinh-vien/{id}', [HomeController::class, 'sinhVienHome'])->name('trang-sinh-vien');
         });
-        Route::get('/quan-ly-dashboard/{id}', [DashboardSinhVienController::class, 'index'])->name('quan-ly-dashboard');
-        Route::get('/quan-ly-bai-thi-sinh-vien/{id}', [BaiThiSinhVienController::class, 'index'])->name('quan-ly-bai-thi-sinh-vien');
+        Route::group(['prefix' => '', 'as'=>'dashboard.'], function() {
+            Route::get('/quan-ly-dashboard/{id}', [DashboardSinhVienController::class, 'index'])->name('quan-ly-dashboard');
+        });
+        Route::group(['prefix' => '', 'as'=>'bai-thi.'], function() {
+            Route::get('/quan-ly-bai-thi-sinh-vien/{id}', [BaiThiSinhVienController::class, 'index'])->name('quan-ly-bai-thi-sinh-vien');
+            Route::get('/quan-ly-lam-bai-thi-sinh-vien/{id}/{maBaiThi}', [BaiThiSinhVienController::class, 'lamBaiThi'])->name('quan-ly-lam-bai-thi-sinh-vien');
+            Route::get('/quan-ly-lam-bai-thi-trac-nghiem-sinh-vien/{id}/{maBaiThi}', [BaiThiSinhVienController::class, 'lamBaiThiTracNghiem'])->name('quan-ly-lam-bai-thi-trac-nghiem-sinh-vien');
+        });
     });
 });

@@ -81,6 +81,9 @@
             @endforeach
         </tbody>
     </table>
+    <div class="mt-4 ml-auto">
+        {{ $danhSachDuLieu->links() }}
+    </div>
 </div>
 @php
     $dsSinhVienAll = [];

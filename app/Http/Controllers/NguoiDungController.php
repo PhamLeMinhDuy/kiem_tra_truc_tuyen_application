@@ -9,11 +9,12 @@ use App\Models\NguoiDung;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 class NguoiDungController extends Controller
 {
     public function index(){
-        $danhSachSinhVien = NguoiDung::all();
+        $danhSachSinhVien = NguoiDung::paginate(10);
         $columnNames = Schema::getColumnListing('nguoi_dung');
         $danhSachTenCot = ['ID', 'Họ tên', 'Email', 'Mật khẩu', 'Role'];
         $danhSachCot = [];

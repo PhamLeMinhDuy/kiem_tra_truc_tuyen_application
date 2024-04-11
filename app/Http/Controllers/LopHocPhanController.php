@@ -11,11 +11,12 @@ use App\Models\GiangVien;
 use App\Models\LopHocPhan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 class LopHocPhanController extends Controller
 {
     public function index(){
-        $danhSachSinhVien = LopHocPhan::all();
+        $danhSachSinhVien = LopHocPhan::paginate(10);
         $columnNames = Schema::getColumnListing('lop_hoc_phan');
         $danhSachTenCot = ['ID', 'Mã lớp học phần', 'Tên lớp học phần', 'Môn học', 'Thời gian bắt đầu', 'Thời gian kết thúc', 'Danh sách sinh viên', 'Danh sách giảng viên'];
         $danhSachCot = [];
