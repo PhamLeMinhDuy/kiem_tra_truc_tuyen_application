@@ -7,11 +7,12 @@ use App\Models\Nganh;
 use App\Models\MonHoc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 class NganhController extends Controller
 {
     public function index(){
-        $danhSachSinhVien = Nganh::all();
+        $danhSachSinhVien = Nganh::paginate(10);
         $columnNames = Schema::getColumnListing('nganh');
         $danhSachTenCot = ['ID', 'Mã ngành', 'Tên ngành', 'Mã khoa'];
         $danhSachCot = [];

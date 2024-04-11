@@ -7,11 +7,12 @@ use App\Models\Nganh;
 use App\Models\MonHoc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 class MonHocController extends Controller
 {
     public function index(){
-        $danhSachSinhVien = MonHoc::all();
+        $danhSachSinhVien = MonHoc::paginate(10);
         $columnNames = Schema::getColumnListing('mon_hoc');
         $danhSachTenCot = ['ID', 'Mã môn học', 'Tên môn học'];
         $danhSachCot = [];

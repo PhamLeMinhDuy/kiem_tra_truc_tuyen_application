@@ -12,10 +12,11 @@
         <div class="flex-1">
             @include('sinhvien.layouts.blocks.header')
             <main class="p-4">
-                <h2 class="text-lg font-bold text-gray-800 ml-2 mb-2">
+                <h2 class="text-lg  text-gray-800 ml-2 mb-2">
                     @yield('page-title')
+                    @yield('content')
                 </h2>
-                @yield('content')
+                
             </main>
             @include('sinhvien.layouts.blocks.footer')
         </div>
