@@ -27,7 +27,7 @@
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Ngày sinh:</label>
-                  <input id="input-ngay-sinh-them" class="input-them-giang-vien col-span-2 border rounded-sm px-2 py-1" type="text">
+                  <input id="input-ngay-sinh-them" class="input-them-giang-vien col-span-2 border rounded-sm px-2 py-1" type="date">
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Khoa:</label>
@@ -37,6 +37,14 @@
                     @endforeach
                   </select>
               </div>
+              <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                <label class="col-span-1" for="">Ngành:</label>
+                <select name="" id="input-ma-nganh-them" class="input-them-giang-vien col-span-2 border rounded-sm px-2 py-1" >
+                    @foreach ($danhSachNganh as $nganh)
+                        <option value="{{ $nganh->ma_nganh }}">{{ $nganh->ten_nganh }}</option>
+                    @endforeach
+                  </select>
+            </div>
             </div>
             <div class="flex justify-between mt-5">
                 <button onclick="them()" type="submit" class="mr-3 border border-cyan-400 py-2 px-4 mt-4 rounded inline-flex items-center hover:bg-cyan-500 font-bold hover:text-white">

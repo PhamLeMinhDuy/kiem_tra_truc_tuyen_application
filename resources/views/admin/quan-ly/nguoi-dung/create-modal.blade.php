@@ -24,6 +24,7 @@
                     <select id="input-role-nguoi-dung-them" class="input-them-nguoi-dung col-span-2 border rounded-sm px-2 py-1">
                         <option value="Giảng viên">Giảng Viên</option>
                         <option value="Sinh viên">Sinh Viên</option>
+                        <option value="Admin">Admin</option>
                     </select>
                 </div>
             </div>

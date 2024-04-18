@@ -1,4 +1,4 @@
-<header class="bg-white shadow">
+<header class="bg-white shadow border-b">
     <div class="container mx-auto px-4">
         <nav class="flex justify-between items-center py-4">
             <!-- Logo and School Name -->

@@ -1,3 +1,6 @@
+<div class="flex justify-end mb-2">
+    <input type="text" id="searchInput" class="w-64 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-400" placeholder="Tìm kiếm...">
+</div>
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -463,6 +466,30 @@
         window.location.href = url;
         
     }
+
+    const searchInput = document.getElementById('searchInput');
+    const rows = document.querySelectorAll('tbody tr');
+
+    searchInput.addEventListener('input', function() {
+        const searchText = searchInput.value.trim().toLowerCase();
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            let rowMatch = false;
+
+            cells.forEach(cell => {
+                if (cell.textContent.trim().toLowerCase().includes(searchText)) {
+                    rowMatch = true;
+                }
+            });
+
+            if (rowMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
 
     // Gọi hàm toggleColumns khi trang được tải hoặc kích thước màn hình thay đổi
     window.addEventListener('load', toggleColumns);

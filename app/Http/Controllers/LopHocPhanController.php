@@ -54,7 +54,7 @@ class LopHocPhanController extends Controller
     public function handleCapNhatLopHocPhan(Request $request) {
         $id = (int)$request->id_lop_hoc_phan;
         $lop_hoc_phan= LopHocPhan::find($id);
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_lop_hoc_phan) || $request->ma_lop_hoc_phan !== $giangVien->ma_lop_hoc_phan) {
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_lop_hoc_phan) || $request->ma_lop_hoc_phan !== $lop_hoc_phan->ma_lop_hoc_phan) {
             $existingMaGiangVien = GiangVien::where('ma_lop_hoc_phan', $request->ma_lop_hoc_phan)->first();
             if ($existingMaGiangVien) {
                 return response()->json([
@@ -71,7 +71,7 @@ class LopHocPhanController extends Controller
             ]);
         }
 
-        if ($request->ten_lop_hoc_phan !== $giangVien->ten_lop_hoc_phan) {
+        if ($request->ten_lop_hoc_phan !== $lop_hoc_phan->ten_lop_hoc_phan) {
             if (preg_match('/[^\p{L}\s]/u', $request->ten_lop_hoc_phan)) {
                 return response()->json([
                     'success'   => false,

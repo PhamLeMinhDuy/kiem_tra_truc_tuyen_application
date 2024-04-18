@@ -36,7 +36,11 @@
                         <ul>
                             @foreach ($cauHoi['cau_tra_loi'] as $i => $cauTraLoi)
                                 <li>
-                                    <input type="radio" id="cauTraLoi{{$i+1}}" name="cauTraLoi{{ $index + 1 }}" value="{{ $cauTraLoi }}">
+                                    @if (count($cauHoi['dap_an_dung']) > 1)
+                                        <input type="checkbox" id="cauTraLoi{{$i+1}}" name="cauTraLoi{{ $index + 1 }}[]" value="{{ $cauTraLoi }}" onchange="luuCauTraLoiDaChon({{ $index + 1 }}, this.value, true)">
+                                    @else
+                                        <input type="radio" id="cauTraLoi{{$i+1}}" name="cauTraLoi{{ $index + 1 }}" value="{{ $cauTraLoi }}">
+                                    @endif
                                     <label for="cauTraLoi{{$i+1}}">{{ chr(65 + $i) }}. {{ $cauTraLoi }}</label>
                                 </li>
                             @endforeach
@@ -67,6 +71,8 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     @stack('scripts')
     <script>
         let currentPage = 1;
@@ -133,39 +139,22 @@
         }, 1000); // Cập nhật thời gian mỗi giây (1000 ms)
 
         // Lưu câu trả lời đã chọn vào Local Storage
-        function luuCauTraLoiDaChon(cauHoiIndex, cauTraLoiIndex) {
-            localStorage.setItem(`cauTraLoi${cauHoiIndex}`, cauTraLoiIndex);
-        }
-
-        // Kiểm tra và khôi phục câu trả lời đã chọn từ Local Storage
-        function khoiPhucCauTraLoi() {
-            for (let i = 1; i <= {{ $totalQuestions }}; i++) {
-                const cauTraLoiDaChon = localStorage.getItem(`cauTraLoi${i}`);
-                if (cauTraLoiDaChon) {
-                    const inputCauTraLoi = document.querySelector(`input[name="cauTraLoi${i}"][value="${cauTraLoiDaChon}"]`);
-                    if (inputCauTraLoi) {
-                        inputCauTraLoi.checked = true;
-                    }
+        function luuCauTraLoiDaChon(cauHoiIndex, cauTraLoiIndex, isCheckbox) {
+            let selectedAnswers = JSON.parse(localStorage.getItem(`cauTraLoi${cauHoiIndex}`)) || [];
+            if (isCheckbox) {
+                if (!selectedAnswers.includes(cauTraLoiIndex)) {
+                    selectedAnswers.push(cauTraLoiIndex);
+                    localStorage.setItem(`cauTraLoi${cauHoiIndex}`, JSON.stringify(selectedAnswers));
                 }
+            } else {
+                localStorage.setItem(`cauTraLoi${cauHoiIndex}`, cauTraLoiIndex);
             }
         }
 
         // Gọi hàm khôi phục câu trả lời khi trang được load
         window.onload = function() {
-            khoiPhucCauTraLoi();
             showPage(currentPage);
         }
-
-        // Lắng nghe sự kiện khi người dùng chọn câu trả lời
-        document.addEventListener('change', function(event) {
-            const target = event.target;
-            if (target.matches('input[type="radio"]')) {
-                const cauHoiIndex = target.name.replace('cauTraLoi', '');
-                const cauTraLoiIndex = target.value;
-                luuCauTraLoiDaChon(cauHoiIndex, cauTraLoiIndex);
-            }
-        });
-
         // Hàm tính điểm số
         function calculateScore() {
             var danhSachCauHoi = @json($danhSachCauHoi);
@@ -185,18 +174,59 @@
 
             return score;
         }
-        // Hàm xử lý khi người dùng nhấn nút Submit
-        let submitted = false; // Biến để kiểm tra đã submit hay chưa
+
+        var danhSachCauHoi = @json($danhSachCauHoi);
+        const totalQuestions = {{ $totalQuestions }};
+        function countCorrectAnswers() {
+            let count = 0;
+            for (let i = 1; i <= totalQuestions; i++) {
+                const cauTraLoiDaChon = localStorage.getItem(`cauTraLoi${i}`);
+                const dapAnDungIndex = danhSachCauHoi[i - 1]['dap_an_dung'] - 1; // Vị trí index của đáp án đúng trong mảng câu trả lời
+                const dapAnDung = danhSachCauHoi[i - 1]['cau_tra_loi'][dapAnDungIndex];
+
+                if (cauTraLoiDaChon && cauTraLoiDaChon == dapAnDung) {
+                    count++; // Tăng biến đếm nếu câu trả lời đúng
+                }
+            }
+            return count;
+        }
+
+        let submitted = false; 
         function submitAnswers() {
             if (!submitted) { // Kiểm tra đã submit hay chưa
-                // Thực hiện submit
-                // Đoạn mã xử lý submit hiện tại
-                submitted = true; // Đánh dấu đã submit
-                document.getElementById("submitBtn").style.display = "none"; // Ẩn nút Submit sau khi đã submit
+                submitted = true; 
+                document.getElementById("submitBtn").style.display = "none"; 
             }
-        }
-        
 
+            // Lấy ra các giá trị cần thiết từ view
+            const maBaiThi = "{{ $maBaiThi }}";
+            const tenBaiThi = "{{ $tenBaiThi }}";
+            const id = "{{ $id }}";
+            const diemSo = calculateScore();
+            const soCauTraLoiDung = countCorrectAnswers();
+            // Gửi yêu cầu Axios
+            axios.post("{{ route('sinh-vien.quan-ly.xem-diem.handle-them-diem-sinh-vien') }}", {
+                ma_bai_thi: maBaiThi,
+                ten_bai_thi: tenBaiThi,
+                id: id,
+                diem: diemSo, // Truyền điểm số tính được vào đây
+                so_cau_tra_loi_dung: soCauTraLoiDung ,
+            })
+            .then(function (response) {
+                if (response.data.success) {
+                    window.location.replace(response.data.redirect);
+                    return;
+                }
+            })
+            .catch(function (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            });
+        }
     </script>
 </body>
 </html>

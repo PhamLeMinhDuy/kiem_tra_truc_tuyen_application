@@ -17,14 +17,11 @@
                     <input id="input-email-nguoi-dung-cap-nhat" class="input-cap-nhat-nguoi-dung col-span-2 border rounded-sm px-2 py-1" type="text">
                 </div>
                 <div class="form-group grid grid-cols-3 gap-4 mb-2">
-                    <label class="col-span-1" for="">Mật khẩu:</label>
-                    <input id="input-mat-khau-nguoi-dung-cap-nhat" class="input-cap-nhat-nguoi-dung col-span-2 border rounded-sm px-2 py-1" type="text">
-                </div>
-                <div class="form-group grid grid-cols-3 gap-4 mb-2">
                     <label class="col-span-1" for="input-role-nguoi-dung-cap-nhat">Role:</label>
                     <select id="input-role-nguoi-dung-cap-nhat" class="input-cap-nhat-nguoi-dung col-span-2 border rounded-sm px-2 py-1">
                         <option value="Giảng viên">Giảng Viên</option>
                         <option value="Sinh viên">Sinh Viên</option>
+                        <option value="Admin">Admin</option>
                     </select>
                 </div>
             </div>
@@ -56,7 +53,6 @@
       // Kiểm tra các trường nhập liệu
       var ho_ten = $('#input-ten-nguoi-dung-cap-nhat').val();
       var email = $('#input-email-nguoi-dung-cap-nhat').val();
-      var mat_khau = $('#input-mat-khau-nguoi-dung-cap-nhat').val();
       var role = $('#input-role-nguoi-dung-cap-nhat').val();
   
       if (ho_ten && email && mat_khau && role) {
@@ -65,7 +61,6 @@
             id_nguoi_dung: $('#data-id').val(),
             ho_ten: ho_ten,
             email: email,
-            mat_khau: mat_khau,
             role: role,
         })
         .then(function (response) {

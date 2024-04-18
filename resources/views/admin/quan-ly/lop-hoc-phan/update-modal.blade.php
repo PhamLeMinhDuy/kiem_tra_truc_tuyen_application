@@ -22,17 +22,17 @@
             </div>
             <div class="form-group grid grid-cols-3 gap-4 mb-2">
                 <label class="col-span-1" for="">Thời gian bắt đầu:</label>
-                <input id="input-bat-dau-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="date" placeholder="Chọn thời gian bắt đầu">
+                <input id="input-bat-dau-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian bắt đầu">
             </div>
             <div class="form-group grid grid-cols-3 gap-4 mb-2">
                 <label class="col-span-1" for="">Thời gian kết thúc:</label>
-                <input id="input-ket-thuc-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="date" placeholder="Chọn thời gian kết thúc">
+                <input id="input-ket-thuc-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian kết thúc">
             </div>
             </div>
             <div class="flex justify-between mt-5">
-                <button  type="submit" class="mr-3 border-2 border-cyan-500 py-2 px-4 rounded inline-flex items-center hover:bg-cyan-500 font-bold hover:text-white">
-                Thêm
-              </button>
+                <button  type="submit" class="mr-3 border border-emerald-400 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
+                    Cập nhật
+                </button>
               <button id="btn-huy-cap-nhat" type='button' class="mr-3 border-2 border-rose-500 py-2 px-4 rounded inline-flex items-center hover:bg-rose-500 font-bold hover:text-white">
                 Hủy
               </button>
@@ -58,17 +58,17 @@
       var ma_lop_hoc_phan = $('#input-ma-lop-hoc-phan-cap-nhat').val();
       var ten_lop_hoc_phan = $('#input-ten-lop-hoc-phan-cap-nhat').val();
       var ma_mon_hoc = $('#input-mon-hoc-lop-hoc-phan-cap-nhat').val();
-      var thoi_gian_dat_dau = $('#input-bat-dau-lop-hoc-phan-cap-nhat').val();
+      var thoi_gian_bat_dau = $('#input-bat-dau-lop-hoc-phan-cap-nhat').val();
       var thoi_gian_ket_thuc = $('#input-ket-thuc-lop-hoc-phan-cap-nhat').val();
   
-      if (ma_lop_hoc_phan && ten_lop_hoc_phan && ma_mon_hoc && thoi_gian_dat_dau && thoi_gian_ket_thuc ) {
+      if (ma_lop_hoc_phan && ten_lop_hoc_phan && ma_mon_hoc && thoi_gian_bat_dau && thoi_gian_ket_thuc ) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
         axios.put("{{ route('admin.quan-ly.lop-hoc-phan.handle-cap-nhat-lop-hoc-phan') }}", {
             id_lop_hoc_phan: $('#data-id').val(),
             ma_lop_hoc_phan: ma_lop_hoc_phan,
             ten_lop_hoc_phan: ten_lop_hoc_phan,
             ma_mon_hoc: ma_mon_hoc,
-            thoi_gian_dat_dau: thoi_gian_dat_dau,
+            thoi_gian_bat_dau: thoi_gian_bat_dau,
             thoi_gian_ket_thuc: thoi_gian_ket_thuc,
             
         })

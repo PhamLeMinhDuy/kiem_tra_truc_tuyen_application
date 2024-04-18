@@ -26,7 +26,7 @@
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Ngày sinh:</label>
-                  <input id="input-ngay-sinh-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-sinh-vien" type="text">
+                  <input id="input-ngay-sinh-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-sinh-vien" type="date">
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Khoa:</label>
