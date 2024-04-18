@@ -15,10 +15,10 @@ class GiangVienController extends Controller
     public function index(){
         $danhSachGiangVien = GiangVien::paginate(10);
         $columnNames = Schema::getColumnListing('giang_vien');
-        $danhSachTenCot = ['ID', 'Mã giảng viên', 'Tên giảng viên', 'Số điện thoại', 'Email', 'Ngày sinh', 'Mã khoa','Các môn giảng dạy'];
+        $danhSachTenCot = ['ID', 'Mã giảng viên', 'Tên giảng viên', 'Số điện thoại', 'Email', 'Ngày sinh', 'Mã khoa','Mã ngành'];
         $danhSachCot = [];
         $danhSachCotDb = [];
-        for ($i = 0; $i < sizeof($danhSachTenCot)-1; $i++) {
+        for ($i = 0; $i < sizeof($danhSachTenCot); $i++) {
             $danhSachCot[] = $danhSachTenCot[$i];
             $danhSachCotDb[] = $columnNames[$i];
         }
@@ -125,7 +125,7 @@ class GiangVienController extends Controller
             $giangVien->email = $request->email;
             $giangVien->ngay_sinh = $request->ngay_sinh;
             $giangVien->ma_khoa = $request->ma_khoa;
-            $giangVien->cac_mon_giang_day = $request->cac_mon;
+            $giangVien->ma_nganh = $request->ma_nganh;
             $giangVien->save();
             $request->session()->flash('success_message', 'Cập nhật giảng viên thành công!');
             return response()->json([
@@ -218,6 +218,7 @@ class GiangVienController extends Controller
             $giangVien->email = $request->email;
             $giangVien->ngay_sinh = $request->ngay_sinh;
             $giangVien->ma_khoa = $request->ma_khoa;
+            $giangVien->ma_nganh = $request->ma_nganh;
             $giangVien->save();
             $request->session()->flash('success_message', 'Thêm giảng viên thành công!');
             return response()->json([

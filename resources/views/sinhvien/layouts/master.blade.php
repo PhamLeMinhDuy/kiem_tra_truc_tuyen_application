@@ -11,8 +11,8 @@
         @include('sinhvien.layouts.blocks.sidebar')
         <div class="flex-1">
             @include('sinhvien.layouts.blocks.header')
-            <main class="p-4">
-                <h2 class="text-lg  text-gray-800 ml-2 mb-2">
+            <main class="p-4 min-h-screen bg-white">
+                <h2 class="text-lg  text-gray-800">
                     @yield('page-title')
                     @yield('content')
                 </h2>

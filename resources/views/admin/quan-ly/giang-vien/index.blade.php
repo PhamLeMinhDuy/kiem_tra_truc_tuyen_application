@@ -15,7 +15,7 @@
 
 @section('content')
     <div class="p-2">
-        @include('components.datatable', [$danhSachCot, $danhSachDuLieu, $dataType])
+        @include('components.datatable', [$danhSachCot, $danhSachDuLieu, $dataType, $danhSachNganh])
     </div>
 @endsection
 @include('admin.quan-ly.giang-vien.create-modal')

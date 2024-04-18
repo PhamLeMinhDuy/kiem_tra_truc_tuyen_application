@@ -26,7 +26,7 @@
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Ngày sinh:</label>
-                  <input id="input-ngay-sinh-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-giang-vien" type="text">
+                  <input id="input-ngay-sinh-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-giang-vien" type="date">
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Khoa:</label>
@@ -36,6 +36,14 @@
                     @endforeach
                   </select>
               </div>
+              <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                <label class="col-span-1" for="">Ngành:</label>
+                <select name="" id="input-ma-nganh-cap-nhat" class="input-cap-nhat-giang-vien col-span-2 border rounded-sm px-2 py-1" >
+                    @foreach ($danhSachNganh as $nganh)
+                        <option value="{{ $nganh->ma_nganh }}">{{ $nganh->ten_nganh }}</option>
+                    @endforeach
+                </select>
+            </div>
             </div>
             <div class="flex justify-between mt-5">
                 <button  type="submit" class="mr-3 border border-emerald-400 py-2 px-4 mt-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
@@ -69,9 +77,8 @@
       var email = $('#input-email-cap-nhat').val();
       var ngay_sinh = $('#input-ngay-sinh-cap-nhat').val();
       var ma_khoa = $('#input-ma-khoa-cap-nhat').val();
-      var cac_mon = $('#input-cac-mon-cap-nhat').val();
-  
-      if (ma_giang_vien && ten_giang_vien && so_dien_thoai && email && ngay_sinh && ma_khoa) {
+      var ma_nganh = $('#input-ma-nganh-cap-nhat').val();
+      if (ma_giang_vien && ten_giang_vien && so_dien_thoai && email && ngay_sinh && ma_khoa && ma_nganh) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
         axios.put("{{ route('admin.quan-ly.giang-vien.handle-cap-nhat-giang-vien') }}", {
             id_giang_vien: $('#data-id').val(),
@@ -81,6 +88,7 @@
             email: email,
             ngay_sinh: ngay_sinh,
             ma_khoa: ma_khoa,
+            ma_nganh: ma_nganh,
         })
         .then(function (response) {
             if (response.data.success) {

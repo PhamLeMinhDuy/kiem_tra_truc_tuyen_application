@@ -7,6 +7,7 @@ use App\Http\Controllers\KhoaController;
 use App\Http\Controllers\NganhController;
 use App\Http\Controllers\BaiThiController;
 use App\Http\Controllers\MonHocController;
+use App\Http\Controllers\XemDiemController;
 use App\Http\Controllers\SinhVienController;
 use App\Http\Controllers\GiangVienController;
 use App\Http\Controllers\HomeAdminController;
@@ -105,6 +106,10 @@ Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
             Route::get('/quan-ly-bai-thi-sinh-vien/{id}', [BaiThiSinhVienController::class, 'index'])->name('quan-ly-bai-thi-sinh-vien');
             Route::get('/quan-ly-lam-bai-thi-sinh-vien/{id}/{maBaiThi}', [BaiThiSinhVienController::class, 'lamBaiThi'])->name('quan-ly-lam-bai-thi-sinh-vien');
             Route::get('/quan-ly-lam-bai-thi-trac-nghiem-sinh-vien/{id}/{maBaiThi}', [BaiThiSinhVienController::class, 'lamBaiThiTracNghiem'])->name('quan-ly-lam-bai-thi-trac-nghiem-sinh-vien');
+        });
+        Route::group(['prefix' => '', 'as'=>'xem-diem.'], function() {
+            Route::get('/xem-diem-sinh-vien/{id}', [XemDiemController::class, 'index'])->name('xem-diem-sinh-vien');
+            Route::post('/quan-ly-sinh-vien-them-diem', [XemDiemController::class, 'handleThemDiemSinhVien'])->name('handle-them-diem-sinh-vien');
         });
     });
 });

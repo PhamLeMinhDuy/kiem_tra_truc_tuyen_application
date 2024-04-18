@@ -158,13 +158,21 @@ class BaiThiController extends Controller
         ]);
     }
     public function handleCauHoi(Request $request, $id) { 
-        $baiThi = BaiThi::find($id);
-        return view('admin.quan-ly.bai-thi.cau-hoi', [
-            'title' =>$baiThi->ten_bai_thi ,
-            'id' => $id,
-        ]);
-        
-    }
+    // Tìm bài thi theo ID
+    $baiThi = BaiThi::find($id);
+
+    // Giải mã JSON để lấy danh sách câu hỏi
+    $danhSachCauHoi = json_decode($baiThi->danh_sach_cau_hoi, true);
+
+    // Chuyển danh sách câu hỏi thành mảng để truy cập dễ dàng hơn
+
+    return view('admin.quan-ly.bai-thi.cau-hoi', [
+        'title' => $baiThi->ten_bai_thi,
+        'id' => $id,
+        'danhSachCauHoi' => $danhSachCauHoi, // Truyền danh sách câu hỏi vào view
+    ]);
+}
+
 
     public function handleThemCauHoi(Request $request) {
         $cauHoi = BaiThi::find((int)$request->cauHoiId);

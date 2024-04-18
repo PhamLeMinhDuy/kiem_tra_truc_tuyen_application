@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\DB;
 class NguoiDungController extends Controller
 {
     public function index(){
-        $danhSachSinhVien = NguoiDung::paginate(10);
+        $danhSachNguoiDung = NguoiDung::paginate(10);
         $columnNames = Schema::getColumnListing('nguoi_dung');
-        $danhSachTenCot = ['ID', 'Họ tên', 'Email', 'Mật khẩu', 'Role'];
+        $danhSachTenCot = ['ID', 'Họ tên', 'Email', 'Role'];
         $danhSachCot = [];
         $danhSachCotDb = [];
         for ($i = 0; $i < sizeof($danhSachTenCot); $i++) {
@@ -29,7 +29,7 @@ class NguoiDungController extends Controller
         return view('admin.quan-ly.nguoi-dung.index', [
             'title' => 'Danh sách người dùng',
             'danhSachCot' => $danhSachCot,
-            'danhSachDuLieu' => $danhSachSinhVien,
+            'danhSachDuLieu' => $danhSachNguoiDung,
             'danhSachCotDb' => $danhSachCotDb,
             'danhSachMon' => $danhSachMon,
             'danhSachKhoa' => $danhSachKhoa,
@@ -83,7 +83,6 @@ class NguoiDungController extends Controller
         if ($nguoiDung) {
             $nguoiDung->ho_ten = $request->ho_ten;
             $nguoiDung->email = $request->email;
-            $nguoiDung->mat_khau = $request->mat_khau;
             $nguoiDung->role = $request->role;
             $nguoiDung->save();
             $request->session()->flash('success_message', 'Cập nhật người thành công!');
