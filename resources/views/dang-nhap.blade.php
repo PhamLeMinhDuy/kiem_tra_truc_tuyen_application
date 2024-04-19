@@ -18,8 +18,7 @@
                     <div class="p-4 bg-white shadow-lg border w-[360px] rounded z-10">
                         <form action="submit" id="form-dang-nhap">
                             <div class="flex justify-between items-end mb-8">
-                                <h2 class="text-xl font-semibold">Đăng nhập</h2>
-                                <span class="font-normal"><a href="{{ route('dang-ky') }}">Đăng ký</a></span>
+                                <h2 class="text-xl font-semibold">Đăng nhập</h2> 
                             </div>
                             <div class="form-group mt-4">
                                 <input type="text" name="email-dang-nhap" id="email-dang-nhap" placeholder="Email đăng nhập" class="border outline-none rounded w-full py-1 px-2 h-10">

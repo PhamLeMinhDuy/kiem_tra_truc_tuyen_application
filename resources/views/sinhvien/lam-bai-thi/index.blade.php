@@ -13,8 +13,13 @@
     <div class="w-full mt-5">
         <div class="mr-5 border bg-white h-[600px]  px-4 text-xl p-4">
             <div class="mb-6">
-                <p>Thời gian bắt đầu: {{ $thoiGianBatDau }}</p><br>
-                <p>Thời gian kết thúc: {{ $thoiGianKetThuc }}</p>
+                <p class="font-bold">Mô tả:</p>
+                @php
+                    $moTaSentences = explode('.', $moTa);
+                    foreach ($moTaSentences as $sentence) {
+                        echo "<p><strong>$sentence</strong></p>";
+                    }
+                @endphp
             </div>
             <div class="flex flex-col items-center justify-center  ">
                 <div class="mb-5">

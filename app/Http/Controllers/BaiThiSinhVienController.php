@@ -48,12 +48,18 @@ class BaiThiSinhVienController extends Controller
         foreach ($thongTinLopHocPhan as $thongTin) {
             $maBaiThi = $thongTin['ma_bai_thi'];
             $baiThi = BaiThi::where('ma_bai_thi', $maBaiThi)->first();
+            
             if ($baiThi) {
+                $thoiGianBatDau = Carbon::parse($baiThi->thoi_gian_bat_dau)->format('l, d/m/Y, H:i');
+                $thoiGianKetThuc = Carbon::parse($baiThi->thoi_gian_ket_thuc)->format('l, d/m/Y, H:i');
+                $danhSachCauHoi = json_decode($baiThi->danh_sach_cau_hoi, true);
+                $tongSoCauHoi = count($danhSachCauHoi);
                 $thongTinBaiThi[] = [
                     'ma_bai_thi' => $maBaiThi,
                     'ten_bai_thi' => $baiThi->ten_bai_thi,
-                    'thoi_gian_bat_dau' => $baiThi->thoi_gian_bat_dau,
-                    'thoi_gian_ket_thuc' => $baiThi->thoi_gian_ket_thuc,
+                    'thoi_gian_bat_dau' => $thoiGianBatDau,
+                    'thoi_gian_ket_thuc' => $thoiGianKetThuc,
+                    'tongSoCauHoi' => $tongSoCauHoi,
                 ];
             }
         }
@@ -77,6 +83,7 @@ class BaiThiSinhVienController extends Controller
             $tenBaiThi = $baiThi->ten_bai_thi;
             $thoiGianBatDau = $baiThi->thoi_gian_bat_dau;
             $thoiGianKetThuc = $baiThi->thoi_gian_ket_thuc;
+            $moTa = $baiThi->mo_ta;
             $thoiGianBatDauThi = Carbon::parse($baiThi->thoi_gian_bat_dau);
             $thoiGianKetThucThi = Carbon::parse($baiThi->thoi_gian_ket_thuc);
             //Tính thòi gian
@@ -93,6 +100,7 @@ class BaiThiSinhVienController extends Controller
                 'thoiGianKetThuc' => $thoiGianKetThuc,
                 'thoiGianLamBai' => $thoiGianLamBai,
                 'thoiGianKetThucThi' => $thoiGianKetThucThi,
+                'moTa' => $moTa,
                 'sogio' => $sogio,
                 'sophut' => $sophut,
                 'maBaiThi' => $maBaiThi,

@@ -24,6 +24,10 @@
                     <label class="col-span-1" for="">Thời gian kết thúc:</label>
                     <input id="input-thoi-gian-ket-thuc-bai-thi-cap-nhat" class="input-cap-nhat-bai-thi col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian kết thúc">
                 </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label for="input-mo-ta-bai-thi-cap-nhat" class="col-span-1">Mô tả:</label>
+                    <textarea id="input-mo-ta-bai-thi-cap-nhat" class=" input-cap-nhat-bai-thi col-span-2 border rounded-sm px-2 py-1"  style="height: 200px;"></textarea>
+                </div>
             </div>
             <div class="flex justify-between mt-5">
                 <button  type="submit" class="mr-3 border border-emerald-400 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
@@ -55,7 +59,7 @@
       var ten_bai_thi = $('#input-ten-bai-thi-cap-nhat').val();
       var thoi_gian_bat_dau = $('#input-thoi-gian-bat-dau-bai-thi-cap-nhat').val();
       var thoi_gian_ket_thuc = $('#input-thoi-gian-ket-thuc-bai-thi-cap-nhat').val();
-  
+      var  mo_ta = $('#input-mo-ta-bai-thi-cap-nhat').val();
       if (ma_bai_thi && ten_bai_thi) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
         axios.put("{{ route('admin.quan-ly.bai-thi.handle-cap-nhat-bai-thi') }}", {
@@ -64,6 +68,7 @@
             ten_bai_thi: ten_bai_thi,
             thoi_gian_bat_dau: thoi_gian_bat_dau,
             thoi_gian_ket_thuc: thoi_gian_ket_thuc,
+            mo_ta: mo_ta,
         })
         .then(function (response) {
             if (response.data.success) {
