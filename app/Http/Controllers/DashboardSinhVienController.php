@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use App\Models\SinhVien;
 use App\Models\LopHocPhan;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 class DashboardSinhVienController extends Controller
 {
     public function index($id){
@@ -26,11 +26,14 @@ class DashboardSinhVienController extends Controller
                 $thoiGianKetThuc = Carbon::parse($lopHocPhan->thoi_gian_ket_thuc);
                 // So sánh thời gian kết thúc của lớp học phần với thời gian hiện tại
                 if ($thoiGianKetThuc->isFuture()) {
+                    // Đếm số lượng bài thi
+                    $soLuongBaiThi = DB::table('lop_hoc_phan')->where('id', $lopHocPhan->id)->count();
                     // Thêm thông tin lớp học phần vào mảng nếu thời gian kết thúc chưa đến
                     $thongTinLopHocPhan[] = [
                         'ten_lop_hoc_phan' => $lopHocPhan->ten_lop_hoc_phan,
                         'thoi_gian_bat_dau' => $lopHocPhan->thoi_gian_bat_dau,
                         'thoi_gian_ket_thuc' => $lopHocPhan->thoi_gian_ket_thuc,
+                        'so_luong_bai_thi' => $soLuongBaiThi,
                     ];
                 }
             }

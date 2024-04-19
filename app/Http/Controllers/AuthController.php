@@ -112,44 +112,52 @@ class AuthController extends Controller
         ]);
     }
     public function handleDangNhap(Request $request) {
-
+        // Kiểm tra và xử lý các trường hợp lỗi
         if (empty($request->email)) {
+            // Trả về thông báo lỗi nếu email trống
             return response()->json([
                 'success'   => false,
                 'type'      => 'error',
                 'message'   => 'Vui lòng nhập email!'
             ]);
         }
-
+    
         if (empty($request->matKhau)) {
+            // Trả về thông báo lỗi nếu mật khẩu trống
             return response()->json([
                 'success'   => false,
                 'type'      => 'error',
                 'message'   => 'Vui lòng nhập mật khẩu!'
             ]);
         }
-
+    
+        // Kiểm tra email và mật khẩu từ yêu cầu đăng nhập
         if ($request->filled(['email', 'matKhau'])) {
+            // Lấy thông tin người dùng từ cơ sở dữ liệu
             $nguoiDung = NguoiDung::where('email', $request->email)->first();
             
+            // Kiểm tra xem thông tin đăng nhập có hợp lệ không
             if ($nguoiDung && Hash::check($request->matKhau, $nguoiDung->mat_khau)) {
+                // Đăng nhập người dùng
                 Auth::login($nguoiDung);
-        
-                // Kiểm tra xem người dùng có phải là sinh viên không
+    
+                // Kiểm tra xem người dùng là sinh viên
                 $sinhVien = SinhVien::where('email', $request->email)->first();
-        
+    
+                // Nếu là sinh viên, chuyển hướng và truyền ID của sinh viên vào view
                 if ($sinhVien) {
-                    // Nếu người dùng là sinh viên, chuyển hướng đến trang sinh viên và truyền ID của sinh viên
                     return response()->json([
                         'success'   => true,
-                        'redirect'  => route('sinh-vien.quan-ly.trang-chu.trang-sinh-vien', ['id' => $sinhVien->id])
+                        'redirect'  => route('sinh-vien.quan-ly.dashboard.quan-ly-dashboard', ['id' => $sinhVien->id])
                     ]);
                 } elseif ($nguoiDung->role == 'Admin') {
+                    // Nếu là admin, chuyển hướng đến trang quản trị admin
                     return response()->json([
                         'success'   => true,
                         'redirect'  => route('admin.quan-ly.giang-vien.quan-ly-giang-vien')
                     ]);
                 } else {
+                    // Nếu không phải sinh viên hoặc admin, chuyển hướng đến trang chính
                     return response()->json([
                         'success'   => true,
                         'redirect'  => route('home')
@@ -157,7 +165,8 @@ class AuthController extends Controller
                 }
             }
         }
-
+    
+        // Trả về thông báo lỗi nếu thông tin đăng nhập không hợp lệ
         return response()->json([
             'success'   => false,
             'type'      => 'error',

@@ -37,7 +37,7 @@
                             @foreach ($cauHoi['cau_tra_loi'] as $i => $cauTraLoi)
                                 <li>
                                     @if (count($cauHoi['dap_an_dung']) > 1)
-                                        <input type="checkbox" id="cauTraLoi{{$i+1}}" name="cauTraLoi{{ $index + 1 }}[]" value="{{ $cauTraLoi }}" onchange="luuCauTraLoiDaChon({{ $index + 1 }}, this.value, true)">
+                                        <input type="checkbox" id="cauTraLoi{{$i+1}}" name="cauTraLoi{{ $index + 1 }}" value="{{ $cauTraLoi }}">
                                     @else
                                         <input type="radio" id="cauTraLoi{{$i+1}}" name="cauTraLoi{{ $index + 1 }}" value="{{ $cauTraLoi }}">
                                     @endif
@@ -45,6 +45,15 @@
                                 </li>
                             @endforeach
                         </ul>
+                        @php
+                            $dapAnDungIndexes = $cauHoi['dap_an_dung'];
+                            $dapAnDungValues = [];
+                            foreach ($dapAnDungIndexes as $dapAnDungIndex) {
+                                $dapAnDungValues[] = $cauHoi['cau_tra_loi'][$dapAnDungIndex];
+                            }
+                            $dapAnDungString = implode(', ', $dapAnDungValues);
+                        @endphp
+                        <input type="hidden" name="dapAnDung{{ $index + 1 }}" value="{{ $dapAnDungString }}">
                     </div>
                 @endforeach
                 <!-- Pagination -->
@@ -79,7 +88,7 @@
         const totalPages = {{ $totalPages }};
         const btnPrevious = document.getElementById('btnPrevious');
         const btnNext = document.getElementById('btnNext');
-
+        const totalQuestions = {{ $totalQuestions }};
         function showPage(page) {
             for (let i = 1; i <= {{ $totalQuestions }}; i++) {
                 const question = document.getElementById(`question${i}`);
@@ -137,96 +146,157 @@
                 document.getElementById("submitBtn").style.display = "none"; // Ẩn nút Submit sau khi hết thời gian
             }
         }, 1000); // Cập nhật thời gian mỗi giây (1000 ms)
+        
+        // Lấy danh sách câu trả lời của người dùng
+        function getSelectedAnswers() {
+            let selectedAnswers = {};
 
-        // Lưu câu trả lời đã chọn vào Local Storage
-        function luuCauTraLoiDaChon(cauHoiIndex, cauTraLoiIndex, isCheckbox) {
-            let selectedAnswers = JSON.parse(localStorage.getItem(`cauTraLoi${cauHoiIndex}`)) || [];
-            if (isCheckbox) {
-                if (!selectedAnswers.includes(cauTraLoiIndex)) {
-                    selectedAnswers.push(cauTraLoiIndex);
-                    localStorage.setItem(`cauTraLoi${cauHoiIndex}`, JSON.stringify(selectedAnswers));
-                }
-            } else {
-                localStorage.setItem(`cauTraLoi${cauHoiIndex}`, cauTraLoiIndex);
-            }
-        }
+            // Duyệt qua mỗi câu hỏi
+            for (let i = 1; i <= {{ $totalQuestions }}; i++) {
+                let question = document.getElementsByName("cauTraLoi" + i);
 
-        // Gọi hàm khôi phục câu trả lời khi trang được load
-        window.onload = function() {
-            showPage(currentPage);
-        }
-        // Hàm tính điểm số
-        function calculateScore() {
-            var danhSachCauHoi = @json($danhSachCauHoi);
-            const totalQuestions = danhSachCauHoi.length;
-            const scorePerQuestion = 10 / totalQuestions; // Điểm số cho mỗi câu hỏi
-            let score = 0;
-
-            for (let i = 0; i < danhSachCauHoi.length; i++) {
-                const cauTraLoiDaChon = localStorage.getItem(`cauTraLoi${i + 1}`);
-                const dapAnDungIndex = danhSachCauHoi[i].dap_an_dung - 1; // Vị trí index của đáp án đúng trong mảng câu trả lời
-                const dapAnDung = danhSachCauHoi[i].cau_tra_loi[dapAnDungIndex];
-
-                if (cauTraLoiDaChon && cauTraLoiDaChon == dapAnDung) {
-                    score += scorePerQuestion; // Tăng điểm nếu câu trả lời đúng
+                // Duyệt qua tất cả các lựa chọn của câu hỏi
+                for (let j = 0; j < question.length; j++) {
+                    if (question[j].checked) {
+                        // Nếu lựa chọn này được chọn, thêm vào đáp án đã chọn cho câu hỏi tương ứng
+                        if (!selectedAnswers["Câu " + i]) {
+                            selectedAnswers["Câu " + i] = [];
+                        }
+                        selectedAnswers["Câu " + i].push(question[j].value);
+                    }
                 }
             }
-
-            return score;
+            return selectedAnswers;
         }
 
-        var danhSachCauHoi = @json($danhSachCauHoi);
-        const totalQuestions = {{ $totalQuestions }};
-        function countCorrectAnswers() {
-            let count = 0;
-            for (let i = 1; i <= totalQuestions; i++) {
-                const cauTraLoiDaChon = localStorage.getItem(`cauTraLoi${i}`);
-                const dapAnDungIndex = danhSachCauHoi[i - 1]['dap_an_dung'] - 1; // Vị trí index của đáp án đúng trong mảng câu trả lời
-                const dapAnDung = danhSachCauHoi[i - 1]['cau_tra_loi'][dapAnDungIndex];
+        // Lấy danh sách đáp án đúng
+        function layDapAnDungTuInputHidden() {
+            let dapAnDung = {};
 
-                if (cauTraLoiDaChon && cauTraLoiDaChon == dapAnDung) {
-                    count++; // Tăng biến đếm nếu câu trả lời đúng
+            // Lấy tất cả các input hidden
+            const hiddenInputs = document.querySelectorAll('input[type="hidden"]');
+
+            // Duyệt qua từng input hidden
+            hiddenInputs.forEach(input => {
+                // Lấy tên của input
+                const tenInput = input.getAttribute('name');
+
+                // Kiểm tra xem tên input có phải là tên của một câu hỏi không (có dạng "dapAnDungN")
+                if (tenInput.startsWith('dapAnDung')) {
+                    // Lấy số thứ tự của câu hỏi từ tên input
+                    const soThuTuCauHoi = tenInput.replace('dapAnDung', '');
+
+                    // Lấy giá trị của input, tức là danh sách các đáp án đúng cho câu hỏi đó
+                    const giaTriInput = input.value;
+
+                    // Chuyển danh sách các đáp án đúng thành mảng (nếu cần)
+                    const mangDapAnDung = giaTriInput.split(', ');
+
+                    // Thêm danh sách đáp án đúng vào đối tượng dapAnDung với khóa là tên của câu hỏi
+                    dapAnDung["Câu " + soThuTuCauHoi] = mangDapAnDung;
+                }
+            });
+
+            return dapAnDung;
+        }
+
+
+        // Tính điểm 
+        
+        function tinhDiem(cauTraLoiNguoiDung, dapAnDung) {
+            let diemTongCong = 0;
+            const soCauHoi = Object.keys(dapAnDung).length; // Tổng số câu hỏi
+            const diemMoiCauHoi = 10 / soCauHoi; // Điểm cho mỗi câu hỏi
+
+            // Duyệt qua từng câu hỏi
+            for (let i = 1; i <= soCauHoi; i++) {
+                const dapAnDungCuaCauHoi = dapAnDung["Câu " + i];
+                const cauTraLoiNguoiDungCuaCauHoi = cauTraLoiNguoiDung["Câu " + i];
+                
+                // Kiểm tra nếu câu trả lời của người dùng trùng với đáp án đúng
+                if (Array.isArray(cauTraLoiNguoiDungCuaCauHoi)) {
+                    // Multiple choice
+                    const diemMoiCauTraLoiDung = diemMoiCauHoi / dapAnDungCuaCauHoi.length; // Điểm cho mỗi đáp án đúng
+
+                    // Duyệt qua từng đáp án đúng của câu hỏi
+                    dapAnDungCuaCauHoi.forEach(dapAn => {
+                        if (cauTraLoiNguoiDungCuaCauHoi.includes(dapAn)) {
+                            // Cộng điểm nếu trả lời đúng
+                            diemTongCong += diemMoiCauTraLoiDung;
+                        }
+                    });
+                } else {
+                    // Single choice
+                    if (JSON.stringify(cauTraLoiNguoiDungCuaCauHoi) === JSON.stringify(dapAnDungCuaCauHoi)) {
+                        // Cộng điểm nếu trả lời đúng
+                        diemTongCong += diemMoiCauHoi;
+                    }
                 }
             }
-            return count;
+
+            // Làm tròn điểm đến một chữ số thập phân
+            diemTongCong = parseFloat(diemTongCong.toFixed(1));
+
+            return diemTongCong;
         }
+
 
         let submitted = false; 
         function submitAnswers() {
-            if (!submitted) { // Kiểm tra đã submit hay chưa
-                submitted = true; 
-                document.getElementById("submitBtn").style.display = "none"; 
-            }
+            // if (!submitted) { // Kiểm tra đã submit hay chưa
+            //     submitted = true; 
+            //     document.getElementById("submitBtn").style.display = "none"; 
+            // }
+
+            // Lấy danh sách đáp án đúng và danh sách câu trả lời của người dùng
+            const dapAnDung = layDapAnDungTuInputHidden();
+            const cauTraLoiNguoiDung = getSelectedAnswers();
+            const diem = tinhDiem(cauTraLoiNguoiDung,dapAnDung)
+            // In ra danh sách đáp án đúng
+            console.log("Danh sách đáp án đúng:");
+            console.log(dapAnDung);
+
+            // In ra danh sách người dùng đã chọn
+            console.log("Danh sách người dùng đã chọn:");
+            console.log(cauTraLoiNguoiDung);
+
+            // Tính điểm cho từng câu và in ra số điểm của từng câu
+            console.log("kết quả");
+            console.log(diem);
 
             // Lấy ra các giá trị cần thiết từ view
-            const maBaiThi = "{{ $maBaiThi }}";
-            const tenBaiThi = "{{ $tenBaiThi }}";
-            const id = "{{ $id }}";
-            const diemSo = calculateScore();
-            const soCauTraLoiDung = countCorrectAnswers();
-            // Gửi yêu cầu Axios
-            axios.post("{{ route('sinh-vien.quan-ly.xem-diem.handle-them-diem-sinh-vien') }}", {
-                ma_bai_thi: maBaiThi,
-                ten_bai_thi: tenBaiThi,
-                id: id,
-                diem: diemSo, // Truyền điểm số tính được vào đây
-                so_cau_tra_loi_dung: soCauTraLoiDung ,
-            })
-            .then(function (response) {
-                if (response.data.success) {
-                    window.location.replace(response.data.redirect);
-                    return;
-                }
-            })
-            .catch(function (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
-            });
+            // // Gửi yêu cầu Axios
+            // axios.post("{{ route('sinh-vien.quan-ly.xem-diem.handle-them-diem-sinh-vien') }}", {
+            //     ma_bai_thi: maBaiThi,
+            //     ten_bai_thi: tenBaiThi,
+            //     id: id,
+            //     diem: diemSo, // Truyền điểm số tính được vào đây
+            //     so_cau_tra_loi_dung: soCauTraLoiDung ,
+            // })
+            // .then(function (response) {
+            //     if (response.data.success) {
+            //         window.location.replace(response.data.redirect);
+            //         return;
+            //     }
+            // })
+            // .catch(function (error) {
+            //     Swal.fire({
+            //         icon: 'error',
+            //         title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
+            //         showConfirmButton: false,
+            //         timer: 1500
+            //     })
+            // });
         }
+
+        // Lấy tất cả các input hidden
+        const hiddenInputs = document.querySelectorAll('input[type="hidden"]');
+
+        // Duyệt qua mỗi input hidden và in ra giá trị của nó
+        hiddenInputs.forEach(input => {
+            console.log(input.name + ': ' + input.value);
+        });
+
     </script>
 </body>
 </html>

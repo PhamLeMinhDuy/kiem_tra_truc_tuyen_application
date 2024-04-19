@@ -23,6 +23,10 @@
                     <label class="col-span-1" for="">Thời gian kết thúc:</label>
                     <input id="input-thoi-gian-ket-thuc-bai-thi-them" class="input-them-bai-thi col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian kết thúc">
                 </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label for="input-mo-ta-bai-thi-them" class="col-span-1">Mô tả:</label>
+                    <textarea id="input-mo-ta-bai-thi-them" class=" input-them-bai-thi col-span-2 border rounded-sm px-2 py-1"  style="height: 200px;"></textarea>
+                </div>
             </div>
             <div class="flex justify-between mt-5">
                 <button type="submit" class="mr-3 border border-cyan-400 py-2 px-4 rounded inline-flex items-center hover:bg-cyan-500 font-bold hover:text-white">
@@ -52,6 +56,7 @@
             ten_bai_thi: $('#input-ten-bai-thi-them').val(),
             thoi_gian_bat_dau: $('#input-thoi-gian-bat-dau-bai-thi-them').val(),
             thoi_gian_ket_thuc: $('#input-thoi-gian-ket-thuc-bai-thi-them').val(),
+            mo_ta: $('#input-mo-ta-bai-thi-them').val(),
         })
         .then(function (response) {
             if (response.data.success) {

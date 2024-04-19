@@ -6,31 +6,36 @@
     @vite('resources/css/app.css')
     <title>@yield('title')</title>
 </head>
-<body class="bg-gray-100">
-    <div class="flex h-screen">
-        @include('sinhvien.layouts.blocks.sidebar')
-        <div class="flex-1">
-            @include('sinhvien.layouts.blocks.header')
-            <main class="p-4 min-h-screen bg-white">
-                <h2 class="text-lg  text-gray-800">
-                    @yield('page-title')
-                    @yield('content')
-                </h2>
-                
-            </main>
-            @include('sinhvien.layouts.blocks.footer')
+<body class="bg-white">
+    <div class="flex flex-col min-h-screen"> <!-- Sử dụng flex và flex-col để footer dính dưới cùng của trang -->
+        <div class="flex h-screen">
+            @include('sinhvien.layouts.blocks.sidebar')
+            <div class="flex-1 relative">
+                @include('sinhvien.layouts.blocks.header')
+                <main class="pl-4 bg-white ">
+                    <h2 class="text-lg text-gray-800">
+                        @yield('page-title')
+                        @yield('content')
+                    </h2>
+                </main>
+                @include('sinhvien.layouts.blocks.footer')
+            </div>
+            
         </div>
     </div>
 </body>
 </html>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        var sidebar = document.getElementById("sidebar");
+        var sidebarCollapseBtn = document.getElementById("sidebarCollapse");
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const sidebar = document.querySelector('.bg-gray-400');
-        const sidebarCollapseBtn = document.getElementById('sidebarCollapse');
-
-        sidebarCollapseBtn.addEventListener('click', function () {
-            sidebar.classList.toggle('hidden');
+        sidebarCollapseBtn.addEventListener("click", function() {
+            if (sidebar.classList.contains("hidden")) {
+                sidebar.classList.remove("hidden");
+            } else {
+                sidebar.classList.add("hidden");
+            }
         });
     });
 </script>

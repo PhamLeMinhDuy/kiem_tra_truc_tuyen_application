@@ -1,6 +1,8 @@
 @extends('sinhvien.layouts.master')
 
-@section('title', $title)
+@section('title')
+    {{ $title }}
+@endsection
 
 @section('page-title')
     <div class="flex items-center justify-between font-bold">
@@ -26,3 +28,4 @@
         @endif
     </div>
 @endsection
+

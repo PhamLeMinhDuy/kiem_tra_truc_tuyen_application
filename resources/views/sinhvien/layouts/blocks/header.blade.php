@@ -1,6 +1,5 @@
 <header class="bg-white shadow border-b">
-    <div class="container mx-auto px-4">
-        <nav class="flex justify-between items-center py-4">
+        <nav class="flex justify-between items-center py-4 ml-5">
             <!-- Logo and School Name -->
             <div class="flex items-center">
                 <img src="{{ asset('images/logo_vlu.png') }}" alt="Logo" class="h-10">
@@ -15,5 +14,4 @@
                 </svg>
             </button>
         </nav>
-    </div>
 </header>
