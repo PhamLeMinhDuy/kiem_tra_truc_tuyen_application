@@ -19,6 +19,7 @@ class SinhVien extends Model
         'ngay_sinh',
         'ma_khoa',
         'ma_nganh',
+        'bai_thi',
 
     ];
 }

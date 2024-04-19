@@ -200,7 +200,6 @@
             return dapAnDung;
         }
 
-
         // Tính điểm 
         
         function tinhDiem(cauTraLoiNguoiDung, dapAnDung) {
@@ -240,62 +239,77 @@
             return diemTongCong;
         }
 
+        function tinhSoCauTraLoiDung(cauTraLoiNguoiDung, dapAnDung) {
+            let soCauTraLoiDung = 0;
+            const soCauHoi = Object.keys(dapAnDung).length; // Tổng số câu hỏi
+
+            // Duyệt qua từng câu hỏi
+            for (let i = 1; i <= soCauHoi; i++) {
+                const dapAnDungCuaCauHoi = dapAnDung["Câu " + i];
+                const cauTraLoiNguoiDungCuaCauHoi = cauTraLoiNguoiDung["Câu " + i];
+
+                // Kiểm tra nếu câu trả lời của người dùng trùng với đáp án đúng
+                if (Array.isArray(cauTraLoiNguoiDungCuaCauHoi)) {
+                    // Multiple choice
+                    let isAllCorrect = true;
+                    dapAnDungCuaCauHoi.forEach(dapAn => {
+                        if (!cauTraLoiNguoiDungCuaCauHoi.includes(dapAn)) {
+                            isAllCorrect = false;
+                        }
+                    });
+                    if (isAllCorrect) {
+                        // Tăng số câu trả lời đúng
+                        soCauTraLoiDung++;
+                    }
+                } else {
+                    // Single choice
+                    if (JSON.stringify(cauTraLoiNguoiDungCuaCauHoi) === JSON.stringify(dapAnDungCuaCauHoi)) {
+                        // Tăng số câu trả lời đúng
+                        soCauTraLoiDung++;
+                    }
+                }
+            }
+
+            return soCauTraLoiDung;
+        }
 
         let submitted = false; 
         function submitAnswers() {
-            // if (!submitted) { // Kiểm tra đã submit hay chưa
-            //     submitted = true; 
-            //     document.getElementById("submitBtn").style.display = "none"; 
-            // }
+            if (!submitted) { // Kiểm tra đã submit hay chưa
+                submitted = true; 
+                document.getElementById("submitBtn").style.display = "none"; 
+            }
 
             // Lấy danh sách đáp án đúng và danh sách câu trả lời của người dùng
             const dapAnDung = layDapAnDungTuInputHidden();
             const cauTraLoiNguoiDung = getSelectedAnswers();
-            const diem = tinhDiem(cauTraLoiNguoiDung,dapAnDung)
-            // In ra danh sách đáp án đúng
-            console.log("Danh sách đáp án đúng:");
-            console.log(dapAnDung);
-
-            // In ra danh sách người dùng đã chọn
-            console.log("Danh sách người dùng đã chọn:");
-            console.log(cauTraLoiNguoiDung);
-
-            // Tính điểm cho từng câu và in ra số điểm của từng câu
-            console.log("kết quả");
-            console.log(diem);
-
-            // Lấy ra các giá trị cần thiết từ view
-            // // Gửi yêu cầu Axios
-            // axios.post("{{ route('sinh-vien.quan-ly.xem-diem.handle-them-diem-sinh-vien') }}", {
-            //     ma_bai_thi: maBaiThi,
-            //     ten_bai_thi: tenBaiThi,
-            //     id: id,
-            //     diem: diemSo, // Truyền điểm số tính được vào đây
-            //     so_cau_tra_loi_dung: soCauTraLoiDung ,
-            // })
-            // .then(function (response) {
-            //     if (response.data.success) {
-            //         window.location.replace(response.data.redirect);
-            //         return;
-            //     }
-            // })
-            // .catch(function (error) {
-            //     Swal.fire({
-            //         icon: 'error',
-            //         title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
-            //         showConfirmButton: false,
-            //         timer: 1500
-            //     })
-            // });
+            const diem = tinhDiem(cauTraLoiNguoiDung,dapAnDung);
+            const soCauTraLoiDung = tinhSoCauTraLoiDung(cauTraLoiNguoiDung,dapAnDung);
+            // Gửi yêu cầu Axios
+            axios.post("{{ route('sinh-vien.quan-ly.xem-diem.handle-them-diem-sinh-vien') }}", {
+                ma_bai_thi: '{{ $maBaiThi }}',
+                ten_bai_thi: '{{ $tenBaiThi }}',
+                ma_lop_hoc_phan: '{{ $maLopHocPhan }}',
+                id: '{{ $id }}',
+                diem: diem,
+                so_cau_tra_loi_dung: soCauTraLoiDung ,
+            })
+            .then(function (response) {
+                if (response.data.success) {
+                    window.location.replace(response.data.redirect);
+                    return;
+                }
+            })
+            .catch(function (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            });
         }
 
-        // Lấy tất cả các input hidden
-        const hiddenInputs = document.querySelectorAll('input[type="hidden"]');
-
-        // Duyệt qua mỗi input hidden và in ra giá trị của nó
-        hiddenInputs.forEach(input => {
-            console.log(input.name + ': ' + input.value);
-        });
 
     </script>
 </body>
