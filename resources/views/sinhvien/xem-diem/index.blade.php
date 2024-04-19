@@ -13,8 +13,7 @@
 @endsection
 
 @section('content')
-    <div class="mt-8 ">
-        @if (isset($ketQuas) && count($ketQuas) > 0)
+    <div class="mt-8 " style="overflow-y: auto; max-height: 80vh;">
             @foreach ($ketQuas as $ketQua)
                 <div class="border p-4 mb-4 bg-white">
                     <p class="font-semibold">Tên bài thi: {{ $ketQua['tenBaiThi'] }}</p>
@@ -23,9 +22,6 @@
                     <p class="font-semibold">Điểm số: {{ $ketQua['diem'] }}</p>
                 </div>
             @endforeach
-        @else
-            <p class="text-red-500">Không có kết quả</p>
-        @endif
     </div>
 @endsection
 
