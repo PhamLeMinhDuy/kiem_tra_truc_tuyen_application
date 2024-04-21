@@ -113,3 +113,11 @@ Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
         });
     });
 });
+
+Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
+    Route::group(['prefix' => 'quan-ly', 'as'=>'quan-ly.'], function() {
+        Route::group(['prefix' => 'lop-hoc-phan', 'as'=>'lop-hoc-phan.'], function() {
+            
+        });
+    });
+});

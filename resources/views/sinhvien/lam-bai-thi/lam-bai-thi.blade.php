@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Default Title')</title>
+    <title>@yield('title', 'Làm bài thi')</title>
     @vite('resources/css/app.css')
 </head>
 <body class="bg-white">
@@ -69,7 +69,7 @@
                     <div class="text-lg text-red-600 font-semibold mb-7 border-b-2 flex items-center"><p class="ml-6 mb-3">Quiz navigation</p></div>
                     <div class="pl-6 flex flex-wrap items-center">
                         @for ($i = 1; $i <= $totalQuestions; $i++)
-                            <button onclick="goToQuestion({{ $i }})" class=" quiz-nav-btn bg-gray-400 hover:bg-gray-600 text-white px-3 py-2 rounded-lg mb-2 mr-2 w-10 text-center">{{ $i }}</button>
+                            <button onclick="goToQuestion({{ $i }})" class=" quiz-nav-btn border-2 hover:bg-gray-200  px-3 py-2 rounded-lg mb-2 mr-2 w-10 text-center">{{ $i }}</button>
                         @endfor
                     </div>
                     <div id="thoiGianConLai" class="text-gray-600 mt-5 pl-6"></div>
@@ -98,7 +98,81 @@
             }
         }
 
-       // Lưu trạng thái trang hiện tại vào Local Storage
+        // Lưu trạng thái trang hiện tại vào localStorage
+        function saveCurrentPage() {
+            localStorage.setItem('currentPage', currentPage);
+        }
+
+        // Hàm kiểm tra nếu có dữ liệu trong localStorage thì hiển thị trang đó
+        function showStoredPage() {
+            const storedPage = localStorage.getItem('currentPage');
+            if (storedPage) {
+                currentPage = parseInt(storedPage);
+                showPage(currentPage);
+                updateButtonsVisibility();
+            }
+        }
+
+        // Lưu trạng thái đáp án vào localStorage khi người dùng chọn
+        function saveAnswer(questionNumber, answer) {
+            localStorage.setItem(`answer${questionNumber}`, answer);
+        }
+
+        // Lưu trạng thái đáp án vào localStorage khi người dùng chọn
+        function saveAnswer(questionNumber, answer) {
+            localStorage.setItem(`answer${questionNumber}`, answer);
+        }
+
+        // Hàm kiểm tra và áp dụng trạng thái đáp án đã lưu khi trang được tải lại
+        function applyStoredAnswers() {
+            for (let i = 1; i <= totalQuestions; i++) {
+                const storedAnswer = localStorage.getItem(`answer${i}`);
+                if (storedAnswer) {
+                    const inputs = document.querySelectorAll(`input[name="cauTraLoi${i}"]`);
+                    inputs.forEach(input => {
+                        if (input.type === 'radio') {
+                            // Nếu là radio, chỉ kiểm tra và check input có giá trị trùng với storedAnswer
+                            if (input.value === storedAnswer) {
+                                input.checked = true;
+                            }
+                        } else if (input.type === 'checkbox') {
+                            // Nếu là checkbox, kiểm tra nhiều giá trị storedAnswer phân tách bởi dấu phẩy
+                            const storedAnswers = storedAnswer.split(',');
+                            if (storedAnswers.includes(input.value)) {
+                                input.checked = true;
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        function onLoad() {
+            showStoredPage(); // Gọi hàm để hiển thị trang đã lưu
+            applyStoredAnswers(); // Gọi hàm để áp dụng câu trả lời đã lưu
+        }
+
+        window.onload = onLoad;
+        // Gọi hàm saveCurrentPage() khi người dùng chuyển trang
+        btnPrevious.addEventListener('click', saveCurrentPage);
+        btnNext.addEventListener('click', saveCurrentPage);
+
+        document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const questionNumber = this.name.replace('cauTraLoi', '');
+            let answer;
+            if (this.type === 'checkbox') {
+                // Nếu là checkbox, lấy tất cả các giá trị được chọn và nối chúng lại thành một chuỗi ngăn cách bởi dấu phẩy
+                const checkedInputs = document.querySelectorAll(`input[name="${this.name}"]:checked`);
+                const checkedValues = Array.from(checkedInputs).map(input => input.value);
+                answer = checkedValues.join(',');
+            } else {
+                // Nếu là radio, chỉ lấy giá trị của input hiện tại
+                answer = this.value;
+            }
+            saveAnswer(questionNumber, answer);
+            });
+        });
 
         function previousPage() {
             if (currentPage > 1) {
@@ -296,6 +370,7 @@
             })
             .then(function (response) {
                 if (response.data.success) {
+                    localStorage.clear();
                     window.location.replace(response.data.redirect);
                     return;
                 }

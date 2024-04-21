@@ -17,10 +17,6 @@ class AuthController extends Controller
         return view('dang-nhap');
     }
 
-    public function dangKyView() {
-        return view('dang-ky');
-    }
-
     public function handleDangKy(Request $request) {
         $validator = Validator::make($request->all(), [
             'ten' => 'regex:/^[A-Za-z\s]+$/',

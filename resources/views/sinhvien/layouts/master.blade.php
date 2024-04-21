@@ -26,16 +26,24 @@
 </body>
 </html>
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        var sidebar = document.getElementById("sidebar");
-        var sidebarCollapseBtn = document.getElementById("sidebarCollapse");
+     document.addEventListener("DOMContentLoaded", function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarCollapseButton = document.getElementById('sidebarCollapse');
 
-        sidebarCollapseBtn.addEventListener("click", function() {
-            if (sidebar.classList.contains("hidden")) {
-                sidebar.classList.remove("hidden");
-            } else {
-                sidebar.classList.add("hidden");
+            sidebarCollapseButton.addEventListener('click', function() {
+                sidebar.classList.toggle('hidden');
+            });
+
+            // Hide sidebar when screen size is smaller than 760px
+            function handleResize() {
+                if (window.innerWidth < 760) {
+                    sidebar.classList.add('hidden');
+                } else {
+                    sidebar.classList.remove('hidden');
+                }
             }
+
+            window.addEventListener('resize', handleResize);
+            handleResize(); // Initial handling on page load
         });
-    });
 </script>

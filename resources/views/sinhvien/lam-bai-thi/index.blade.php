@@ -3,7 +3,7 @@
     {{ $title }}
 @endsection
 @section('page-title')
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between mt-4">
         <div class="mr-5 w-full border bg-white h-[120px] flex items-center px-4 text-4xl">
             {{ $tenBaiThi }}
         </div>

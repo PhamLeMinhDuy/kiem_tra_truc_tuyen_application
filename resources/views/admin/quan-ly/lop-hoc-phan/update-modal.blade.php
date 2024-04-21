@@ -10,7 +10,7 @@
             <div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Mã lớp học phần:</label>
-                  <input id="input-ma-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="text">
+                  <input id="input-ma-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1 bg-gray-300 opacity-50 cursor-not-allowed" type="text" readonly>
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                   <label class="col-span-1" for="">Tên lớp học phần:</label>

@@ -216,4 +216,9 @@ class LopHocPhanController extends Controller
         ]);
     }
 
+    public function handleLopHocPhanGiangVien($id)
+    {
+
+    }
+
 }
