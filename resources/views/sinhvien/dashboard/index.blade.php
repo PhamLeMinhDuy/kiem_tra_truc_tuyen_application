@@ -21,7 +21,7 @@
                         <div class="text-gray-500 pb-2">
                             <h2 class="text-lg font-bold border-b p-2 bg-blue-200">{{ $lopHocPhan['ten_lop_hoc_phan'] }}</h2>
                             
-                            <p class="mt-2 text-base font-semibold px-2">Số bài thi đã làm: <span class=" font-normal"></span></p>
+                            <p class="mt-2 text-base font-semibold px-2">Số bài thi đã làm: <span class=" font-normal">{{ $lopHocPhan['so_luong_bai_thi_da_lam'] }}</span></p>
                             <p class="mt-2 text-base font-semibold px-2">Đang có: <span class="text-red-400">{{ $lopHocPhan['so_luong_bai_thi'] }}</span></p>
                         </div>
                         <!-- Liên kết chi tiết nằm bên phải -->

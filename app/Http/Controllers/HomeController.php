@@ -23,6 +23,17 @@ class HomeController extends Controller
             return view('sinhvien.layouts.master', $this->data);
         } 
     }
+    
+    public function giangVienHome($id) {
+        $giangVien = SinhVien::find($id);
+        if ($giangVien) {
+            $tenGiangVien = $giangVien->ten_giang_vien;
+            $this->data['title'] = 'Trang chủ giảng viên';
+            $this->data['tenGiangVien'] = $tenGiangVien;
+            $this->data['id'] = $id;
+            return view('layouts.master', $this->data);
+        } 
+    }
 
     public function adminQuanLyGiangVien(){
         $this->data['title'] = 'Quán lý giảng viên';

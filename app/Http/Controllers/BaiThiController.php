@@ -178,7 +178,17 @@ class BaiThiController extends Controller
 
     public function handleThemCauHoi(Request $request) {
         $cauHoi = BaiThi::find((int)$request->cauHoiId);
-        $cauHoi->danh_sach_cau_hoi = $request->data;
+        
+        // Check if danh_sach_cau_hoi is null and assign an empty array if it is
+        $danhSachCauHoi = $cauHoi->danh_sach_cau_hoi ?? [];
+        
+        // Update danh_sach_cau_hoi with the new data
+        $danhSachCauHoi = $request->data;
+        
+        // Assign the updated danh_sach_cau_hoi back to the $cauHoi object
+        $cauHoi->danh_sach_cau_hoi = $danhSachCauHoi;
+        
+        // Save the changes
         $cauHoi->save();
         
         return response()->json([

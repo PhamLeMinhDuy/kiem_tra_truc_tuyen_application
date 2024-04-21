@@ -29,11 +29,10 @@
     document.getElementById('modal-xoa-bai-thi').style.display = 'none';
   }
 
-  function xoa() {
     $('#form-xoa-bai-thi').on('submit', function(event){
         event.preventDefault();
         axios.post("{{ route('admin.quan-ly.bai-thi.handle-xoa-bai-thi') }}", {
-            id_mon_hoc: $('#data-id').val(),
+            id_bai_thi: $('#data-id').val(),
         })
         .then(function (response) {
             if (response.data.success) {
@@ -56,5 +55,4 @@
             })
         });
     })
-  }
 </script>
