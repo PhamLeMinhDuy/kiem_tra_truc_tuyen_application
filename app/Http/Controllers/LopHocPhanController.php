@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 class LopHocPhanController extends Controller
 {
     public function index(){
-        $danhSachSinhVien = LopHocPhan::paginate(10);
+        $danhSachLopHocPhan = LopHocPhan::paginate(10);
         $columnNames = Schema::getColumnListing('lop_hoc_phan');
         $danhSachTenCot = ['ID', 'Mã lớp học phần', 'Tên lớp học phần', 'Môn học', 'Thời gian bắt đầu', 'Thời gian kết thúc', 'Danh sách sinh viên', 'Danh sách giảng viên'];
         $danhSachCot = [];
@@ -34,7 +34,7 @@ class LopHocPhanController extends Controller
         return view('admin.quan-ly.lop-hoc-phan.index', [
             'title' => 'Danh sách lớp học phần',
             'danhSachCot' => $danhSachCot,
-            'danhSachDuLieu' => $danhSachSinhVien,
+            'danhSachDuLieu' => $danhSachLopHocPhan,
             'danhSachCotDb' => $danhSachCotDb,
             'danhSachMon' => $danhSachMon,
             'danhSachKhoa' => $danhSachKhoa,
@@ -216,9 +216,117 @@ class LopHocPhanController extends Controller
         ]);
     }
 
-    public function handleLopHocPhanGiangVien($id)
+    public function indexLopHocPhanGiangVien($id)
     {
+        $giangVien = GiangVien::find($id);
+        $maGiangVien = $giangVien->ma_giang_vien;
+        $danhSachLopHocPhanGiangVien = LopHocPhan::whereJsonContains('danh_sach_giang_vien',  ['ma_giang_vien' => $maGiangVien])->paginate(10);
+        $columnNames = Schema::getColumnListing('lop_hoc_phan');
+        $danhSachTenCot = ['ID', 'Mã lớp học phần', 'Tên lớp học phần', 'Môn học', 'Thời gian bắt đầu', 'Thời gian kết thúc', 'Danh sách sinh viên', 'Danh sách giảng viên'];
+        $danhSachCot = [];
+        $danhSachCotDb = [];
+        for ($i = 0; $i < sizeof($danhSachTenCot)-2; $i++) {
+            $danhSachCot[] = $danhSachTenCot[$i];
+            $danhSachCotDb[] = $columnNames[$i];
+        }
+        $danhSachSinhVienAll = SinhVien::all();
+        $danhSachGiangVienAll = GiangVien::all();
+        $danhSachBaiThiAll = BaiThi::all();
+        $danhSachMon = MonHoc::all();
+        return view('giangvien.lop-hoc-phan.index', [
+            'title' => 'Danh sách lớp học phần',
+            'danhSachCot' => $danhSachCot,
+            'danhSachDuLieu' => $danhSachLopHocPhanGiangVien,
+            'danhSachCotDb' => $danhSachCotDb,
+            'giangVien' => $giangVien,
+            'danhSachSinhVienAll' => $danhSachSinhVienAll,
+            'danhSachGiangVienAll' => $danhSachGiangVienAll,
+            'danhSachBaiThiAll' => $danhSachBaiThiAll,
+            'danhSachMon' => $danhSachMon,
+            'modalBaiThi' => 'modal-bai-thi',
+            'dataType' => 'lop_hoc_phan_giang_vien',
+            'modalCapNhat' => 'modal-cap-nhat-lop-hoc-phan-giang-vien',
+            'modalSinhVien' => 'modal-sinh-vien',
+            'id' => $id,
+            'id_giang_vien' => $id,
 
+        ]);
+    }
+
+    public function handleCapNhatLopHocPhanGiangVien(Request $request) {
+        $id = (int)$request->id_lop_hoc_phan;
+        $lop_hoc_phan= LopHocPhan::find($id);
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_lop_hoc_phan) || $request->ma_lop_hoc_phan !== $lop_hoc_phan->ma_lop_hoc_phan) {
+            $existingMaGiangVien = GiangVien::where('ma_lop_hoc_phan', $request->ma_lop_hoc_phan)->first();
+            if ($existingMaGiangVien) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã lớp học phần đã tồn tại!'
+                ]);
+            }
+        
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Mã lớp học phần chỉ được chứa chữ cái và số.'
+            ]);
+        }
+
+        if ($request->ten_lop_hoc_phan !== $lop_hoc_phan->ten_lop_hoc_phan) {
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_lop_hoc_phan)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Tên lớp học phần không được chứa ký tự đặc biệt và số.'
+                ]);
+            }
+        }
+
+        if ($lop_hoc_phan) {
+            $lop_hoc_phan->ma_lop_hoc_phan= $request->ma_lop_hoc_phan;
+            $lop_hoc_phan->ten_lop_hoc_phan= $request->ten_lop_hoc_phan;
+            $lop_hoc_phan->ma_mon_hoc= $request->ma_mon_hoc;
+            $lop_hoc_phan->thoi_gian_bat_dau= $request->thoi_gian_bat_dau;
+            $lop_hoc_phan->thoi_gian_ket_thuc= $request->thoi_gian_ket_thuc;
+            $id_giang_vien = $request->id_giang_vien;
+            $lop_hoc_phan->save();
+
+            return response()->json([
+                'success'   => true,
+                'redirect'   => route('giang-vien.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan-giang-vien', ['id' => $id_giang_vien])
+            ]);
+        } else {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Có lỗi xảy ra trong quá trình cập nhật!'
+            ]);
+        }
+    }
+
+    public function handleCapNhatDanhSachSinhVienLopHocPhanGiangVien(Request $request)
+    {
+        $lopHocPhan = LopHocPhan::find($request->id);
+        $lopHocPhan->danh_sach_sinh_vien = $request->danh_sach_sinh_vien;
+        $id_giang_vien = $request->id_giang_vien;
+        $lopHocPhan->save();
+        return response()->json([
+            'success'   => true,
+            'redirect'   => route('giang-vien.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan-giang-vien', ['id' => $id_giang_vien])
+        ]);
+    }
+
+    public function handleCapNhatDanhSachBaiThiLopHocPhanGiangVien(Request $request)
+    {
+        $lopHocPhan = LopHocPhan::find($request->id);
+        $lopHocPhan->danh_sach_bai_thi = $request->danh_sach_bai_thi;
+        $id_giang_vien = $request->id_giang_vien;
+        $lopHocPhan->save();
+        return response()->json([
+            'success'   => true,
+            'redirect'   => route('giang-vien.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan-giang-vien', ['id' => $id_giang_vien])
+        ]);
     }
 
 }

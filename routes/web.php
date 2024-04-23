@@ -96,9 +96,6 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
 
 Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
     Route::group(['prefix' => 'quan-ly', 'as'=>'quan-ly.'], function() {
-        Route::group(['prefix' => '', 'as'=>'trang-chu.'], function() {
-            Route::get('/sinh-vien/{id}', [HomeController::class, 'sinhVienHome'])->name('trang-sinh-vien');
-        });
         Route::group(['prefix' => '', 'as'=>'dashboard.'], function() {
             Route::get('/quan-ly-dashboard/{id}', [DashboardSinhVienController::class, 'index'])->name('quan-ly-dashboard');
         });
@@ -114,10 +111,24 @@ Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
     });
 });
 
-Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
+Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {
     Route::group(['prefix' => 'quan-ly', 'as'=>'quan-ly.'], function() {
         Route::group(['prefix' => 'lop-hoc-phan', 'as'=>'lop-hoc-phan.'], function() {
-            
+            Route::get('/quan-ly-lop-hoc-phan-giang-vien/{id}', [LopHocPhanController::class, 'indexLopHocPhanGiangVien'])->name('quan-ly-lop-hoc-phan-giang-vien');
+            Route::put('/quan-ly-lop-hoc-phan-giang-vien-cap-nhat', [LopHocPhanController::class, 'handleCapNhatLopHocPhanGiangVien'])->name('handle-cap-nhat-lop-hoc-phan-giang-vien');
+            Route::put('/quan-ly-lop-hoc-phan-giang-vien-cap-nhat-danh-sach-sinh-vien', [LopHocPhanController::class, 'handleCapNhatDanhSachSinhVienLopHocPhanGiangVien'])->name('handle-cap-nhat-danh-sach-sinh-vien-lop-hoc-phan-giang-vien');
+            Route::put('/quan-ly-lop-hoc-phan-giang-vien-cap-nhat-danh-sach-bai-thi', [LopHocPhanController::class, 'handleCapNhatDanhSachBaiThiLopHocPhanGiangVien'])->name('handle-cap-nhat-danh-sach-bai-thi-lop-hoc-phan-giang-vien');
+        });
+        Route::group(['prefix' => 'bai-thi', 'as'=>'bai-thi.'], function() {
+            Route::get('/quan-ly-bai-thi-giang-vien/{id}', [BaiThiController::class, 'indexBaiThiGiangVien'])->name('quan-ly-bai-thi-giang-vien');
+            Route::post('/quan-ly-bai-thi-them', [BaiThiController::class, 'handleThemBaiThiGiangVien'])->name('handle-them-bai-thi');
+            Route::put('/quan-ly-bai-thi-cap-nhat', [BaiThiController::class, 'handleCapNhatBaiThiGiangVien'])->name('handle-cap-nhat-bai-thi');
+            Route::post('/quan-ly-bai-thi-xoa', [BaiThiController::class, 'handleXoaBaiThiGiangVien'])->name('handle-xoa-bai-thi');
+            Route::get('/quan-ly-bai-thi-cau-hoi/{id}/{id_giang_vien}', [BaiThiController::class, 'handleCauHoiGiangVien'])->name('quan-ly-bai-thi-cau-hoi');
+            Route::post('/quan-ly-bai-thi-them-cau-hoi', [BaiThiController::class, 'handleThemCauHoiGiangVien'])->name('handle-them-bai-thi-cau-hoi');
+        });
+        Route::group(['prefix' => '', 'as'=>'xem-diem.'], function() {
+            Route::get('/xem-diem-sinh-vien-giang-vien/{id}', [XemDiemController::class, 'indexXemDiemSinhVienGiangVien'])->name('xem-diem-sinh-vien-giang-vien');
         });
     });
 });

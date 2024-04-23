@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SinhVien;
+use App\Models\GiangVien;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -25,7 +26,7 @@ class HomeController extends Controller
     }
     
     public function giangVienHome($id) {
-        $giangVien = SinhVien::find($id);
+        $giangVien = GiangVien::find($id);
         if ($giangVien) {
             $tenGiangVien = $giangVien->ten_giang_vien;
             $this->data['title'] = 'Trang chủ giảng viên';
