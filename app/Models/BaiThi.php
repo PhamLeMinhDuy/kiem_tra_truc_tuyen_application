@@ -15,6 +15,11 @@ class BaiThi extends Model
         'ma_bai_thi',
         'ten_bai_thi',
         'danh_sach_cau_hoi',
+        'thoi_gian_bat_dau',
+        'thoi_gian_ket_thuc',
+        'mo_ta',
+        'danh_sach_cau_hoi',
+        'ma_nguoi_tao',
 
     ];
 }

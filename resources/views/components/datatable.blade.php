@@ -1,3 +1,4 @@
+
 <div class="flex justify-end mb-2">
     <input type="text" id="searchInput" class="w-64 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-400" placeholder="Tìm kiếm...">
 </div>
@@ -28,7 +29,7 @@
                     @if ($dataType === 'giang_vien')
                         <input type="hidden" name="" class="cac-mon-giang-day-data" value="{{ $duLieu['cac_mon_giang_day'] }}">
                     @endif
-                    @if ($dataType === 'lop_hoc_phan')
+                    @if ($dataType === 'lop_hoc_phan' || $dataType === 'lop_hoc_phan_giang_vien')
                         <input type="hidden" name="" class="danh-sach-sinh-vien-lop-hoc-phan" value="{{ $duLieu['danh_sach_sinh_vien'] }}">
                         <input type="hidden" name="" class="danh-sach-giang-vien-lop-hoc-phan" value="{{ $duLieu['danh_sach_giang_vien'] }}">
                         <input type="hidden" name="" class="danh-sach-bai-thi-lop-hoc-phan" value="{{ $duLieu['danh_sach_bai_thi'] }}">
@@ -41,12 +42,14 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hover:cursor-pointer" viewBox="0 0 512 512">
                                 <path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z" fill="#a8a29e"/>
                             </svg>
-                        </button>
+                        </button>       
+                        @if($dataType !== 'lop_hoc_phan_giang_vien')
                         <button onclick="showModalXoa('{{ $modalXoa }}')" class="mr-4" title="Xóa">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 448 512">
                                 <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z" fill="#fb7185"/>
                             </svg>
                         </button>
+                        @endif
                         @if ($dataType === 'giang_vien')
                         <button onclick="showModalCacMonGiangDay('{{ $modalCacMonGiangDay }}')" title="Các môn giảng dạy">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-yellow-400">
@@ -71,7 +74,25 @@
                               </svg>                                                                                       
                         </button>
                         @endif
-
+                        @if ($dataType === 'lop_hoc_phan_giang_vien')
+                        <button onclick="showModalSinhVien('{{ $modalSinhVien }}')" title="Danh sách sinh viên" class="mr-2">
+                            <svg class="w-7 h-7 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" stroke-width="1.5" fill="#a3e635">
+                                <path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM504 312V248H440c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V136c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H552v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"/>
+                            </svg>                                                         
+                        </button>
+                        <button onclick="showModalBaiThi('{{ $modalBaiThi }}')" title="Danh sách bài thi">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#facc15" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                              </svg>                                                                                       
+                        </button>
+                        @endif
+                        @if ($dataType === 'bai_thi_giang_vien')
+                        <button onclick="showCauHoiGiangVien()" type="button" title="Thêm câu hỏi">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#a3e635" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                            </svg>
+                        </button>
+                        @endif
                         @if ($dataType === 'bai_thi')
                         <button onclick="showCauHoi()" type="button" title="Thêm câu hỏi">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="#a3e635" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -84,18 +105,22 @@
             @endforeach
         </tbody>
     </table>
-    <div class="mt-4 ml-auto">
-        {{ $danhSachDuLieu->links() }}
-    </div>
+</div>
+<div class="mt-4 ml-auto">
+    {{ $danhSachDuLieu->onEachSide(1)->links('vendor.pagination.tailwind') }}
 </div>
 @php
     $dsSinhVienAll = [];
     $dsGiangVienAll = [];
     $dsBaiThiAll = [];
-    if ($dataType == 'lop_hoc_phan') {
+    
+    if ($dataType == 'lop_hoc_phan' || $dataType == 'lop_hoc_phan_giang_vien') {
         $dsSinhVienAll = $danhSachSinhVienAll;
         $dsGiangVienAll = $danhSachGiangVienAll;
         $dsBaiThiAll = $danhSachBaiThiAll;
+    }
+    if ($dataType == 'lop_hoc_phan_giang_vien') {
+        $id_gv = $id_giang_vien;
     }
 @endphp
 <script>
@@ -127,6 +152,10 @@
             inputListKhoa[i].value = childrenCell[i].innerText;
         }
         var inputListLopHocPhan = document.querySelectorAll('.input-cap-nhat-lop-hoc-phan')
+        for (let i = 0; i<inputListLopHocPhan.length; i++) { 
+            inputListLopHocPhan[i].value = childrenCell[i].innerText;
+        }
+        var inputListLopHocPhan = document.querySelectorAll('.input-cap-nhat-lop-hoc-phan-giang-vien')
         for (let i = 0; i<inputListLopHocPhan.length; i++) { 
             inputListLopHocPhan[i].value = childrenCell[i].innerText;
         }
@@ -456,16 +485,27 @@
         danhSachBaiThiAllBlock.innerHTML = innerHTMl;
     }
 
-    function showCauHoi() {
-        var button = event.target;
-        var parentTr = button.closest('tr');
-        var id = parentTr.id.split('-')[1];
-
-        var url = "{{ route('admin.quan-ly.bai-thi.quan-ly-bai-thi-cau-hoi', ':id') }}";
-        url = url.replace(':id', id);
-        window.location.href = url;
-        
-    }
+    @if(isset($id_giang_vien))
+        var id_giang_vien = {{ $id_giang_vien }};
+        function showCauHoiGiangVien() {
+            var button = event.target;
+            var parentTr = button.closest('tr');
+            var id = parentTr.id.split('-')[1];
+            var url = "{{ route('giang-vien.quan-ly.bai-thi.quan-ly-bai-thi-cau-hoi', [':id', ':id_giang_vien']) }}";
+            url = url.replace(':id', id);
+            url = url.replace(':id_giang_vien', id_giang_vien);
+            window.location.href = url;
+        }
+    @else
+        function showCauHoi() {
+            var button = event.target;
+            var parentTr = button.closest('tr');
+            var id = parentTr.id.split('-')[1];
+            var url = "{{ route('admin.quan-ly.bai-thi.quan-ly-bai-thi-cau-hoi', ':id') }}";
+            url = url.replace(':id', id);
+            window.location.href = url;
+        }
+    @endif
 
     const searchInput = document.getElementById('searchInput');
     const rows = document.querySelectorAll('tbody tr');
