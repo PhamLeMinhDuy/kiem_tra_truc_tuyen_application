@@ -129,6 +129,7 @@ Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {
         });
         Route::group(['prefix' => '', 'as'=>'xem-diem.'], function() {
             Route::get('/xem-diem-sinh-vien-giang-vien/{id}', [XemDiemController::class, 'indexXemDiemSinhVienGiangVien'])->name('xem-diem-sinh-vien-giang-vien');
+            Route::get('/bang-diem-sinh-vien-giang-vien/{id}/{ma_lop_hoc_phan}/{ma_bai_thi}', [XemDiemController::class, 'bangDiemSinhVienGiangVien'])->name('bang-diem-sinh-vien-giang-vien');
         });
     });
 });

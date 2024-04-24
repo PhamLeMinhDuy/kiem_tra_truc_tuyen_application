@@ -59,36 +59,44 @@
                                                 Đáp án đúng
                                             </div>
                                         </div>
-                                        @foreach($cauHoi['cau_tra_loi'] as $index => $cauTraLoi)
-                                            <div class="w-full list-cau-tra-loi">
-                                                <div class="w-full flex items-center mb-2 list-group-items">
-                                                    <div class="w-2/3 flex">
-                                                        <input type="text" class="w-full h-10 px-3 border-2 rounded cau-tra-loi" value="{{ $cauTraLoi }}" oninput="nhapCauTraLoi()">
+                                        <div id='' class="w-full list-cau-tra-loi">
+                                            @foreach($cauHoi['cau_tra_loi'] as $index => $cauTraLoi)
+                                                    <div class="w-full flex items-center mb-2 list-group-items">
+                                                        <div class="w-2/3 flex">
+                                                            <input type="text" class="w-full h-10 px-3 border-2 rounded cau-tra-loi" value="{{ $cauTraLoi }}" oninput="nhapCauTraLoi()">
+                                                        </div>
+                                                        <div class="w-1/3">
+                                                            <span class="ml-10">
+                                                                @if(count($cauHoi['dap_an_dung']) == 1)
+                                                                    <input type="radio" class="input-dap-an" name="group-{{ $key + 1 }}" @if($index == $cauHoi['dap_an_dung'][0]) checked @endif>
+                                                                @else
+                                                                    <input type="checkbox" class="input-dap-an" name="group-{{ $key + 1 }}" @if(in_array($index, $cauHoi['dap_an_dung'])) checked @endif>
+                                                                @endif
+                                                                <button onclick="xoaCauTraLoi()" class="ml-14">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-500">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                                    </svg>
+                                                                </button>
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <div class="w-1/3">
-                                                        <span class="ml-10">
-                                                            @if(count($cauHoi['dap_an_dung']) == 1)
-                                                                <input type="radio" class="input-dap-an" name="group-{{ $key + 1 }}" @if($index == $cauHoi['dap_an_dung'][0]) checked @endif>
-                                                            @else
-                                                                <input type="checkbox" class="input-dap-an" name="group-{{ $key + 1 }}" @if(in_array($index, $cauHoi['dap_an_dung'])) checked @endif>
-                                                            @endif
-                                                            <button onclick="xoaCauTraLoi()" class="ml-14">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-500">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                                                </svg>
-                                                            </button>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
+                                            @endforeach
+                                        </div>
                                     </div>
                                     <div class="w-full ">
-                                        <button onclick="themCauTraLoiMotDapAn()" class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
-                                            <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                                                Thêm
-                                            </span>
-                                        </button>
+                                        @if(count($cauHoi['dap_an_dung']) == 1)
+                                            <button onclick="themCauTraLoiMotDapAn()" class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
+                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                                    Thêm
+                                                </span>
+                                            </button>
+                                        @else
+                                            <button onclick="themCauTraLoiNhieuDapAn()" class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
+                                                <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                                                    Thêm
+                                                </span>
+                                            </button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +134,7 @@
                                         </div>
                                         <div class="w-1/3">
                                             <span class="ml-10">
-                                                <input type="radio" class="input-dap-an" name="group-${children.lenght+1}">
+                                                <input type="radio" class="input-dap-an" name="group-1">
                                                 <button onclick="xoaCauTraLoi()" class="ml-14">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-500">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -141,7 +149,7 @@
                                         </div>
                                         <div class="w-1/3">
                                             <span class="ml-10">
-                                                <input type="radio" class="input-dap-an" name="group-${children.lenght+1}">
+                                                <input type="radio" class="input-dap-an" name="group-1">
                                                 <button onclick="xoaCauTraLoi()" class="ml-14">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-500">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -156,7 +164,7 @@
                                         </div>
                                         <div class="w-1/3">
                                             <span class="ml-10">
-                                                <input type="radio" class="input-dap-an" name="group-${children.lenght+1}">
+                                                <input type="radio" class="input-dap-an" name="group-1">
                                                 <button onclick="xoaCauTraLoi()" class="ml-14">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-500">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -171,7 +179,7 @@
                                         </div>
                                         <div class="w-1/3">
                                             <span class="ml-10">
-                                                <input type="radio" class="input-dap-an" name="group-${children.lenght+1}">
+                                                <input type="radio" class="input-dap-an" name="group-1">
                                                 <button onclick="xoaCauTraLoi()" class="ml-14">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-500">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -209,6 +217,16 @@
 @endsection
 @section('page-js')
      <script type="text/javascript">
+        function themCauTraLoiCuoiDanhSach(parentElement, newDiv) {
+            var listCauTraLoi = parentElement.querySelectorAll('.list-group-items');
+            console.log(listCauTraLoi);
+            if (listCauTraLoi.length > 0) {
+                var lastAnswer = listCauTraLoi[listCauTraLoi.length - 1];
+                parentElement.insertBefore(newDiv, lastAnswer.nextSibling);
+            } else {
+                parentElement.appendChild(newDiv);
+            }
+        }
         var listCauHoi = document.getElementById("list-cau-hoi").innerHTML;
         function themCauTraLoiMotDapAn() {
             var button = event.target;
@@ -230,7 +248,7 @@
                                             </button>
                                         </span>
                                     </div>               `
-            parentElement.appendChild(newDiv)
+            themCauTraLoiCuoiDanhSach(parentElement, newDiv);
         }
 
         function themCauTraLoiNhieuDapAn() {
@@ -238,7 +256,6 @@
             var cauHoi = button.closest('.cau-hoi');
             var number = cauHoi.id.split('-')[2];
             var parentElement = cauHoi.querySelector('.list-cau-tra-loi')
-            console.log(parentElement);
             var newDiv = document.createElement('div');
             newDiv.classList.add('list-group-items', 'w-full', 'flex', 'items-center', 'mb-2');
             newDiv.innerHTML = `<div class="w-2/3 flex">
@@ -254,7 +271,7 @@
                                             </button>
                                         </span>
                                     </div>               `
-            parentElement.appendChild(newDiv)
+            themCauTraLoiCuoiDanhSach(parentElement, newDiv);
         }
 
         function themCauHoiMotDapAn() {
