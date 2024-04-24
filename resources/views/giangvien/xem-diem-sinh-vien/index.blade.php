@@ -5,15 +5,14 @@
 @section('page-title')
     <div class="flex items-center justify-between">
         <div class="mr-5">
-            Danh sách lớp học phần
-
+            Xem điểm 
         </div> 
     </div>
 @endsection
 @section('content')
     <div class="p-2">
-        @if ($dataType = 'lop_hoc_phan_giang_vien')
-            @include('components.datatable', [$danhSachCot, $danhSachDuLieu, $danhSachMon, $danhSachSinhVienAll])    
+        @if ($dataType = 'xem_diem_sinh_vien_giang_vien')
+            @include('components.datatable', [$danhSachCot, $danhSachDuLieu, $danhSachMon])    
         @else 
             @include('components.datatable', [$danhSachCot, $danhSachDuLieu, $danhSachMon])    
         @endif

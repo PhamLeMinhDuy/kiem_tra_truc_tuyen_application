@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BaiThi;
 use App\Models\KetQua;
+use App\Models\MonHoc;
 use App\Models\SinhVien;
+use App\Models\GiangVien;
 use App\Models\LopHocPhan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redirect;
-
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 class XemDiemController extends Controller
 {
     public function index($id) {
@@ -99,37 +105,111 @@ class XemDiemController extends Controller
     public function indexXemDiemSinhVienGiangVien($id){
         // Tìm giảng viên dựa trên ID
         $giangVien = GiangVien::find($id);
-        // Lấy mã giảng viên từ giảng viên tìm thấy
         $maGiangVien = $giangVien->ma_giang_vien;
-        // Tìm các lớp học phần mà giảng viên tham gia bằng cách lọc trong cột danh_sach_giang_vien
-        $danhSachLopHocPhanGiangVien = LopHocPhan::whereJsonContains('danh_sach_giang_vien',  ['ma_giang_vien' => $maGiangVien])->get();
-        // Tạo một mảng để lưu trữ thông tin về các bài thi của các lớp học phần
-        $danhSachBaiThi = [];
-        // Duyệt qua từng lớp học phần và lấy danh sách bài thi của mỗi lớp
+    
+        // Lấy danh sách lớp học phần chứa giảng viên đó
+        $danhSachLopHocPhanGiangVien = LopHocPhan::whereJsonContains('danh_sach_giang_vien',  ['ma_giang_vien' => $maGiangVien])->paginate(10);
+    
+        // Khởi tạo mảng danhSachDuLieu để chứa thông tin cần hiển thị
+        $danhSachDuLieu = [];
+    
+        // Lấy danh sách bài thi từ các lớp học phần
         foreach ($danhSachLopHocPhanGiangVien as $lopHocPhan) {
-            // Lấy danh sách bài thi từ cột danh_sach_bai_thi của lớp học phần
-            $danhSachBaiThiLopHocPhan = $lopHocPhan->danh_sach_bai_thi;
-            // Nếu danh sách bài thi không rỗng, thêm vào mảng danhSachBaiThi
-            if (!empty($danhSachBaiThiLopHocPhan)) {
-                $danhSachBaiThi = array_merge($danhSachBaiThi, json_decode($danhSachBaiThiLopHocPhan, true));
+            $danhSachBaiThiLopHocPhan = json_decode($lopHocPhan->danh_sach_bai_thi, true);
+            foreach ($danhSachBaiThiLopHocPhan as $baiThi) {
+                // Lấy thông tin về bài thi từ bảng BaiThi
+                $thongTinBaiThi = BaiThi::where('ma_bai_thi', $baiThi['ma_bai_thi'])->first();
+                if ($thongTinBaiThi) {
+                    // Tạo một mảng chứa thông tin của mỗi bài thi
+                    $duLieu = [
+                        'id' => $lopHocPhan->id,
+                        'ma_lop_hoc_phan' => $lopHocPhan->ma_lop_hoc_phan,
+                        'ten_lop_hoc_phan' => $lopHocPhan->ten_lop_hoc_phan,
+                        'ma_bai_thi' => $baiThi['ma_bai_thi'],
+                        'ten_bai_thi' => $thongTinBaiThi->ten_bai_thi
+                    ];
+    
+                    // Thêm mảng dữ liệu vào mảng danh sách dữ liệu
+                    $danhSachDuLieu[] = $duLieu;
+                }
             }
         }
-        // Lấy thông tin về các bài thi từ bảng BaiThi dựa trên danh sách mã bài thi đã tìm thấy
-        $thongTinBaiThi = BaiThi::whereIn('ma_bai_thi', $danhSachBaiThi)->get();
-        // Tạo một mảng để lưu trữ mã và tên lớp học phần
-        $thongTinLopHocPhan = [];
-        // Duyệt qua danh sách lớp học phần để lấy mã và tên của mỗi lớp
-        foreach ($danhSachLopHocPhanGiangVien as $lopHocPhan) {
-            $thongTinLopHocPhan[] = [
-                'ma_lop_hoc_phan' => $lopHocPhan->ma_lop_hoc_phan,
-                'ten_lop_hoc_phan' => $lopHocPhan->ten_lop_hoc_phan
-            ];
-        }
+        $danhSachDuLieu = collect($danhSachDuLieu);
+
+        // Tạo một đối tượng LengthAwarePaginator từ đối tượng Collection
+        $perPage = 10; // Số lượng mục trên mỗi trang
+        $page = request()->get('page', 1); // Trang hiện tại
+        $danhSachDuLieu = new LengthAwarePaginator(
+            $danhSachDuLieu->forPage($page, $perPage), // Dữ liệu cho trang cụ thể
+            $danhSachDuLieu->count(), // Tổng số mục
+            $perPage, // Số lượng mục trên mỗi trang
+            $page, // Trang hiện tại
+            ['path' => request()->url(), 'query' => request()->query()] // Các tham số yêu cầu khác
+        );
+        $danhSachMon = MonHoc::all();
+        // Khởi tạo mảng chứa tên cột
+        $danhSachTenCot = ['Mã lớp học phần', 'Tên lớp học phần', 'Mã bài thi', 'Tên bài thi'];
+    
         // Trả về view và truyền dữ liệu cần thiết
-        return view('ten_view', [
-            'thongTinBaiThi' => $thongTinBaiThi,
-            'thongTinLopHocPhan' => $thongTinLopHocPhan
+        return view('giangvien.xem-diem-sinh-vien.index', [
+            'title' => 'Xem điểm sinh viên',
+            'dataType' => 'xem_diem_sinh_vien_giang_vien',
+            'danhSachDuLieu' => $danhSachDuLieu, // Truyền vào mảng chứa thông tin của các bài thi
+            'danhSachCot' => $danhSachTenCot, // Truyền vào mảng chứa tên cột
+            'id' => $id,
+            'id_giang_vien' => $id,
+            'giangVien' => $giangVien,
+            'danhSachMon' => $danhSachMon,
         ]);
     }
+
+    public function bangDiemSinhVienGiangVien($id, $maLopHocPhan, $maBaiThi)
+    {
+        // Tìm giảng viên và mã giảng viên
+        $giangVien = GiangVien::find($id);
+        $maGiangVien = $giangVien->ma_giang_vien;
+
+        // Lấy danh sách mã sinh viên từ bảng LopHocPhan
+        $lopHocPhan = LopHocPhan::where('ma_lop_hoc_phan', $maLopHocPhan)->first();
+        $danhSachSinhVienJson = $lopHocPhan->danh_sach_sinh_vien;
+        $danhSachSinhVien = json_decode($danhSachSinhVienJson, true);
+
+        // Lấy điểm và số câu đúng của sinh viên từ bảng KetQua
+        $ketQua = [];
+
+        foreach ($danhSachSinhVien as $sinhVien) {
+            $diemSinhVien = KetQua::where('ma_bai_thi', $maBaiThi)
+                                    ->where('ma_sinh_vien', $sinhVien['ma_sinh_vien'])
+                                    ->first();
+            if ($diemSinhVien) {
+                $ketQua[] = [
+                    'ma_sinh_vien' => $sinhVien['ma_sinh_vien'],
+                    'ten_sinh_vien' => SinhVien::where('ma_sinh_vien', $sinhVien['ma_sinh_vien'])->value('ten_sinh_vien'),
+                    'diem' => $diemSinhVien->diem,
+                    'so_cau_tra_loi_dung' => $diemSinhVien->so_cau_tra_loi_dung,
+                ];
+            }
+        }
+
+        $currentPage = LengthAwarePaginator::resolveCurrentPage() ?: 1;
+        $perPage = 10;
+        $currentPageItems = array_slice($ketQua, ($currentPage - 1) * $perPage, $perPage);
+        $danhSachSinhVien = new LengthAwarePaginator($currentPageItems, count($ketQua), $perPage, $currentPage, [
+            'path' => LengthAwarePaginator::resolveCurrentPath(),
+            'pageName' => 'page',
+        ]);
+
+        // Trả về view với dữ liệu cần thiết
+        return view('giangvien.xem-diem-sinh-vien.bang-diem', [
+            'title' => 'Bảng điểm sinh viên',
+            'dataType' => 'bang_diem_sinh_vien_giang_vien',
+            'id' => $id,
+            'giangVien' => $giangVien,
+            'danhSachSinhVien' => $danhSachSinhVien,
+        ]);
+    }
+
+
+    
     
 }
