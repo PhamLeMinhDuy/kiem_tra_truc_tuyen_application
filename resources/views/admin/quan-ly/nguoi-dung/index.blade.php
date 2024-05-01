@@ -20,6 +20,7 @@
     </div>
 @endsection
 @include('admin.quan-ly.nguoi-dung.create-modal')
+\@include('admin.quan-ly.nguoi-dung.create-modal-van-lang')
 @include('admin.quan-ly.nguoi-dung.update-modal')
 @include('admin.quan-ly.nguoi-dung.delete-modal') 
 @section('page-js')

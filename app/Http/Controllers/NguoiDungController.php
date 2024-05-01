@@ -36,6 +36,7 @@ class NguoiDungController extends Controller
             'danhSachNganh' => $danhSachNganh,
             'modalCapNhat' => 'modal-cap-nhat-nguoi-dung',
             'modalThem' => 'modal-them-nguoi-dung',
+            'modalThemEmail' => 'modal-them-nguoi-dung-email',
             'modalXoa' => 'modal-xoa-nguoi-dung',
             'dataType' => 'nguoi_dung',
         ]);
@@ -184,5 +185,64 @@ class NguoiDungController extends Controller
             'success'   => true,
             'redirect'   => route('admin.quan-ly.nguoi-dung.quan-ly-nguoi-dung')
         ]);
+    }
+
+    // Dành cho email đã được cấp
+    public function handleThemNguoiDungEmail(Request $request) {
+        if (empty($request->ho_ten) || empty($request->email) ) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Vui lòng điền đầy đủ thông tin!'
+            ]);
+        }
+
+        if (preg_match('/[^\p{L}\s]/u', $request->ho_ten)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Tên người dùng không được chứa ký tự đặc biệt và số.'
+            ]);
+        }
+
+        $existingEmail = NguoiDung::where('email', $request->email)->first();
+            if ($existingEmail) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Email đã tồn tại!'
+                ]);
+            }
+
+        if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)|| !filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Email không đúng định dạng.'
+            ]);
+        }
+
+        $nguoiDung = new NguoiDung;
+        if ($nguoiDung) {
+            $nguoiDung->ho_ten = $request->ho_ten;
+            $nguoiDung->email = $request->email;
+            $nguoiDung->role = $request->role;
+            $nguoiDung->save();
+            $request->session()->flash('success_message', 'Thêm người dùng thành công!');
+
+            return response()->json([
+                'success'   => true,
+                'type'      => 'success',
+                'message'   => 'Thêm người dùng thành công!',
+                'redirect'   => route('admin.quan-ly.nguoi-dung.quan-ly-nguoi-dung')
+            ]);
+        } else {
+            return response()->json([
+                'success'   => false,
+                'type'      => 'error',
+                'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
+            ]);
+        }
+       
     }
 }
