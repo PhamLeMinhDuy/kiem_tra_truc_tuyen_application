@@ -90,6 +90,7 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
             Route::put('/quan-ly-nguoi-dung-cap-nhat', [NguoiDungController::class, 'handleCapNhatNguoiDung'])->name('handle-cap-nhat-nguoi-dung');
             Route::post('/quan-ly-nguoi-dung-them', [NguoiDungController::class, 'handleThemNguoiDung'])->name('handle-them-nguoi-dung');
             Route::post('/quan-ly-nguoi-dung-xoa', [NguoiDungController::class, 'handleXoaNguoiDung'])->name('handle-xoa-nguoi-dung');
+            Route::post('/quan-ly-nguoi-dung-them-van-lang', [NguoiDungController::class, 'handleThemNguoiDungEmail'])->name('handle-them-nguoi-dung-email');
         });
     });
 });

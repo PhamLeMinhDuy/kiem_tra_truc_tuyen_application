@@ -10,6 +10,11 @@
                     @if ($tenCot != 'ID')
                      <th scope="col" class="px-6 py-3 @if($tenCot == 'Email' || $tenCot == 'Ngày sinh' || $tenCot == 'Số điện thoại') hide-on-small-screen @endif">
                         {{ $tenCot }}
+                        <button class="sort-btn" data-column="{{ $loop->index }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-1">
+                                <path d="M10 3L5 9h10L10 3zm0 14l5-6H5l5 6z" />
+                            </svg>
+                        </button>
                     </th>
                     @endif
                 @endforeach
@@ -136,6 +141,7 @@
         $id_gv = $id_giang_vien;
     }
 @endphp
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
     function showModalChiTiet(modalCapNhat) {
         var modal = document.getElementById(modalCapNhat)
@@ -547,5 +553,30 @@
     // Gọi hàm toggleColumns khi trang được tải hoặc kích thước màn hình thay đổi
     window.addEventListener('load', toggleColumns);
     window.addEventListener('resize', toggleColumns)
+
+    $(document).ready(function() {
+        $('.sort-btn').click(function() {
+            var column = $(this).data('column');
+            var $table = $(this).closest('table');
+            var rows = $table.find('tbody > tr').get();
+
+            rows.sort(function(a, b) {
+                var keyA = $(a).children('td').eq(column).text().toUpperCase();
+                var keyB = $(b).children('td').eq(column).text().toUpperCase();
+                return (keyA < keyB) ? -1 : (keyA > keyB) ? 1 : 0;
+            });
+
+            $(this).toggleClass('desc');
+            if ($(this).hasClass('desc')) {
+                rows.reverse();
+            }
+
+            $.each(rows, function(index, row) {
+                $table.children('tbody').append(row);
+            });
+        });
+    });
+
+
 </script>
 
