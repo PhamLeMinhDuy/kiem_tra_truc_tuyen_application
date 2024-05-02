@@ -16,7 +16,7 @@ class MicrosoftAuthController extends Controller
         $_SESSION['state'] = session_id();
         $params = [
             'client_id' => $appid,
-            'redirect_uri' => 'https://72ba-2001-ee0-5435-1780-8457-bd47-ae5f-6cba.ngrok-free.app/microsoft-oauth-callback',
+            'redirect_uri' => env('REDIRECT_URI'),
             'response_type' => 'code',
             'scope' => 'https://graph.microsoft.com/User.Read https://graph.microsoft.com/Directory.ReadWrite.All',
             'state' => $_SESSION['state']
@@ -33,7 +33,7 @@ class MicrosoftAuthController extends Controller
             $response = Http::asForm()->post('https://login.microsoftonline.com/'.env('TENANT_ID').'/oauth2/v2.0/token', [
                 'client_id' => env('CLIENT_ID'),
                 'client_secret' => env('CLIENT_SECRET'),
-                'redirect_uri' => 'https://72ba-2001-ee0-5435-1780-8457-bd47-ae5f-6cba.ngrok-free.app/microsoft-oauth-callback',
+                'redirect_uri' => env('REDIRECT_URI'),
                 'code' => $code,
                 'grant_type' => 'authorization_code',
             ]);
@@ -58,14 +58,14 @@ class MicrosoftAuthController extends Controller
                         return redirect()->route('handle-dang-nhap-van-lang', ['userEmail' => $userEmail]);
                     } else {
                         // Nếu email không hợp lệ, chuyển hướng về trang microsoft-oauth
-                        return redirect()->route('https://72ba-2001-ee0-5435-1780-8457-bd47-ae5f-6cba.ngrok-free.app/microsoft-oauth');
+                        return redirect()->route(env('REDIRECT_URI_LOGIN'));
                     }
                 }
             }
         }
 
         // Nếu không có mã từ callback hoặc xử lý không thành công, chuyển hướng về trang microsoft-oauth
-        return redirect()->route('https://72ba-2001-ee0-5435-1780-8457-bd47-ae5f-6cba.ngrok-free.app/microsoft-oauth');
+        return redirect()->route(env('REDIRECT_URI_LOGIN'));
     }
 
 
