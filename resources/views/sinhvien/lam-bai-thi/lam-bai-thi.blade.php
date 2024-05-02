@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Làm bài thi')</title>
     @vite('resources/css/app.css')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
 </head>
 <body class="bg-white">
     <header class="bg-blue-500 p-4 flex items-center ">
@@ -80,10 +81,10 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    @stack('scripts')
-    <script>
+</body>
+</html>
+
+<script type="text/javascript">
         let currentPage = 1;
         const totalPages = {{ $totalPages }};
         const btnPrevious = document.getElementById('btnPrevious');
@@ -148,6 +149,7 @@
         }
 
         function onLoad() {
+            currentPage = 1; // Đặt lại currentPage thành 1
             showStoredPage(); // Gọi hàm để hiển thị trang đã lưu
             applyStoredAnswers(); // Gọi hàm để áp dụng câu trả lời đã lưu
         }
@@ -384,8 +386,4 @@
                 })
             });
         }
-
-
-    </script>
-</body>
-</html>
+</script>
