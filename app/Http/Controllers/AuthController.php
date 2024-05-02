@@ -18,96 +18,6 @@ class AuthController extends Controller
         return view('dang-nhap');
     }
 
-    // public function handleDangKy(Request $request) {
-    //     $validator = Validator::make($request->all(), [
-    //         'ten' => 'regex:/^[A-Za-z\s]+$/',
-    //         'email' => 'email',
-    //         'matKhau' => 'min:8|regex:/^[a-zA-Z0-9]+$/',
-    //     ], [
-    //         'ten.regex' => 'Tên người dùng phải là kiểu chữ và không có ký tự đặc biệt.',
-    //         'email.email' => 'Địa chỉ email không hợp lệ.',
-    //         'matKhau.min' => 'Mật khấu phải lớn hơn 8 ký tự.',
-    //         'matKhau.regex' => 'Mật khẩu không được chứa ký tự đặc biệt.',
-    //     ]);
-    
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'success'   => false,
-    //             'type'      => 'error',
-    //             'message'   => $validator->errors()->first(),
-    //         ]);
-    //     }
-
-    //     if (empty($request->ten)) {
-    //         return response()->json([
-    //             'success'   => false,
-    //             'type'      => 'error',
-    //             'message'   => 'Vui lòng nhập họ tên!'
-    //         ]);
-    //     }
-        
-
-    //     if (empty($request->email)) {
-    //         return response()->json([
-    //             'success'   => false,
-    //             'type'      => 'error',
-    //             'message'   => 'Vui lòng nhập email!'
-    //         ]);
-    //     }
-
-    //     if ($validator->fails()) {
-    //         return response()->json([
-    //             'success'   => false,
-    //             'type'      => 'error',
-    //             'message'   => $validator->errors()->second(),
-    //             'timer'     => 5000 
-    //         ]);
-    //     }
-
-    //     if (empty($request->matKhau)) {
-    //         return response()->json([
-    //             'success'   => false,
-    //             'type'      => 'error',
-    //             'message'   => 'Vui lòng nhập mật khẩu!'
-    //         ]);
-    //     }
-
-    //     if (empty($request->xacNhanMatKhau)) {
-    //         return response()->json([
-    //             'success'   => false,
-    //             'type'      => 'error',
-    //             'message'   => 'Vui lòng nhập mật khẩu xác nhận!'
-    //         ]);
-    //     }
-
-    //     if($request->xacNhanMatKhau != $request->matKhau){
-    //         return response()->json([
-    //             'success'   => false,
-    //             'type'      => 'error',
-    //             'message'   => 'Mật khẩu không khớp!'
-    //         ]);
-    //     }
-
-    //     $emailExist = NguoiDung::where('email', $request->email)->exists();
-    //     if($emailExist) {
-    //         return response()->json([
-    //             'success'   => false,
-    //             'type'      => 'error',
-    //             'message'   => 'Email này đã đăng ký tài khoản!'
-    //         ]);
-    //     }
-
-    //     $nguoiDungMoi = new NguoiDung;
-    //     $nguoiDungMoi->ho_ten = $request->ten;
-    //     $nguoiDungMoi->email = $request->email;
-    //     $nguoiDungMoi->mat_khau = Hash::make($request->matKhau);
-    //     $nguoiDungMoi->save();
-
-    //     return response()->json([
-    //         'success'   => true,
-    //         'redirect'   => route('dang-nhap')
-    //     ]);
-    // }
     public function handleDangNhap(Request $request) {
         // Kiểm tra và xử lý các trường hợp lỗi
         if (empty($request->email)) {
@@ -179,4 +89,47 @@ class AuthController extends Controller
             'message'   => 'Thông tin đăng nhập không hợp lệ.'
         ]);
     }
+
+    public function handleDangNhapVanLang($userEmail) {
+        $nguoiDung = NguoiDung::where('email', $userEmail)->first();
+    
+        // Kiểm tra xem thông tin đăng nhập có hợp lệ không
+        if ($nguoiDung) {
+            // Đăng nhập người dùng
+            Auth::login($nguoiDung);
+    
+            // Kiểm tra xem người dùng là sinh viên
+            $sinhVien = SinhVien::where('email', $userEmail)->first();
+    
+            // Kiểm tra người dùng là giảng viên
+            $giangVien = GiangVien::where('email', $userEmail)->first();
+    
+            // Nếu là sinh viên, chuyển hướng và truyền ID của sinh viên vào view
+            if ($sinhVien) {
+                // Chuyển hướng ngay sau khi xác nhận thành công
+                return redirect()->route('sinh-vien.quan-ly.dashboard.quan-ly-dashboard', ['id' => $sinhVien->id]);
+            } elseif ($giangVien) {
+                // Chuyển hướng ngay sau khi xác nhận thành công
+                return redirect()->route('giang-vien.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan-giang-vien', ['id' => $giangVien->id]);
+            } elseif ($nguoiDung->role == 'Admin') {
+                // Chuyển hướng ngay sau khi xác nhận thành công
+                return redirect()->route('admin.quan-ly.giang-vien.quan-ly-giang-vien');
+            } else {
+                // Thông báo tài khoản không có trong hệ thống
+                return response()->json([
+                    'success'   => false,
+                    'message'   => 'Tài khoản không tồn tại trong hệ thống'
+                ]);
+            }
+        }
+    
+        // Trả về thông báo lỗi nếu thông tin đăng nhập không hợp lệ
+        return response()->json([
+            'success'   => false,
+            'type'      => 'error',
+            'message'   => 'Thông tin đăng nhập không hợp lệ.'
+        ]);
+    }
+    
+
 }

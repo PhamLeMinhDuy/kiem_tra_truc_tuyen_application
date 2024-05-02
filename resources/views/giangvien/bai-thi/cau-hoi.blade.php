@@ -505,6 +505,7 @@
 
         function luu() {
             event.preventDefault();
+
             var listCauHoi = [];
 
             var childrenElements = document.querySelectorAll('#list-cau-hoi .cau-hoi');
@@ -516,7 +517,7 @@
                 cauHoiElement.querySelectorAll('.list-group-items').forEach((cauTraLoiElement, index) => {
                     var cauTraLoi = cauTraLoiElement.querySelector('.cau-tra-loi').value.trim();
                     var isDapAnDung = cauTraLoiElement.querySelector('.input-dap-an').checked;
-                    
+
                     if (cauTraLoi !== '') {
                         listCauTraLoi.push(cauTraLoi);
                     }
@@ -532,26 +533,31 @@
                         dap_an_dung: dapAnDung
                     });
                 }
+            });
 
-                var jsonListCauHoi = JSON.stringify(listCauHoi)
-                var cauHoiId = "{{ $id }}";
-                event.preventDefault();
-                axios.post("{{ route('giang-vien.quan-ly.bai-thi.handle-them-bai-thi-cau-hoi') }}", {
-                    data: jsonListCauHoi,
-                    cauHoiId: cauHoiId,
-                    id_giang_vien: {{ $id_giang_vien }},
-                })
+            var jsonListCauHoi = JSON.stringify(listCauHoi);
+            var cauHoiId = "{{ $id }}";
+
+            // Tạo đối tượng data chứa toàn bộ dữ liệu câu hỏi
+            var data = {
+                data: jsonListCauHoi,
+                cauHoiId: cauHoiId,
+                id_giang_vien: {{ $id_giang_vien }},
+            };
+
+            // Gửi một yêu cầu AJAX duy nhất
+            axios.post("{{ route('giang-vien.quan-ly.bai-thi.handle-them-bai-thi-cau-hoi') }}", data)
                 .then(function (response) {
                     if (response.data.success) {
                         window.location.replace(response.data.redirect);
-                        return;
+                    } else {
+                        Swal.fire({
+                            icon: response.data.type,
+                            title: response.data.message,
+                            showConfirmButton: false,
+                            timer: 1000
+                        });
                     }
-                    Swal.fire({
-                        icon: response.data.type,
-                        title: response.data.message,
-                        showConfirmButton: false,
-                        timer: 1000
-                    })
                 })
                 .catch(function (error) {
                     Swal.fire({
@@ -559,10 +565,9 @@
                         title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
                         showConfirmButton: false,
                         timer: 1500
-                    })
+                    });
                 });
-            });
-        }  
+        } 
 
 
         function capNhatSoThuTuCauHoi() {

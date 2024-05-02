@@ -26,18 +26,18 @@
                             <div class="form-group mt-4">
                                 <input type="password" name="mat-khau-dang-nhap" id="mat-khau-dang-nhap" placeholder="Mật khẩu" class="border outline-none rounded w-full py-1 px-2 h-10">
                             </div>
-                            <div class="mt-4 w-full flex justify-center">
-                                <button type="button" class="py-2 px-4 flex items-center justify-center gap-x-2 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:border-red-400 hover:text-red-400 disabled:opacity-50 disabled:pointer-events-none">
-                                    <img src="{{ asset('images/logo_vlu.png') }}" class="h-8 me-3" alt="Văn Lang Logo" />
-                                    Tài khoản Văn Lang
-                                </button>
-                            </div>
                             <div class="mt-4">
                                 <button class="w-full rounded bg-blue-500 text-white font-bold py-2 border border-blue-500 hover:bg-white hover:text-blue-500">
                                     Đăng nhập
                                 </button>
                             </div>
                         </form>
+                        <div class="mt-4 w-full flex justify-center">
+                            <a href="{{ route('microsoft-login') }}" class="w-full py-2 px-4 flex items-center justify-center gap-x-2 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:border-red-400 hover:text-red-400 disabled:opacity-50 disabled:pointer-events-none">
+                                <img src="{{ asset('images/logo_vlu.png') }}" class="h-8 me-3" alt="Văn Lang Logo" />
+                                Tài khoản Văn Lang
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

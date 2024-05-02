@@ -13,6 +13,7 @@ use App\Http\Controllers\GiangVienController;
 use App\Http\Controllers\HomeAdminController;
 use App\Http\Controllers\NguoiDungController;
 use App\Http\Controllers\LopHocPhanController;
+use App\Http\Controllers\MicrosoftAuthController;
 use App\Http\Controllers\BaiThiSinhVienController;
 use App\Http\Controllers\DashboardSinhVienController;
 
@@ -31,9 +32,10 @@ use App\Http\Controllers\DashboardSinhVienController;
 
 Route::get('/admin', [HomeController::class, 'adminHome'])->name('trang-admin');
 Route::get('/', [AuthController::class, 'dangNhapView'])->name('dang-nhap');
-Route::get('/dang-ky', [AuthController::class, 'dangKyView'])->name('dang-ky');
-Route::post('/dang-ky', [AuthController::class, 'handleDangKy'])->name('handle-dang-ky');
 Route::post('/', [AuthController::class, 'handleDangNhap'])->name('handle-dang-nhap');
+Route::get('/dang-nhap-van-lang/{userEmail}', [AuthController::class, 'handleDangNhapVanLang'])->name('handle-dang-nhap-van-lang');
+Route::get('/microsoft-oauth', [MicrosoftAuthController::class, 'microsoftOAuthLogin'])->name('microsoft-login');
+Route::get('/microsoft-oauth-callback', [MicrosoftAuthController::class, 'microsoftOAuthCallback'])->name('microsoft-callback');
 
 Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
     Route::group(['prefix' => 'quan-ly', 'as'=>'quan-ly.'], function() {
