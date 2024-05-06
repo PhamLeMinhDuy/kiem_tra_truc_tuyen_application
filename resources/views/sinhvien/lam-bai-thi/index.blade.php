@@ -28,7 +28,7 @@
                 <div class="mb-5">
                     Time limit: {{ $sogio}} h {{ $sophut }} p
                 </div>
-                @if(\Carbon\Carbon::now()->gte($thoiGianKetThucThi))
+                @if(\Carbon\Carbon::now()->gte($thoiGianKetThucThi) || !$coTrongDanhSach)
                     <button class="px-4 py-2 rounded-md border border-neutral-300 bg-neutral-100 text-neutral-500 text-sm hover:-translate-y-1 transform transition duration-200 hover:shadow-md" disabled>
                         Can't Attemp quiz now
                     </button>

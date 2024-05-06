@@ -38,7 +38,7 @@
                         <div id="cau-hoi-{{ $key + 1 }}" class="cau-hoi">
                             <div class="tao-cau-hoi w-full flex p-4 border-2 rounded-lg shadow-black-50 mb-3">
                                 <div class="w-1/6 mr-1">
-                                    Câu hỏi {{ $key + 1 }}:
+                                    Câu hỏi <span  class="so-thu-tu">{{ $key + 1 }}</span>:
                                 </div>
                                 <div class="w-5/6">
                                     <div class="mb-2 relative">
@@ -574,7 +574,31 @@
         function xoaCauHoi(cauHoiId) {
             var cauHoiElement = document.getElementById(cauHoiId);
             cauHoiElement.parentNode.removeChild(cauHoiElement);
+
+            // Cập nhật lại số thứ tự của các câu hỏi còn lại
             capNhatSoThuTuCauHoi();
+
+            // Cập nhật tên group của radio và checkbox trong các câu hỏi còn lại
+            var danhSachCauHoi = document.querySelectorAll('.cau-hoi');
+            danhSachCauHoi.forEach(function(cauHoi, index) {
+                var soThuTu = index + 1;
+                var contentTextarea = cauHoi.querySelector('textarea');
+                var inputElements = cauHoi.querySelectorAll('input[type="radio"], input[type="checkbox"]');
+
+                // Cập nhật số thứ tự của câu hỏi
+                var soThuTuElement = cauHoi.querySelector('.so-thu-tu');
+                if (soThuTuElement) {
+                    soThuTuElement.innerText = soThuTu;
+                }
+
+                // Cập nhật tên group của radio và checkbox
+                if (contentTextarea && inputElements.length > 0) {
+                    var groupName = 'group-' + soThuTu;
+                    inputElements.forEach(function(input) {
+                        input.setAttribute('name', groupName);
+                    });
+                }
+            });
         }
 
 

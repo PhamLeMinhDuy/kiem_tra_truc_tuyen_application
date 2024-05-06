@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @vite('resources/css/app.css')
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.js"></script>
     <title>@yield('title')</title>
 </head>
 <body class="bg-white">
@@ -12,11 +14,11 @@
             @include('sinhvien.layouts.blocks.sidebar')
             <div class="flex-1 relative">
                 @include('sinhvien.layouts.blocks.header')
-                <main class="pl-4 bg-white ">
+                <main class="pl-4 bg-white flex-1">
                     <h2 class="text-lg text-gray-800">
-                        @yield('page-title')
-                        @yield('content')
+                        @yield('page-title')    
                     </h2>
+                    @yield('content')
                 </main>
                 @include('sinhvien.layouts.blocks.footer')
             </div>
@@ -27,23 +29,23 @@
 </html>
 <script type="text/javascript">
      document.addEventListener("DOMContentLoaded", function() {
-            const sidebar = document.getElementById('sidebar');
-            const sidebarCollapseButton = document.getElementById('sidebarCollapse');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarCollapseButton = document.getElementById('sidebarCollapse');
 
-            sidebarCollapseButton.addEventListener('click', function() {
-                sidebar.classList.toggle('hidden');
-            });
-
-            // Hide sidebar when screen size is smaller than 760px
-            function handleResize() {
-                if (window.innerWidth < 760) {
-                    sidebar.classList.add('hidden');
-                } else {
-                    sidebar.classList.remove('hidden');
-                }
-            }
-
-            window.addEventListener('resize', handleResize);
-            handleResize(); // Initial handling on page load
+        sidebarCollapseButton.addEventListener('click', function() {
+            sidebar.classList.toggle('-translate-x-full'); // Thêm/xóa lớp để hiển thị/ẩn sidebar
         });
+
+        // Ẩn sidebar khi kích thước màn hình nhỏ hơn 1024px (sử dụng tailwind breakpoints)
+        function handleResize() {
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('-translate-x-full'); // Ẩn sidebar khi màn hình nhỏ
+            } else {
+                sidebar.classList.remove('-translate-x-full'); // Hiển thị sidebar khi màn hình lớn hơn
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Xử lý ban đầu khi tải trang
+    });
 </script>

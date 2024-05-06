@@ -30,6 +30,7 @@ class DashboardSinhVienController extends Controller
                     $soLuongBaiThiDaLam = $this->demSoLuongBaiThiDaLam($maSinhVien, $lopHocPhan->ma_lop_hoc_phan);
                     // Thêm thông tin lớp học phần vào mảng nếu thời gian kết thúc chưa đến
                     $thongTinLopHocPhan[] = [
+                        'ma_lop_hoc_phan' =>  $lopHocPhan->ma_lop_hoc_phan,
                         'ten_lop_hoc_phan' => $lopHocPhan->ten_lop_hoc_phan,
                         'thoi_gian_bat_dau' => $lopHocPhan->thoi_gian_bat_dau,
                         'thoi_gian_ket_thuc' => $lopHocPhan->thoi_gian_ket_thuc,
