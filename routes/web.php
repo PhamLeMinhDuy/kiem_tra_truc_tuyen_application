@@ -103,7 +103,7 @@ Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
             Route::get('/quan-ly-dashboard/{id}', [DashboardSinhVienController::class, 'index'])->name('quan-ly-dashboard');
         });
         Route::group(['prefix' => '', 'as'=>'bai-thi.'], function() {
-            Route::get('/quan-ly-bai-thi-sinh-vien/{id}', [BaiThiSinhVienController::class, 'index'])->name('quan-ly-bai-thi-sinh-vien');
+            Route::get('/quan-ly-bai-thi-sinh-vien/{id}/{maLop}', [BaiThiSinhVienController::class, 'index'])->name('quan-ly-bai-thi-sinh-vien');
             Route::get('/quan-ly-lam-bai-thi-sinh-vien/{id}/{maBaiThi}', [BaiThiSinhVienController::class, 'lamBaiThi'])->name('quan-ly-lam-bai-thi-sinh-vien');
             Route::get('/quan-ly-lam-bai-thi-trac-nghiem-sinh-vien/{id}/{maBaiThi}', [BaiThiSinhVienController::class, 'lamBaiThiTracNghiem'])->name('quan-ly-lam-bai-thi-trac-nghiem-sinh-vien');
         });

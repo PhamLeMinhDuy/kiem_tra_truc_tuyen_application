@@ -11,15 +11,15 @@ use Illuminate\Support\Facades\DB;
 
 class BaiThiSinhVienController extends Controller
 {
-    public function index($id){
+    public function index($id, $maLop)
+    {
         $sinhVien = SinhVien::find($id);
         $tenSinhVien = $sinhVien->ten_sinh_vien;
         $maSinhVien = $sinhVien->ma_sinh_vien;
-        $danhSachLopHocPhan = LopHocPhan::all();
+        $danhSachLopHocPhan = LopHocPhan::where('ma_lop_hoc_phan', $maLop)->get();
         $thongTinLopHocPhan = [];
         $thongTinBaiThi = [];
-        $tatCaMaSinhVien = SinhVien::pluck('ma_sinh_vien')->toArray();
-    
+
         foreach ($danhSachLopHocPhan as $lopHocPhan) {
             $danhSachSinhVien = json_decode($lopHocPhan->danh_sach_sinh_vien, true);
             // Kiểm tra xem mã sinh viên hiện tại có trong danh sách sinh viên của lớp học phần hay không
@@ -48,7 +48,7 @@ class BaiThiSinhVienController extends Controller
         foreach ($thongTinLopHocPhan as $thongTin) {
             $maBaiThi = $thongTin['ma_bai_thi'];
             $baiThi = BaiThi::where('ma_bai_thi', $maBaiThi)->first();
-            
+
             if ($baiThi) {
                 $thoiGianBatDau = Carbon::parse($baiThi->thoi_gian_bat_dau)->format('l, d/m/Y, H:i');
                 $thoiGianKetThuc = Carbon::parse($baiThi->thoi_gian_ket_thuc)->format('l, d/m/Y, H:i');
@@ -63,6 +63,7 @@ class BaiThiSinhVienController extends Controller
                 ];
             }
         }
+
         return view('sinhvien.bai-thi.index', [
             'title' => 'Bài thi sinh viên',
             'tenSinhVien' => $tenSinhVien,
@@ -70,6 +71,7 @@ class BaiThiSinhVienController extends Controller
             'thongTinBaiThi' => $thongTinBaiThi,
         ]);
     }
+
 
     public function lamBaiThi($id, $maBaiThi){
         $sinhVien = SinhVien::find($id);
@@ -90,6 +92,15 @@ class BaiThiSinhVienController extends Controller
             $thoiGianLamBai = $thoiGianBatDauThi->diffInMinutes($thoiGianKetThucThi);
             $sogio = floor($thoiGianLamBai / 60);
             $sophut = $thoiGianLamBai % 60;
+            // Kiểm tra xem mã bài thi có nằm trong danh sách bài thi của sinh viên không
+            $baiThiSinhVien = json_decode($sinhVien->bai_thi, true);
+            $coTrongDanhSach = false;
+            foreach ($baiThiSinhVien as $bai) {
+                if ($bai['ma_bai_thi'] === $maBaiThi) {
+                    $coTrongDanhSach = true;
+                    break;
+                }
+            }
             // Truyền thông tin vào view
             return view('sinhvien.lam-bai-thi.index', [
                 'title' => 'Bài thi',
@@ -104,6 +115,7 @@ class BaiThiSinhVienController extends Controller
                 'sogio' => $sogio,
                 'sophut' => $sophut,
                 'maBaiThi' => $maBaiThi,
+                'coTrongDanhSach' => $coTrongDanhSach, 
             ]);
         } else {
             // Xử lý trường hợp không tìm thấy bài thi

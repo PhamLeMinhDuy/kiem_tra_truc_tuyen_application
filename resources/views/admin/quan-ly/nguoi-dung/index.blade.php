@@ -7,7 +7,7 @@
         <div class="mr-5">
             Danh sách người dùng
         </div>
-        <div class="font-normal text-sm mr-5 mt-6">
+        <div class="font-normal text-sm mr-2 mt-6">
             @include('admin.quan-ly.nguoi-dung.components.add')
         </div> 
     </div>

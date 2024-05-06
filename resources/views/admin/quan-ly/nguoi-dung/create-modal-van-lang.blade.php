@@ -28,7 +28,7 @@
                 <button type="submit" class="mr-3 border border-cyan-400 py-2 px-4 rounded inline-flex items-center hover:bg-cyan-500 font-bold hover:text-white">
                 Thêm
               </button>
-              <button id="btn-huy-them" type='button' class="mr-3 border border-rose-400 py-2 px-4 rounded inline-flex items-center hover:bg-rose-500 font-bold hover:text-white">
+              <button id="btn-huy-them-email" type='button' class="mr-3 border border-rose-400 py-2 px-4 rounded inline-flex items-center hover:bg-rose-500 font-bold hover:text-white">
                 Hủy
               </button>
             </div>
@@ -37,7 +37,7 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
-   $('#btn-huy-them').on('click', function(event){
+   $('#btn-huy-them-email').on('click', function(event){
         document.getElementById('modal-them-nguoi-dung-email').style.display = 'none';
         var inputList = document.querySelectorAll('.input-them-nguoi-dung-email')
         for (let i = 0; i<inputList.length; i++) { 

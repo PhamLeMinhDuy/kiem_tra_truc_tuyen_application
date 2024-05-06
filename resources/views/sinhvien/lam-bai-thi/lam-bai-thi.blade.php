@@ -25,15 +25,13 @@
     </div>
     
     <div class="container mx-auto mt-8">
-        <div class="flex  w-full">
-            <div class="questions w-4/6">
+        <div class="flex flex-col md:flex-row md:space-x-3">
+            <div class="questions w-full md:w-4/6">
                 <!-- Hiển thị các câu hỏi -->
                 @foreach ($danhSachCauHoi as $index => $cauHoi)
-                    <div class="question border border-gray-300 p-4 mb-4 w-full" id="question{{ $index + 1 }}">
+                    <div class="question border border-gray-300 p-4 mb-4" id="question{{ $index + 1 }}">
                         <p class="mb-2">Câu hỏi {{ $index + 1 }}</p>
-                        <!-- Nội dung câu hỏi -->
                         <p class="mb-2">{{ $cauHoi['cau_hoi'] }}</p>
-                        <!-- Hiển thị các câu trả lời -->
                         <ul>
                             @foreach ($cauHoi['cau_tra_loi'] as $i => $cauTraLoi)
                                 <li>
@@ -46,15 +44,7 @@
                                 </li>
                             @endforeach
                         </ul>
-                        @php
-                            $dapAnDungIndexes = $cauHoi['dap_an_dung'];
-                            $dapAnDungValues = [];
-                            foreach ($dapAnDungIndexes as $dapAnDungIndex) {
-                                $dapAnDungValues[] = $cauHoi['cau_tra_loi'][$dapAnDungIndex];
-                            }
-                            $dapAnDungString = implode(', ', $dapAnDungValues);
-                        @endphp
-                        <input type="hidden" name="dapAnDung{{ $index + 1 }}" value="{{ $dapAnDungString }}">
+                        <input type="hidden" name="dapAnDung{{ $index + 1 }}" value="{{ implode(', ', array_intersect_key($cauHoi['cau_tra_loi'], array_flip($cauHoi['dap_an_dung']))) }}">
                     </div>
                 @endforeach
                 <!-- Pagination -->
@@ -65,25 +55,24 @@
                     @endif
                 </div>
             </div>
-            <div class="flex justify-between mb-4 bg-white border-2 shadow ml-3 w-2/6 h-[480px] pt-5 rounded-lg overflow-auto">
-                <div class="w-full mt-3 ">
-                    <div class="text-lg text-red-600 font-semibold mb-7 border-b-2 flex items-center"><p class="ml-6 mb-3">Quiz navigation</p></div>
-                    <div class="pl-6 flex flex-wrap items-center">
-                        @for ($i = 1; $i <= $totalQuestions; $i++)
-                            <button onclick="goToQuestion({{ $i }})" class=" quiz-nav-btn border-2 hover:bg-gray-200  px-3 py-2 rounded-lg mb-2 mr-2 w-10 text-center">{{ $i }}</button>
-                        @endfor
-                    </div>
-                    <div id="thoiGianConLai" class="text-gray-600 mt-5 pl-6"></div>
-                    <div class="pl-6 mt-5">
-                        <button onclick="submitAnswers()" id="submitBtn" class="btn btn-blue text-black border border-gray-800 bg-white hover:bg-black hover:text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Submit</button>
-                    </div>
+            <div class="quiz-nav bg-white border-2 shadow mt-3 md:mt-0 md:w-2/6 h-auto md:h-[480px] rounded-lg overflow-auto">
+                <div class="text-lg text-red-600 font-semibold mb-7 border-b-2 flex items-center"><p class="ml-6 mb-3">Quiz navigation</p></div>
+                <div class="pl-6 flex flex-wrap items-center">
+                    @for ($i = 1; $i <= $totalQuestions; $i++)
+                        <button onclick="goToQuestion({{ $i }})" class="quiz-nav-btn border-2 px-3 py-2 rounded-lg mb-2 mr-2 w-10 text-center" data-question="{{ $i }}">{{ $i }}</button>
+                    @endfor
+                </div>
+                <div id="thoiGianConLai" class="text-gray-600 mt-5 pl-6"></div>
+                <div class="pl-6 mt-5">
+                    <button onclick="submitAnswers()" id="submitBtn" class="btn btn-blue text-black border border-gray-800 bg-white hover:bg-black hover:text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Submit</button>
                 </div>
             </div>
         </div>
     </div>
+    
 </body>
 </html>
-
+<script src="{{ asset('js/sweetalert2.bundle.js') }}"></script>
 <script type="text/javascript">
         let currentPage = 1;
         const totalPages = {{ $totalPages }};
@@ -91,17 +80,25 @@
         const btnNext = document.getElementById('btnNext');
         const totalQuestions = {{ $totalQuestions }};
         function showPage(page) {
-            for (let i = 1; i <= {{ $totalQuestions }}; i++) {
+            for (let i = 1; i <= totalQuestions; i++) {
                 const question = document.getElementById(`question${i}`);
                 if (question) {
                     question.style.display = (i >= (page - 1) * 5 + 1 && i <= page * 5) ? 'block' : 'none';
                 }
             }
+            updateButtonsVisibility();
         }
 
         // Lưu trạng thái trang hiện tại vào localStorage
-        function saveCurrentPage() {
+        function saveCurrentPage(questionNumber) {
             localStorage.setItem('currentPage', currentPage);
+
+            // Đổi màu của nút tương ứng với câu hỏi đã được trả lời
+            const quizNavBtn = document.querySelector(`.quiz-nav-btn[data-question="${questionNumber}"]`);
+            if (quizNavBtn) {
+                quizNavBtn.style.backgroundColor = '#34D399'; // Thay đổi màu nền
+                quizNavBtn.style.color = '#FFFFFF'; // Thay đổi màu chữ
+            }
         }
 
         // Hàm kiểm tra nếu có dữ liệu trong localStorage thì hiển thị trang đó
@@ -110,7 +107,9 @@
             if (storedPage) {
                 currentPage = parseInt(storedPage);
                 showPage(currentPage);
-                updateButtonsVisibility();
+            } else {
+                currentPage = 1;
+                showPage(currentPage);
             }
         }
 
@@ -130,6 +129,11 @@
                 const storedAnswer = localStorage.getItem(`answer${i}`);
                 if (storedAnswer) {
                     const inputs = document.querySelectorAll(`input[name="cauTraLoi${i}"]`);
+                    const quizNavBtn = document.querySelector(`.quiz-nav-btn[data-question="${i}"]`);
+                    if (quizNavBtn) {
+                        quizNavBtn.style.backgroundColor = '#34D399'; // Thay đổi màu nền
+                        quizNavBtn.style.color = '#FFFFFF'; // Thay đổi màu chữ
+                    }
                     inputs.forEach(input => {
                         if (input.type === 'radio') {
                             // Nếu là radio, chỉ kiểm tra và check input có giá trị trùng với storedAnswer
@@ -150,14 +154,14 @@
 
         function onLoad() {
             currentPage = 1; // Đặt lại currentPage thành 1
-            showStoredPage(); // Gọi hàm để hiển thị trang đã lưu
+            showStoredPage(1); // Gọi hàm để hiển thị trang đã lưu
             applyStoredAnswers(); // Gọi hàm để áp dụng câu trả lời đã lưu
         }
 
         window.onload = onLoad;
         // Gọi hàm saveCurrentPage() khi người dùng chuyển trang
-        btnPrevious.addEventListener('click', saveCurrentPage);
-        btnNext.addEventListener('click', saveCurrentPage);
+        btnPrevious.addEventListener('click', () => saveCurrentPage(currentPage));
+        btnNext.addEventListener('click', () => saveCurrentPage(currentPage));
 
         document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
         input.addEventListener('change', function() {
@@ -386,4 +390,27 @@
                 })
             });
         }
+
+        document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const questionNumber = this.name.replace('cauTraLoi', ''); // Lấy số thứ tự câu hỏi từ tên input
+                const quizNavBtn = document.querySelector(`.quiz-nav-btn[data-question="${questionNumber}"]`);
+                if (quizNavBtn) {
+                    quizNavBtn.style.backgroundColor = '#34D399'; // Thay đổi màu nền
+                    quizNavBtn.style.color = '#FFFFFF'; // Thay đổi màu chữ
+                }
+
+                let answer;
+                if (this.type === 'checkbox') {
+                    // Nếu là checkbox, lấy tất cả các giá trị được chọn và nối chúng lại thành một chuỗi ngăn cách bởi dấu phẩy
+                    const checkedInputs = document.querySelectorAll(`input[name="${this.name}"]:checked`);
+                    const checkedValues = Array.from(checkedInputs).map(input => input.value);
+                    answer = checkedValues.join(',');
+                } else {
+                    // Nếu là radio, chỉ lấy giá trị của input hiện tại
+                    answer = this.value;
+                }
+                saveAnswer(questionNumber, answer); // Lưu trạng thái đáp án vào localStorage
+            });
+        });
 </script>
