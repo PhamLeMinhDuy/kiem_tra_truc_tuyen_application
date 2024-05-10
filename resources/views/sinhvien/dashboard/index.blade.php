@@ -4,9 +4,10 @@
 @endsection
 @section('page-title')
     <div class="flex items-center justify-between font-bold">
-        <div class="mt-4   ">
+        <div>
             Dashboard
         </div>
+        
     </div>
 @endsection
 @section('content')
@@ -39,6 +40,7 @@
 @endsection
 <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.css" rel="stylesheet" />
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+<script src="{{ asset('js/firebase-messaging-sw.js') }}"></script>
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
         var lopHocPhanList = document.getElementById('lopHocPhanList');
@@ -77,5 +79,23 @@
 
             calendar.render();
         }
+    });
+
+    function displayToken(token) {
+        const tokenDisplayElement = document.getElementById('device-token');
+        if (tokenDisplayElement) {
+            tokenDisplayElement.textContent = token;
+        }
+    }
+
+    messaging.getToken().then((token) => {
+        if (token) {
+            console.log('Device Token:', token);
+            displayToken(token);
+        } else {
+            console.log('No Instance ID token available. Request permission to generate one.');
+        }
+    }).catch((error) => {
+        console.log('An error occurred while retrieving token. ', error);
     });
 </script>

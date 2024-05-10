@@ -95,10 +95,12 @@ class BaiThiSinhVienController extends Controller
             // Kiểm tra xem mã bài thi có nằm trong danh sách bài thi của sinh viên không
             $baiThiSinhVien = json_decode($sinhVien->bai_thi, true);
             $coTrongDanhSach = false;
-            foreach ($baiThiSinhVien as $bai) {
-                if ($bai['ma_bai_thi'] === $maBaiThi) {
-                    $coTrongDanhSach = true;
-                    break;
+            if (is_array($baiThiSinhVien)){
+                foreach ($baiThiSinhVien as $bai) {
+                    if ($bai['ma_bai_thi'] === $maBaiThi) {
+                        $coTrongDanhSach = true;
+                        break;
+                    }
                 }
             }
             // Truyền thông tin vào view

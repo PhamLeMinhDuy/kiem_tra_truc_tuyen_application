@@ -93,11 +93,15 @@
         function saveCurrentPage(questionNumber) {
             localStorage.setItem('currentPage', currentPage);
 
-            // Đổi màu của nút tương ứng với câu hỏi đã được trả lời
-            const quizNavBtn = document.querySelector(`.quiz-nav-btn[data-question="${questionNumber}"]`);
-            if (quizNavBtn) {
-                quizNavBtn.style.backgroundColor = '#34D399'; // Thay đổi màu nền
-                quizNavBtn.style.color = '#FFFFFF'; // Thay đổi màu chữ
+            // Kiểm tra xem câu trả lời của câu hỏi này đã được chọn hay chưa
+            const storedAnswer = localStorage.getItem(`answer${questionNumber}`);
+            if (storedAnswer) {
+                // Nếu đã có câu trả lời được lưu trong localStorage
+                const quizNavBtn = document.querySelector(`.quiz-nav-btn[data-question="${questionNumber}"]`);
+                if (quizNavBtn) {
+                    quizNavBtn.style.backgroundColor = '#34D399'; // Thay đổi màu nền
+                    quizNavBtn.style.color = '#FFFFFF'; // Thay đổi màu chữ
+                }
             }
         }
 
@@ -111,11 +115,6 @@
                 currentPage = 1;
                 showPage(currentPage);
             }
-        }
-
-        // Lưu trạng thái đáp án vào localStorage khi người dùng chọn
-        function saveAnswer(questionNumber, answer) {
-            localStorage.setItem(`answer${questionNumber}`, answer);
         }
 
         // Lưu trạng thái đáp án vào localStorage khi người dùng chọn
@@ -210,22 +209,35 @@
 
         // Hiển thị thời gian còn lại
         var thoiGianKetThuc = new Date('{{ $thoiGianKetThuc }}');
+
         var x = setInterval(function() {
             var thoiGianHienTai = new Date().getTime();
             var thoiGianConLai = thoiGianKetThuc - thoiGianHienTai;
+
             var gio = Math.floor((thoiGianConLai % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             var phut = Math.floor((thoiGianConLai % (1000 * 60 * 60)) / (1000 * 60));
             var giay = Math.floor((thoiGianConLai % (1000 * 60)) / 1000);
-            document.getElementById("thoiGianConLai").innerHTML = gio + " giờ " + phut + " phút " + giay + " giây ";
 
+            var thoiGianConLaiElement = document.getElementById("thoiGianConLai");
+
+            // Kiểm tra nếu chỉ còn 5 phút cuối cùng
+            if (thoiGianConLai <= 5 * 60 * 1000) { // 5 phút * 60 giây * 1000 (ms)
+                thoiGianConLaiElement.style.color = "red"; // Đổi màu thành đỏ
+            }
+
+            // Hiển thị thời gian còn lại
+            thoiGianConLaiElement.innerHTML = gio + " giờ " + phut + " phút " + giay + " giây ";
+
+            // Kiểm tra nếu hết thời gian
             if (thoiGianConLai <= 0) {
                 clearInterval(x);
-                document.getElementById("thoiGianConLai").innerHTML = "Hết thời gian làm bài";
+                thoiGianConLaiElement.innerHTML = "Hết thời gian làm bài";
                 // Thực hiện hành động khi hết thời gian làm bài 
                 submitAnswers(); // Tự động nộp bài khi hết thời gian
                 document.getElementById("submitBtn").style.display = "none"; // Ẩn nút Submit sau khi hết thời gian
             }
         }, 1000); // Cập nhật thời gian mỗi giây (1000 ms)
+
         
         // Lấy danh sách câu trả lời của người dùng
         function getSelectedAnswers() {
