@@ -59,7 +59,6 @@ class XemDiemController extends Controller
                 }
             }
         }
-    
         return view('sinhvien.xem-diem.index', [
             'title' => 'Xem điểm',
             'tenSinhVien' => $tenSinhVien,
