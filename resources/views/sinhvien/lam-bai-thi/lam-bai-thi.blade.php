@@ -72,7 +72,7 @@
     
 </body>
 </html>
-<script src="{{ asset('js/sweetalert2.bundle.js') }}"></script>
+<script src="{{  secure_asset('js/sweetalert2.bundle.js') }}"></script>
 <script type="text/javascript">
         let currentPage = 1;
         const totalPages = {{ $totalPages }};

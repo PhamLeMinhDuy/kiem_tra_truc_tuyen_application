@@ -29,29 +29,35 @@
             $labels = [];
             $data = [];
         @endphp
-        @foreach ($ketQuas as $ketQua)
-            @if ($ketQua['maLopHocPhan'] !== $previousMaLopHocPhan)
-                <div class="flex items-center justify-between font-bold text-xl">
-                    <div class="mr-5 mb-5">
-                        {{ $ketQua['tenLopHocPhan'] }} - {{ $ketQua['maLopHocPhan'] }}
+        @if (count($ketQuas) > 0)
+            @foreach ($ketQuas as $ketQua)
+                @if ($ketQua['maLopHocPhan'] !== $previousMaLopHocPhan)
+                    <div class="flex items-center justify-between font-bold text-xl">
+                        <div class="mr-5 mb-5">
+                            {{ $ketQua['tenLopHocPhan'] }} - {{ $ketQua['maLopHocPhan'] }}
+                        </div>
                     </div>
+                    @php
+                        $previousMaLopHocPhan = $ketQua['maLopHocPhan'];
+                    @endphp
+                @endif
+                <div class="border p-4 mb-4 bg-white">
+                    <p class="font-semibold text-xl text-red-600 mb-2">Tên bài thi: {{ $ketQua['tenBaiThi'] }}</p>
+                    <p class="text-gray-600">Mã bài thi: {{ $ketQua['maBaiThi'] }}</p>
+                    <p class="text-green-600">Số câu đúng: {{ $ketQua['soCauDung'] }}</p>
+                    <p class="text-blue-600">Điểm số: {{ $ketQua['diem'] }}</p>
                 </div>
                 @php
-                    $previousMaLopHocPhan = $ketQua['maLopHocPhan'];
+                    // Thêm tên bài thi và điểm vào mảng labels và data
+                    $labels[] = $ketQua['tenBaiThi'];
+                    $data[] = $ketQua['diem'];
                 @endphp
-            @endif
-            <div class="border p-4 mb-4 bg-white">
-                <p class="font-semibold text-xl text-red-600 mb-2">Tên bài thi: {{ $ketQua['tenBaiThi'] }}</p>
-                <p class="text-gray-600">Mã bài thi: {{ $ketQua['maBaiThi'] }}</p>
-                <p class="text-green-600">Số câu đúng: {{ $ketQua['soCauDung'] }}</p>
-                <p class="text-blue-600">Điểm số: {{ $ketQua['diem'] }}</p>
+            @endforeach
+        @else
+            <div class="text-red-600 font-bold">
+                Sinh viên chưa có điểm.
             </div>
-            @php
-                // Thêm tên bài thi và điểm vào mảng labels và data
-                $labels[] = $ketQua['tenBaiThi'];
-                $data[] = $ketQua['diem'];
-            @endphp
-        @endforeach
+        @endif
     </div>
     <div id="chartMode" class="mt-8 hidden">
         <!-- Đặt canvas trong một container để kiểm soát kích thước -->
