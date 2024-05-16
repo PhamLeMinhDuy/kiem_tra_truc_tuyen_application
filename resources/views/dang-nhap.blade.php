@@ -53,7 +53,7 @@
 <script type="text/javascript">
     $('#form-dang-nhap').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ secure_route('handle-dang-nhap') }}", {
+        axios.post("{{ route('handle-dang-nhap') }}", {
             email: $('#email-dang-nhap').val(),
             matKhau: $('#mat-khau-dang-nhap').val(),
         })
