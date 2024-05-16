@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <title>Đăng nhập</title>
 </head>
 <body>
-    <div class="w-screen h-screen relative" style="background-image: url({{ secure_asset('images/auth_bg.jpg') }});">   
+    <div class="w-screen h-screen relative" style="background-image: url({{ asset('images/auth_bg.jpg') }});">   
         <div class=" bg-black bg-opacity-75 w-[200px] sm:w-[460px] h-screen absolute top-0 left-0 sm:block hidden">
 
         </div>
@@ -34,7 +35,7 @@
                         </form>
                         <div class="mt-4 w-full flex justify-center">
                             <a href="{{ route('microsoft-login') }}" class="w-full py-2 px-4 flex items-center justify-center gap-x-2 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:border-red-400 hover:text-red-400 disabled:opacity-50 disabled:pointer-events-none">
-                                <img src="{{ secure_asset('images/logo_vlu.png') }}" class="h-8 me-3" alt="Văn Lang Logo" />
+                                <img src="{{ asset('images/logo_vlu.png') }}" class="h-8 me-3" alt="Văn Lang Logo" />
                                 Tài khoản Văn Lang
                             </a>
                         </div>
@@ -46,8 +47,9 @@
 </body>
 </html>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="{{ secure_asset('plugins/axios/axios.min.js') }}"></script>
-<script src="{{ secure_asset('js/sweetalert2.bundle.js') }}"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script type="text/javascript">
     $('#form-dang-nhap').on('submit', function(event){
         event.preventDefault();
