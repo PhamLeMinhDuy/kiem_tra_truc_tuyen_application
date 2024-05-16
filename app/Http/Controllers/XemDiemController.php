@@ -97,7 +97,7 @@ class XemDiemController extends Controller
         $sinhVien->save();
         return response()->json([
             'success'   => true,
-            'redirect'   => route('sinh-vien.quan-ly.bai-thi.quan-ly-bai-thi-sinh-vien', ['id' => $id, 'maLop' => $request->ma_lop_hoc_phan])
+            'redirect'   => route('sinh-vien.quan-ly.xem-diem.xem-diem-sinh-vien', ['id' => $id])
         ]);
     }
 

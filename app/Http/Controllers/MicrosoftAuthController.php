@@ -9,63 +9,69 @@ class MicrosoftAuthController extends Controller
 {
     public function microsoftOAuthLogin(Request $request)
     {
-        $appid = env('CLIENT_ID');
-        $tennantid = env('TENANT_ID');
-        $login_url = "https://login.microsoftonline.com/".$tennantid."/oauth2/v2.0/authorize";
-        session_start();
-        $_SESSION['state'] = session_id();
+        $clientId = env('CLIENT_ID');
+        $redirectUri = env('REDIRECT_URI');
+        $scope = 'openid profile offline_access'; // Thêm scope 'offline_access' để nhận refresh_token
+
+        $loginUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
+
         $params = [
-            'client_id' => $appid,
-            'redirect_uri' => env('REDIRECT_URI'),
-            'response_type' => 'code',
-            'scope' => 'https://graph.microsoft.com/User.Read https://graph.microsoft.com/Directory.ReadWrite.All',
-            'state' => $_SESSION['state']
+            'client_id' => $clientId,
+            'redirect_uri' => $redirectUri,
+            'response_type' => 'code', // Sử dụng 'code' cho Authorization Code Grant
+            'scope' => $scope,
+            'state' => Str::random(40), // Tạo state ngẫu nhiên
+            'nonce' => Str::random(40), // Tạo nonce ngẫu nhiên
         ];
-        return redirect()->away($login_url.'?'.http_build_query($params));  
+
+        // Redirect người dùng đến URL đăng nhập
+        return redirect()->away($loginUrl . '?' . http_build_query($params));
     }
 
     public function microsoftOAuthCallback(Request $request)
     {
-        if ($request->has('code')) {
+        if ($request->filled('code')) {
             $code = $request->input('code');
-            
-            // Gọi API để trao đổi code lấy access token
-            $response = Http::asForm()->post('https://login.microsoftonline.com/'.env('TENANT_ID').'/oauth2/v2.0/token', [
+    
+            // Gọi API để trao đổi code lấy access token và id token
+            $tokenEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
+            $tokenResponse = Http::asForm()->post($tokenEndpoint, [
                 'client_id' => env('CLIENT_ID'),
                 'client_secret' => env('CLIENT_SECRET'),
                 'redirect_uri' => env('REDIRECT_URI'),
                 'code' => $code,
                 'grant_type' => 'authorization_code',
+                'scope' => 'openid profile', // Scope yêu cầu cho token
             ]);
-
-            // Kiểm tra xem có kết quả hợp lệ không
-            if ($response->successful()) {
-                $access_token = $response->json()['access_token'];
+    
+            if ($tokenResponse->successful()) {
+                $tokens = $tokenResponse->json();
+                $idToken = $tokens['id_token'];
+                // Không cần lấy access_token trong trường hợp này
+    
+                // Giải mã id_token để lấy thông tin người dùng
+                $decodedToken = base64_decode(explode('.', $idToken)[1]);
+                $tokenData = json_decode($decodedToken, true);
                 
-                // Gọi Microsoft Graph API để lấy thông tin người dùng
-                $userResponse = Http::withToken($access_token)->get('https://graph.microsoft.com/v1.0/me');
-
-                if ($userResponse->successful()) {
-                    $user = $userResponse->json();
-
-                    // Kiểm tra email của người dùng có đúng định dạng vanlanguni.vn hay không
-                    if (isset($user['mail']) && Str::endsWith($user['mail'], '@vanlanguni.vn')) {
-                        // Lưu thông tin người dùng trong session
-                        session(['user' => $user]);
-                        $userEmail = $user['mail'];
-
-                        // Chuyển hướng đến trang chào mừng và truyền thông tin người dùng
-                        return redirect()->route('handle-dang-nhap-van-lang', ['userEmail' => $userEmail]);
-                    } else {
-                        // Nếu email không hợp lệ, chuyển hướng về trang microsoft-oauth
-                        return redirect()->route(env('REDIRECT_URI_LOGIN'));
-                    }
+                // Kiểm tra email có đúng định dạng @vanlanguni.vn không
+                $userEmail = $tokenData['preferred_username'];
+                $domain = '@vanlanguni.vn';
+                
+                if (Str::endsWith($userEmail, $domain)) {
+                    // Lưu thông tin người dùng vào session
+                    session(['user' => $tokenData]);
+                    $userName = $tokenData['name'];
+                    // Chuyển hướng đến trang chào mừng và truyền thông tin người dùng
+                    return redirect()->route('handle-dang-nhap-van-lang', ['userEmail' => $userEmail]);
+                } else {
+                    // Quay trở lại trang đăng nhập vì email không hợp lệ
+                    return redirect()->route('/')->withErrors('Only @vanlanguni.vn accounts are allowed.');
                 }
             }
         }
-
-        // Nếu không có mã từ callback hoặc xử lý không thành công, chuyển hướng về trang microsoft-oauth
-        return redirect()->route(env('REDIRECT_URI_LOGIN'));
+    
+        // Xử lý khi đăng nhập không thành công
+        return redirect()->route('/')->withErrors('Authentication failed.');
     }
 
 
