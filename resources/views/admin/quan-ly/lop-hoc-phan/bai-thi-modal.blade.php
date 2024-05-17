@@ -297,10 +297,16 @@
         })
         danhSachBaiThiAllBlock.innerHTML = innerHTMl;
     }
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
 
     $('#form-danh-sach-bai-thi-lop-hoc-phan').on('submit', function(event){
         event.preventDefault();
-        axios.put("{{ route('admin.quan-ly.lop-hoc-phan.handle-cap-nhat-danh-sach-bai-thi-lop-hoc-phan') }}", {
+        axios.put(secureUrl("{{ route('admin.quan-ly.lop-hoc-phan.handle-cap-nhat-danh-sach-bai-thi-lop-hoc-phan') }}"), {
             id: $('#lop-hoc-phan-id--danh-sach-bai-thi').val(),
             danh_sach_bai_thi: $('#danh-sach-bai-thi-hien-tai-data--lop-hoc-phan').val(),
         })

@@ -48,10 +48,14 @@
             inputList[i].value = '';
         }
     })
+    let url = "{{ route('admin.quan-ly.nguoi-dung.handle-them-nguoi-dung') }}";
+    if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+        url = url.replace('http:', 'https:');
+    }
 
     $('#form-them-nguoi-dung').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.nguoi-dung.handle-them-nguoi-dung') }}", {
+        axios.post(url, {
             ho_ten: $('#input-ten-nguoi-dung-them').val(),
             email: $('#input-email-nguoi-dung-them').val(),
             mat_khau: $('#input-mat-khau-nguoi-dung-them').val(),

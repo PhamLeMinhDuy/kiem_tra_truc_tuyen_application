@@ -37,6 +37,13 @@
             inputList[i].value = '';
         }
     })
+
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
   
     $('#form-cap-nhat-mon-hoc').on('submit', function(event){
       // Ngăn chặn hành vi mặc định của form
@@ -48,7 +55,7 @@
   
       if (ma_mon_hoc && ten_mon_hoc) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.put("{{ route('admin.quan-ly.mon-hoc.handle-cap-nhat-mon-hoc') }}", {
+        axios.put(secureUrl("{{ route('admin.quan-ly.mon-hoc.handle-cap-nhat-mon-hoc') }}"), {
             id_mon_hoc: $('#data-id').val(),
             ma_mon_hoc: ma_mon_hoc,
             ten_mon_hoc: ten_mon_hoc,

@@ -37,9 +37,16 @@
         }
     })
 
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
+
     $('#form-them-mon-hoc').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.mon-hoc.handle-them-mon-hoc') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.mon-hoc.handle-them-mon-hoc') }}"), {
             ma_mon_hoc: $('#input-ma-mon-hoc-them').val(),
             ten_mon_hoc: $('#input-ten-mon-hoc-them').val(),
         })

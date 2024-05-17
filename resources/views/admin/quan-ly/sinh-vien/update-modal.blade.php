@@ -65,6 +65,13 @@
             inputList[i].value = '';
         }
     })
+
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
   
     $('#form-cap-nhat-sinh-vien').on('submit', function(event){
       // Ngăn chặn hành vi mặc định của form
@@ -81,7 +88,7 @@
   
       if (ma_sinh_vien && ten_sinh_vien && so_dien_thoai && email && ngay_sinh && ma_khoa && ma_nganh) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.put("{{ route('admin.quan-ly.sinh-vien.handle-cap-nhat-sinh-vien') }}", {
+        axios.put(secureUrl("{{ route('admin.quan-ly.sinh-vien.handle-cap-nhat-sinh-vien') }}"), {
             id_sinh_vien: $('#data-id').val(),
             ma_sinh_vien: ma_sinh_vien,
             ten_sinh_vien: ten_sinh_vien,

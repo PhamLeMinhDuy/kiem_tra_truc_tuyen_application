@@ -36,10 +36,15 @@
             inputList[i].value = '';
         }
     })
-
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
     $('#form-them-khoa').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.khoa.handle-them-khoa') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.khoa.handle-them-khoa') }}"), {
             ma_khoa: $('#input-ma-khoa-them').val(),
             ten_khoa: $('#input-ten-khoa-them').val(),
 

@@ -297,10 +297,16 @@
         })
         danhSachGiangVienAllBlock.innerHTML = innerHTMl;
     }
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
 
     $('#form-danh-sach-giang-vien-lop-hoc-phan').on('submit', function(event){
         event.preventDefault();
-        axios.put("{{ route('admin.quan-ly.lop-hoc-phan.handle-cap-nhat-danh-sach-giang-vien-lop-hoc-phan') }}", {
+        axios.put(secureUrl("{{ route('admin.quan-ly.lop-hoc-phan.handle-cap-nhat-danh-sach-giang-vien-lop-hoc-phan') }}"), {
             id: $('#lop-hoc-phan-id--danh-sach-giang-vien').val(),
             danh_sach_giang_vien: $('#danh-sach-giang-vien-hien-tai-data--lop-hoc-phan').val(),
         })

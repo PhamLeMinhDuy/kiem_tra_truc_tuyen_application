@@ -28,11 +28,17 @@
   function tatModal() {
     document.getElementById('modal-xoa-giang-vien').style.display = 'none';
   }
+  function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
 
   function xoa() {
     $('#form-xoa-giang-vien').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.giang-vien.handle-xoa-giang-vien') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.giang-vien.handle-xoa-giang-vien') }}"), {
             id_giang_vien: $('#data-id').val(),
         })
         .then(function (response) {

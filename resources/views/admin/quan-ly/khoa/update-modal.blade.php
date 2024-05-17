@@ -37,6 +37,12 @@
             inputList[i].value = '';
         }
     })
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
   
     $('#form-cap-nhat-khoa').on('submit', function(event){
       // Ngăn chặn hành vi mặc định của form
@@ -48,7 +54,7 @@
   
       if (ma_khoa && ten_khoa) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.put("{{ route('admin.quan-ly.khoa.handle-cap-nhat-khoa') }}", {
+        axios.put(secureUrl("{{ route('admin.quan-ly.khoa.handle-cap-nhat-khoa') }}"), {
             id_khoa: $('#data-id').val(),
             ma_khoa: ma_khoa,
             ten_khoa: ten_khoa,

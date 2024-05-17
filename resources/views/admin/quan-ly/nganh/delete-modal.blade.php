@@ -28,11 +28,17 @@
   function tatModal() {
     document.getElementById('modal-xoa-nganh').style.display = 'none';
   }
+  function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
 
   function xoa() {
     $('#form-xoa-nganh').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.nganh.handle-xoa-nganh') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.nganh.handle-xoa-nganh') }}"), {
             id_nganh: $('#data-id').val(),
         })
         .then(function (response) {

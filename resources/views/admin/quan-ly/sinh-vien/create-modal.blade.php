@@ -64,9 +64,16 @@
             inputList[i].value = '';
         }
     })
+
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
     $('#form-them-sinh-vien').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.sinh-vien.handle-them-sinh-vien') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.sinh-vien.handle-them-sinh-vien') }}"), {
             ma_sinh_vien: $('#input-ma-sinh-vien-them').val(),
             ten_sinh_vien: $('#input-ten-sinh-vien-them').val(),
             so_dien_thoai: $('#input-so-dien-thoai-them').val(),

@@ -28,10 +28,16 @@
   function tatModal() {
     document.getElementById('modal-xoa-bai-thi').style.display = 'none';
   }
+  function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+  }
 
     $('#form-xoa-bai-thi').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.bai-thi.handle-xoa-bai-thi') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.bai-thi.handle-xoa-bai-thi') }}"), {
             id_bai_thi: $('#data-id').val(),
         })
         .then(function (response) {

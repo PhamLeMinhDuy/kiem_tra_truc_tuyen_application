@@ -49,6 +49,13 @@
             inputList[i].value = '';
         }
     })
+
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
   
     $('#form-cap-nhat-lop-hoc-phan-giang-vien').on('submit', function(event){
       // Ngăn chặn hành vi mặc định của form
@@ -63,7 +70,7 @@
       var id_giang_vien = {{ $id }};
       if (ma_lop_hoc_phan && ten_lop_hoc_phan && ma_mon_hoc && thoi_gian_bat_dau && thoi_gian_ket_thuc ) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.put("{{ route('giang-vien.quan-ly.lop-hoc-phan.handle-cap-nhat-lop-hoc-phan-giang-vien') }}", {
+        axios.put(secureUrl("{{ route('giang-vien.quan-ly.lop-hoc-phan.handle-cap-nhat-lop-hoc-phan-giang-vien') }}"), {
             id_lop_hoc_phan: $('#data-id').val(),
             ma_lop_hoc_phan: ma_lop_hoc_phan,
             ten_lop_hoc_phan: ten_lop_hoc_phan,

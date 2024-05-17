@@ -44,10 +44,16 @@
             inputList[i].value = '';
         }
     })
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
 
     $('#form-them-nguoi-dung-email').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.nguoi-dung.handle-them-nguoi-dung-email') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.nguoi-dung.handle-them-nguoi-dung-email') }}"), {
             ho_ten: $('#input-ten-nguoi-dung-them-email').val(),
             email: $('#input-email-nguoi-dung-them-email').val(),
             role: $('#input-role-nguoi-dung-them-email').val(),

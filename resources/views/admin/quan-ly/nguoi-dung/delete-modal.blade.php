@@ -26,35 +26,41 @@
 
 <script type="text/javascript">
   function tatModal() {
-    document.getElementById('modal-xoa-nguoi-dung').style.display = 'none';
+      document.getElementById('modal-xoa-nguoi-dung').style.display = 'none';
   }
-
+  function secureUrl(url) {
+      if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+          return url.replace('http:', 'https:');
+      }
+      return url;
+  }
   function xoa() {
-    $('#form-xoa-nguoi-dung').on('submit', function(event){
-        event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.nguoi-dung.handle-xoa-nguoi-dung') }}", {
-            id_nguoi_dung: $('#data-id').val(),
-        })
-        .then(function (response) {
-            if (response.data.success) {
-                window.location.replace(response.data.redirect);
-                return;
-            }
-            Swal.fire({
-                icon: response.data.type,
-                title: response.data.message,
-                showConfirmButton: false,
-                timer: 1000
-            })
-        })
-        .catch(function (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
-                showConfirmButton: false,
-                timer: 1500
-            })
-        });
-    })
+      $('#form-xoa-nguoi-dung').on('submit', function(event){
+          event.preventDefault();
+          var url = "{{ route('admin.quan-ly.nguoi-dung.handle-xoa-nguoi-dung') }}";
+          axios.post(secureUrl(url), {
+              id_nguoi_dung: $('#data-id').val(),
+          })
+          .then(function (response) {
+              if (response.data.success) {
+                  window.location.replace(response.data.redirect);
+                  return;
+              }
+              Swal.fire({
+                  icon: response.data.type,
+                  title: response.data.message,
+                  showConfirmButton: false,
+                  timer: 1000
+              })
+          })
+          .catch(function (error) {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
+                  showConfirmButton: false,
+                  timer: 1500
+              })
+          });
+      })
   }
 </script>
