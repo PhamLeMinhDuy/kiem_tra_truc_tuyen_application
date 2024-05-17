@@ -8,6 +8,9 @@
     "routes": [{
         "src": "/(.*)",
         "dest": "/api/index.php"
+    },
+    {   "src": "/dist/manifest.json", 
+        "dest": "/dist/manifest.json" 
     }],
     "env": {
         "APP_ENV": "production",
