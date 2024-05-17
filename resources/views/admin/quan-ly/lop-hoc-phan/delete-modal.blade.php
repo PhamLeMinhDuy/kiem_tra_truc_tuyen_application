@@ -28,11 +28,17 @@
   function tatModal() {
     document.getElementById('modal-xoa-lop-hoc-phan').style.display = 'none';
   }
+  function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
 
   function xoa() {
     $('#form-xoa-lop-hoc-phan').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.lop-hoc-phan.handle-xoa-lop-hoc-phan') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.lop-hoc-phan.handle-xoa-lop-hoc-phan') }}"), {
             id_lop_hoc_phan: $('#data-id').val(),
         })
         .then(function (response) {

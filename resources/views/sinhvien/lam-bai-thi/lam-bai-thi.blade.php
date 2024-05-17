@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Làm bài thi')</title>
-    @vite('resources/css/app.css')
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
 </head>
 <body class="bg-white">
@@ -72,7 +72,11 @@
     
 </body>
 </html>
-<script src="{{  secure_asset('js/sweetalert2.bundle.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script type="text/javascript">
         let currentPage = 1;
         const totalPages = {{ $totalPages }};
@@ -378,7 +382,11 @@
             const diem = tinhDiem(cauTraLoiNguoiDung,dapAnDung);
             const soCauTraLoiDung = tinhSoCauTraLoiDung(cauTraLoiNguoiDung,dapAnDung);
             // Gửi yêu cầu Axios
-            axios.post("{{ route('sinh-vien.quan-ly.xem-diem.handle-them-diem-sinh-vien') }}", {
+            let url = "{{ route('sinh-vien.quan-ly.xem-diem.handle-them-diem-sinh-vien') }}";
+            if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+                url = url.replace('http:', 'https:');
+            }
+            axios.post(url, {
                 ma_bai_thi: '{{ $maBaiThi }}',
                 ten_bai_thi: '{{ $tenBaiThi }}',
                 ma_lop_hoc_phan: '{{ $maLopHocPhan }}',

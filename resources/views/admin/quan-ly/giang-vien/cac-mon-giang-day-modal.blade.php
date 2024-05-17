@@ -71,7 +71,12 @@
         parentElement.appendChild(newDiv)
     }
 
-
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
     function xacNhan() {
         var parentElement = document.getElementById("list-mon-hoc")
         var childrenElements = parentElement.children
@@ -88,7 +93,7 @@
         }
         var jsonCacMonGiangDay = JSON.stringify(listMonHoc)
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.giang-vien.handle-cac-mon-giang-day') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.giang-vien.handle-cac-mon-giang-day') }}"), {
             data: jsonCacMonGiangDay,
             giangVienId: $('#giang-vien-id--cac-mon-giang-day').val(),
         })

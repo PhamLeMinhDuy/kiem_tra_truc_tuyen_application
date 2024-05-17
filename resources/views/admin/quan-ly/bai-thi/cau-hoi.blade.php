@@ -493,6 +493,12 @@
             var inputSelect = parentElement.querySelector('.input-dap-an')
             inputSelect.value = inputElement.value;
         }
+        function secureUrl(url) {
+            if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+                return url.replace('http:', 'https:');
+            }
+            return url;
+        }
 
         function luu() {
             event.preventDefault();
@@ -536,7 +542,7 @@
             };
 
             // Gửi một yêu cầu AJAX duy nhất
-            axios.post("{{ route('admin.quan-ly.bai-thi.handle-them-bai-thi-cau-hoi') }}", data)
+            axios.post(secureUrl("{{ route('admin.quan-ly.bai-thi.handle-them-bai-thi-cau-hoi') }}"), data)
                 .then(function (response) {
                     if (response.data.success) {
                         window.location.replace(response.data.redirect);

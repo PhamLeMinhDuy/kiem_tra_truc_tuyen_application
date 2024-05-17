@@ -46,6 +46,11 @@
         }
     })
 
+    let urlcn = "{{ route('admin.quan-ly.nguoi-dung.handle-cap-nhat-nguoi-dung') }}";
+    if (window.location.protocol === 'https:' && urlcn.startsWith('http:')) {
+        urlcn = urlcn.replace('http:', 'https:');
+    }
+
     $('#form-cap-nhat-nguoi-dung').on('submit', function(event){
       // Ngăn chặn hành vi mặc định của form
       event.preventDefault();
@@ -55,9 +60,9 @@
       var email = $('#input-email-nguoi-dung-cap-nhat').val();
       var role = $('#input-role-nguoi-dung-cap-nhat').val();
   
-      if (ho_ten && email && mat_khau && role) {
+      if (ho_ten && email && role) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.put("{{ route('admin.quan-ly.nguoi-dung.handle-cap-nhat-nguoi-dung') }}", {
+        axios.put(urlcn, {
             id_nguoi_dung: $('#data-id').val(),
             ho_ten: ho_ten,
             email: email,

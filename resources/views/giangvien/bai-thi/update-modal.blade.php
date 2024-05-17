@@ -49,6 +49,12 @@
             inputList[i].value = '';
         }
     })
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
   
     $('#form-cap-nhat-bai-thi').on('submit', function(event){
       // Ngăn chặn hành vi mặc định của form
@@ -63,7 +69,7 @@
       var id_giang_vien = {{ $id }};
       if (ma_bai_thi && ten_bai_thi) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
-        axios.put("{{ route('giang-vien.quan-ly.bai-thi.handle-cap-nhat-bai-thi') }}", {
+        axios.put(secureUrl("{{ route('giang-vien.quan-ly.bai-thi.handle-cap-nhat-bai-thi') }}"), {
             id_bai_thi: $('#data-id').val(),
             ma_bai_thi: ma_bai_thi,
             ten_bai_thi: ten_bai_thi,

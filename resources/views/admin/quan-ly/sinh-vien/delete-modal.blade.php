@@ -28,11 +28,16 @@
   function tatModal() {
     document.getElementById('modal-xoa-sinh-vien').style.display = 'none';
   }
-
+  function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
   function xoa() {
     $('#form-xoa-sinh-vien').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.sinh-vien.handle-xoa-sinh-vien') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.sinh-vien.handle-xoa-sinh-vien') }}"), {
             id_sinh_vien: $('#data-id').val(),
         })
         .then(function (response) {

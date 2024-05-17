@@ -309,9 +309,16 @@
         document.getElementById('modal-bai-thi').style.display = 'none';
     })
 
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
+
     $('#form-danh-sach-bai-thi-lop-hoc-phan').on('submit', function(event){
         event.preventDefault();
-        axios.put("{{ route('giang-vien.quan-ly.lop-hoc-phan.handle-cap-nhat-danh-sach-bai-thi-lop-hoc-phan-giang-vien') }}", {
+        axios.put(secureUrl("{{ route('giang-vien.quan-ly.lop-hoc-phan.handle-cap-nhat-danh-sach-bai-thi-lop-hoc-phan-giang-vien') }}"), {
             id: $('#lop-hoc-phan-id--danh-sach-bai-thi').val(),
             danh_sach_bai_thi: $('#danh-sach-bai-thi-hien-tai-data--lop-hoc-phan').val(),
             id_giang_vien: {{ $id }},

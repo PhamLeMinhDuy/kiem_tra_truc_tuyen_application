@@ -44,10 +44,16 @@
             inputList[i].value = '';
         }
     })
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
 
     $('#form-them-nganh').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.nganh.handle-them-nganh') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.nganh.handle-them-nganh') }}"), {
             ma_nganh: $('#input-ma-nganh-them').val(),
             ten_nganh: $('#input-ten-nganh-them').val(),
             ma_khoa: $('#input-ma-khoa-them').val(),

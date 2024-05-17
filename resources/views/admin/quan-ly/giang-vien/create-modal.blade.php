@@ -59,6 +59,12 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
    $('#btn-huy-them').on('click', function(event){
         document.getElementById('modal-them-giang-vien').style.display = 'none';
         var inputList = document.querySelectorAll('.input-them-giang-vien')
@@ -68,7 +74,7 @@
     })
     $('#form-them-giang-vien').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.giang-vien.handle-them-giang-vien') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.giang-vien.handle-them-giang-vien') }}"), {
             ma_giang_vien: $('#input-ma-giang-vien-them').val(),
             ten_giang_vien: $('#input-ten-giang-vien-them').val(),
             so_dien_thoai: $('#input-so-dien-thoai-them').val(),

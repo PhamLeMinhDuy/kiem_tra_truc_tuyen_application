@@ -53,9 +53,16 @@
             inputList[i].value = '';
         }
     })
+
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
     $('#form-them-lop-hoc-phan').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.lop-hoc-phan.handle-them-lop-hoc-phan') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.lop-hoc-phan.handle-them-lop-hoc-phan') }}"), {
             ma_lop_hoc_phan: $('#input-ma-lop-hoc-phan-them').val(),
             ten_lop_hoc_phan: $('#input-ten-lop-hoc-phan-them').val(),
             ma_mon_hoc: $('#input-mon-hoc-lop-hoc-phan-them').val(),

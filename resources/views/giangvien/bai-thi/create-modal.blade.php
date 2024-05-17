@@ -49,9 +49,16 @@
         }
     })
 
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
+
     $('#form-them-bai-thi').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('giang-vien.quan-ly.bai-thi.handle-them-bai-thi') }}", {
+        axios.post(secureUrl("{{ route('giang-vien.quan-ly.bai-thi.handle-them-bai-thi') }}"), {
             ma_bai_thi: $('#input-ma-bai-thi-them').val(),
             ten_bai_thi: $('#input-ten-bai-thi-them').val(),
             thoi_gian_bat_dau: $('#input-thoi-gian-bat-dau-bai-thi-them').val(),

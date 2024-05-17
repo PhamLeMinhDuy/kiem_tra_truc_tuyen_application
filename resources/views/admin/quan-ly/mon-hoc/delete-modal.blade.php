@@ -28,11 +28,17 @@
   function tatModal() {
     document.getElementById('modal-xoa-mon-hoc').style.display = 'none';
   }
+  function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
 
   function xoa() {
     $('#form-xoa-mon-hoc').on('submit', function(event){
         event.preventDefault();
-        axios.post("{{ route('admin.quan-ly.mon-hoc.handle-xoa-mon-hoc') }}", {
+        axios.post(secureUrl("{{ route('admin.quan-ly.mon-hoc.handle-xoa-mon-hoc') }}"), {
             id_mon_hoc: $('#data-id').val(),
         })
         .then(function (response) {

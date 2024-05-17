@@ -300,10 +300,16 @@
     $('#btn-huy-sinh-vien').on('click', function(event){
         document.getElementById('modal-sinh-vien').style.display = 'none';
     })
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
+    }
 
     $('#form-danh-sach-sinh-vien-lop-hoc-phan').on('submit', function(event){
         event.preventDefault();
-        axios.put("{{ route('admin.quan-ly.lop-hoc-phan.handle-cap-nhat-danh-sach-sinh-vien-lop-hoc-phan') }}", {
+        axios.put(secureUrl("{{ route('admin.quan-ly.lop-hoc-phan.handle-cap-nhat-danh-sach-sinh-vien-lop-hoc-phan') }}"), {
             id: $('#lop-hoc-phan-id--danh-sach-sinh-vien').val(),
             danh_sach_sinh_vien: $('#danh-sach-sinh-vien-hien-tai-data--lop-hoc-phan').val(),
         })
