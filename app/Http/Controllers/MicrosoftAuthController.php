@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Request;
+use App\Models\NguoiDung;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class MicrosoftAuthController extends Controller
 {
@@ -46,6 +48,11 @@ class MicrosoftAuthController extends Controller
     
             if ($tokenResponse->successful()) {
                 $tokens = $tokenResponse->json();
+                // Lưu token vào session
+                
+                $microsoftToken = $tokens['access_token'];
+                $request->session()->put('microsoft_token', $microsoftToken);
+
                 $idToken = $tokens['id_token'];
                 // Không cần lấy access_token trong trường hợp này
     
@@ -55,6 +62,7 @@ class MicrosoftAuthController extends Controller
                 
                 // Kiểm tra email có đúng định dạng @vanlanguni.vn không
                 $userEmail = $tokenData['preferred_username'];
+                $userName = $tokenData['name'];
                 $domain = '@vanlanguni.vn';
                 
                 if (Str::endsWith($userEmail, $domain)) {
@@ -62,7 +70,7 @@ class MicrosoftAuthController extends Controller
                     session(['user' => $tokenData]);
                     $userName = $tokenData['name'];
                     // Chuyển hướng đến trang chào mừng và truyền thông tin người dùng
-                    return redirect()->route('handle-dang-nhap-van-lang', ['userEmail' => $userEmail]);
+                    return redirect()->route('handle-dang-nhap-van-lang', ['userEmail' => $userEmail, 'userName' => $userName]);
                 } else {
                     // Quay trở lại trang đăng nhập vì email không hợp lệ
                     return redirect()->route('/')->withErrors('Only @vanlanguni.vn accounts are allowed.');
@@ -74,5 +82,17 @@ class MicrosoftAuthController extends Controller
         return redirect()->route('/')->withErrors('Authentication failed.');
     }
 
+    public function logoutSession(Request $request)
+    {
+        // Lấy thông tin người dùng từ session
+        $userData = session('user');
+        if ($userData) {
+            // Xóa session_id của người dùng từ bảng NguoiDung
+            NguoiDung::where('email', $userData['preferred_username'])->update(['session_id' => null]);
+            // Xóa session của người dùng
+            $request->session()->forget('user');
+        }
+        return response()->json(['success' => true]);
+    }
 
 }

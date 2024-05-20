@@ -41,5 +41,8 @@
     }
     adjustMargin();
     window.addEventListener('resize', adjustMargin);
+
+    
+
 </script>
 @yield('page-js')

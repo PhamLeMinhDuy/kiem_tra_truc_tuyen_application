@@ -203,7 +203,7 @@ class BaiThiController extends Controller
     public function indexBaiThiGiangVien($id){
         $giangVien = GiangVien::find($id);
         $maGiangVien = $giangVien->ma_giang_vien;
-        $danhSachSinhVien = BaiThi::paginate(10);
+        $danhSachBaiThi = BaiThi::where('ma_nguoi_tao', $maGiangVien)->paginate(10);
         $columnNames = Schema::getColumnListing('bai_thi');
         $danhSachTenCot = ['ID', 'Mã bài thi', 'Tên bài thi', 'Thời gian bắt đầu', 'Thời gian kết thúc', 'Mô tả'];
         $danhSachCot = [];
@@ -218,7 +218,7 @@ class BaiThiController extends Controller
         return view('giangvien.bai-thi.index', [
             'title' => 'Danh sách bài thi',
             'danhSachCot' => $danhSachCot,
-            'danhSachDuLieu' => $danhSachSinhVien,
+            'danhSachDuLieu' => $danhSachBaiThi,
             'danhSachCotDb' => $danhSachCotDb,
             'danhSachMon' => $danhSachMon,
             'danhSachKhoa' => $danhSachKhoa,

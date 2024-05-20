@@ -11,11 +11,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Auth\Authenticatable;
-
+use Illuminate\Support\Facades\Session;
 class AuthController extends Controller
 {
     public function dangNhapView() {
         return view('dang-nhap');
+    }
+
+    public function handleDangXuat() {
+        Auth::logout(); // Đăng xuất người dùng
+        return redirect()->route('dang-nhap'); // Chuyển hướng về trang đăng nhập
     }
 
     public function handleDangNhap(Request $request) {
@@ -45,6 +50,7 @@ class AuthController extends Controller
             
             // Kiểm tra xem thông tin đăng nhập có hợp lệ không
             if ($nguoiDung && Hash::check($request->matKhau, $nguoiDung->mat_khau)) {
+                
                 // Đăng nhập người dùng
                 Auth::login($nguoiDung);
     
@@ -90,37 +96,64 @@ class AuthController extends Controller
         ]);
     }
 
-    public function handleDangNhapVanLang($userEmail) {
+    public function handleDangNhapVanLang($userEmail, $userName) {
         $nguoiDung = NguoiDung::where('email', $userEmail)->first();
+
+        // Nếu người dùng không tồn tại, thêm vào bảng NguoiDung với vai trò "Chưa phân quyền"
+        if (!$nguoiDung) {
+            $nguoiDung = NguoiDung::create([
+                'email' => $userEmail,
+                'ho_ten' => $userName,
+                'role' => 'Chưa phân quyền',
+            ]);
+
+            // Chuyển hướng đến trang thông báo và truyền email của người dùng
+            return view('thong-bao',['userEmail' => $userEmail, 'message' => 'Tài khoản ' . $userEmail . ' hiện chưa được phân quyền. Vui lòng chờ để được phân quyền. Cảm ơn bạn đã kiên nhẫn!']);
+        }
+
+        // Nếu người dùng tồn tại nhưng chưa được phân quyền
+        if ($nguoiDung->role == 'Chưa phân quyền') {
+            // Chuyển hướng đến trang thông báo và truyền email của người dùng
+            return view('thong-bao',['userEmail' => $userEmail, 'message' => 'Tài khoản ' . $userEmail . ' hiện chưa được phân quyền. Vui lòng chờ để được phân quyền. Cảm ơn bạn đã kiên nhẫn!']);
+        }
     
         // Kiểm tra xem thông tin đăng nhập có hợp lệ không
         if ($nguoiDung) {
             // Đăng nhập người dùng
             Auth::login($nguoiDung);
-    
-            // Kiểm tra xem người dùng là sinh viên
-            $sinhVien = SinhVien::where('email', $userEmail)->first();
-    
-            // Kiểm tra người dùng là giảng viên
-            $giangVien = GiangVien::where('email', $userEmail)->first();
-    
-            // Nếu là sinh viên, chuyển hướng và truyền ID của sinh viên vào view
-            if ($sinhVien) {
-                // Chuyển hướng ngay sau khi xác nhận thành công
-                return redirect()->route('sinh-vien.quan-ly.dashboard.quan-ly-dashboard', ['id' => $sinhVien->id]);
-            } elseif ($giangVien) {
-                // Chuyển hướng ngay sau khi xác nhận thành công
-                return redirect()->route('giang-vien.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan-giang-vien', ['id' => $giangVien->id]);
-            } elseif ($nguoiDung->role == 'Admin') {
-                // Chuyển hướng ngay sau khi xác nhận thành công
-                return redirect()->route('admin.quan-ly.giang-vien.quan-ly-giang-vien');
+            if (empty($nguoiDung->session_id)) {
+                // Thêm session_id hiện tại vào cột session_id
+                $nguoiDung->session_id = Session::getId();
+                $nguoiDung->save();
+
+                 // Kiểm tra xem người dùng là sinh viên
+                $sinhVien = SinhVien::where('email', $userEmail)->first();
+        
+                // Kiểm tra người dùng là giảng viên
+                $giangVien = GiangVien::where('email', $userEmail)->first();
+        
+                // Nếu là sinh viên, chuyển hướng và truyền ID của sinh viên vào view
+                if ($sinhVien) {
+                    // Chuyển hướng ngay sau khi xác nhận thành công
+                    return redirect()->route('sinh-vien.quan-ly.dashboard.quan-ly-dashboard', ['id' => $sinhVien->id]);
+                } elseif ($giangVien) {
+                    // Chuyển hướng ngay sau khi xác nhận thành công
+                    return redirect()->route('giang-vien.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan-giang-vien', ['id' => $giangVien->id]);
+                } elseif ($nguoiDung->role == 'Admin') {
+                    // Chuyển hướng ngay sau khi xác nhận thành công
+                    return redirect()->route('admin.quan-ly.giang-vien.quan-ly-giang-vien');
+                } else {
+                    // Thông báo tài khoản không có trong hệ thống
+                    return response()->json([
+                        'success'   => false,
+                        'message'   => 'Tài khoản không tồn tại trong hệ thống'
+                    ]);
+                }
             } else {
-                // Thông báo tài khoản không có trong hệ thống
-                return response()->json([
-                    'success'   => false,
-                    'message'   => 'Tài khoản không tồn tại trong hệ thống'
-                ]);
+                // Nếu đã có session_id, chuyển hướng đến trang thông báo
+                return view('thong-bao', ['userEmail' => $userEmail, 'message' => 'Tài khoản đã được đăng nhập trước đó và chưa được đăng xuất. Vui lòng đăng xuất tài khoản trước đó.']);
             }
+           
         }
     
         // Trả về thông báo lỗi nếu thông tin đăng nhập không hợp lệ
