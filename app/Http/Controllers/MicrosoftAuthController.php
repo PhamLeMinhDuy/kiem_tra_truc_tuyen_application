@@ -95,4 +95,24 @@ class MicrosoftAuthController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function microsoftLogout(Request $request)
+    {
+        $user = Auth::user();
+        if ($user && $user->nguoiDung) {
+            $user->nguoiDung->session_id = null;
+            $user->nguoiDung->save();
+        }
+
+        // Xóa thông tin người dùng khỏi session
+        $request->session()->forget('microsoft_token');
+        $request->session()->forget('user'); // Xóa luôn thông tin người dùng
+        Auth::logout();
+
+        // URL đăng xuất của Microsoft
+        $logoutUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=" . urlencode(env('APP_URL'));
+
+        // Chuyển hướng đến trang đăng xuất của Microsoft
+        return redirect($logoutUrl);
+    }
+
 }
