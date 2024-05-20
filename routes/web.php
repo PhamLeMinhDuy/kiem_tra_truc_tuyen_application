@@ -28,15 +28,15 @@ use App\Http\Controllers\DashboardSinhVienController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-
 Route::get('/admin', [HomeController::class, 'adminHome'])->name('trang-admin');
 Route::get('/', [AuthController::class, 'dangNhapView'])->name('dang-nhap');
 Route::post('/', [AuthController::class, 'handleDangNhap'])->name('handle-dang-nhap');
-Route::get('/dang-nhap-van-lang/{userEmail}', [AuthController::class, 'handleDangNhapVanLang'])->name('handle-dang-nhap-van-lang');
+Route::get('/dang-xuat', [AuthController::class, 'handleDangXuat'])->name('handle-dang-xuat');
+Route::get('/dang-nhap-van-lang/{userEmail}/{userName}', [AuthController::class, 'handleDangNhapVanLang'])->name('handle-dang-nhap-van-lang');
 Route::get('/microsoft-oauth', [MicrosoftAuthController::class, 'microsoftOAuthLogin'])->name('microsoft-login');
 Route::get('/microsoft-oauth-callback', [MicrosoftAuthController::class, 'microsoftOAuthCallback'])->name('microsoft-callback');
-
+Route::get('/microsoft-logout', [MicrosoftAuthController::class, 'microsoftLogout'])->name('microsoft-logout');
+Route::get('/logout-session', [MicrosoftAuthController::class, 'logoutSession']);
 Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
     Route::group(['prefix' => 'quan-ly', 'as'=>'quan-ly.'], function() {
         Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {

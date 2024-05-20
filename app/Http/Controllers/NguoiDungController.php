@@ -26,6 +26,11 @@ class NguoiDungController extends Controller
         $danhSachKhoa = Khoa::all();
         $danhSachMon = MonHoc::all();
         $danhSachNganh = Nganh::all();
+
+        // Kiểm tra và thêm sinh viên và giảng viên
+        $sinhVienEmails = SinhVien::pluck('email')->toArray();
+        $giangVienEmails = GiangVien::pluck('email')->toArray();
+
         return view('admin.quan-ly.nguoi-dung.index', [
             'title' => 'Danh sách người dùng',
             'danhSachCot' => $danhSachCot,

@@ -433,4 +433,11 @@
                 saveAnswer(questionNumber, answer); // Lưu trạng thái đáp án vào localStorage
             });
         });
+
+        window.addEventListener('beforeunload', function (event) {
+            // Gửi yêu cầu Ajax khi tab hoặc trình duyệt đóng
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/microsoft-logout', false); // Sử dụng đồng bộ để đảm bảo yêu cầu được gửi trước khi trang đóng
+            xhr.send();
+        });
 </script>
