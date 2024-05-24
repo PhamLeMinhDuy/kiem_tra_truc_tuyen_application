@@ -18,7 +18,14 @@
             </span>
             <div class="flex items-center">
                 <p class="text-md mr-3 ml-2">Thêm câu hỏi:</p>
-                <div>
+                <div class="flex items-center"> 
+                    <button class="relative inline-flex items-center justify-center overflow-hidden p-0.5 mb-2 me-2 " title="Tải file excel mẫu">
+                        <a href="{{ route('giang-vien.quan-ly.bai-thi.download-template') }}" download="template.xlsx" class="inline-block"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="w-10 h-10"> 
+                                <path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z" fill="#008000"/> <!-- Thay đổi fill="#008000" để đổi màu thành xanh lá cây -->
+                            </svg>
+                        </a>
+                    </button>
                     <button onclick="themCauHoiMotDapAn()" class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
                         <span class="relative px-2 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                             Một đáp án
@@ -29,6 +36,12 @@
                             Nhiều đáp án
                         </span>
                     </button>
+                    <div class="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
+                        <label for="file-upload" class="relative px-2 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 cursor-pointer">
+                            <input id="file-upload" type="file" accept=".xlsx, .xls" class="hidden" onchange="importQuestions(event)">
+                            <span>Import File</span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -503,11 +516,80 @@
             inputSelect.value = inputElement.value;
         }
         function secureUrl(url) {
-        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
-            return url.replace('http:', 'https:');
+            if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+                return url.replace('http:', 'https:');
+            }
+            return url;
         }
-        return url;
-    }
+
+        function importQuestions(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel') {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+                        const questions = jsonData.slice(1).map(row => {
+                            const answers = row.slice(1, -1).filter(answer => answer !== undefined && answer !== "");
+
+                            // Kiểm tra xem giá trị cuối cùng của mảng row là một chuỗi trước khi split
+                            let correctAnswersIndices = [];
+                            if (typeof row[row.length - 1] === 'string') {
+                                correctAnswersIndices = row[row.length - 1].split(',').map(answerIndex => parseInt(answerIndex.trim()) - 1);
+                            } else if (typeof row[row.length - 1] === 'number') {
+                                // Trường hợp giá trị cuối cùng là một số, chuyển đổi nó thành mảng chỉ số đáp án đúng
+                                correctAnswersIndices = [parseInt(row[row.length - 1]) - 1];
+                            } else {
+                                // Xử lý lỗi nếu giá trị cuối cùng không phải là chuỗi hoặc số
+                                console.error("Giá trị đáp án đúng không hợp lệ:", row[row.length - 1]);
+                            }
+
+                            return {
+                                cau_hoi: row[0],
+                                cau_tra_loi: answers,
+                                dap_an_dung: correctAnswersIndices
+                            };
+                        });
+
+                        var cauHoiId = "{{ $id }}";
+                        var data_excel = {
+                            data: questions,
+                            cauHoiId: cauHoiId,
+                            id_giang_vien: {{ $id_giang_vien }},
+                        };
+
+                        axios.post(secureUrl("{{ route('giang-vien.quan-ly.bai-thi.handle-them-bai-thi-cau-hoi') }}"), data_excel)
+                            .then(function (response) {
+                                if (response.data.success) {
+                                    window.location.replace(response.data.redirect);
+                                } else {
+                                    Swal.fire({
+                                        icon: response.data.type,
+                                        title: response.data.message,
+                                        showConfirmButton: false,
+                                        timer: 1000
+                                    });
+                                }
+                            })
+                            .catch(function (error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            });
+                    };
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    alert('Vui lòng chọn tệp Excel hợp lệ.');
+                }
+            }
+        }
 
         function luu() {
             event.preventDefault();

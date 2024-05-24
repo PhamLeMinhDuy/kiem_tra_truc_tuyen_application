@@ -404,5 +404,12 @@ class BaiThiController extends Controller
         ]);
     }
 
+    public function downloadTemplate()
+    {
+        $file = public_path('templates/template.xlsx'); // Đường dẫn đến tệp mẫu Excel
+
+        return response()->download($file, 'template.xlsx');
+    }
+
 }
 

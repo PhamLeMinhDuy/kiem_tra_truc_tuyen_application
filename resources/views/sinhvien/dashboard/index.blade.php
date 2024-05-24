@@ -40,7 +40,6 @@
 @endsection
 <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.css" rel="stylesheet" />
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
-<script src="{{ asset('js/firebase-messaging-sw.js') }}"></script>
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
         var lopHocPhanList = document.getElementById('lopHocPhanList');
