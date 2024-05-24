@@ -13,6 +13,7 @@ use App\Http\Controllers\GiangVienController;
 use App\Http\Controllers\HomeAdminController;
 use App\Http\Controllers\NguoiDungController;
 use App\Http\Controllers\LopHocPhanController;
+use App\Http\Controllers\XemLichThiController;
 use App\Http\Controllers\MicrosoftAuthController;
 use App\Http\Controllers\BaiThiSinhVienController;
 use App\Http\Controllers\DashboardSinhVienController;
@@ -37,6 +38,7 @@ Route::get('/microsoft-oauth', [MicrosoftAuthController::class, 'microsoftOAuthL
 Route::get('/microsoft-oauth-callback', [MicrosoftAuthController::class, 'microsoftOAuthCallback'])->name('microsoft-callback');
 Route::get('/microsoft-logout', [MicrosoftAuthController::class, 'microsoftLogout'])->name('microsoft-logout');
 Route::get('/logout-session', [MicrosoftAuthController::class, 'logoutSession']);
+
 Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
     Route::group(['prefix' => 'quan-ly', 'as'=>'quan-ly.'], function() {
         Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {
@@ -86,6 +88,7 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
             Route::post('/quan-ly-bai-thi-them', [BaiThiController::class, 'handleThemBaiThi'])->name('handle-them-bai-thi');
             Route::post('/quan-ly-bai-thi-xoa', [BaiThiController::class, 'handleXoaBaiThi'])->name('handle-xoa-bai-thi');
             Route::post('/quan-ly-bai-thi-them-cau-hoi', [BaiThiController::class, 'handleThemCauHoi'])->name('handle-them-bai-thi-cau-hoi');
+            Route::get('/download-template', [BaiThiController::class, 'downloadTemplate'])->name('download-template');
         });
         Route::group(['prefix' => 'nguoi-dung', 'as'=>'nguoi-dung.'], function() {
             Route::get('/quan-ly-nguoi-dung', [NguoiDungController::class, 'index'])->name('quan-ly-nguoi-dung');
@@ -129,10 +132,14 @@ Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {
             Route::post('/quan-ly-bai-thi-xoa', [BaiThiController::class, 'handleXoaBaiThiGiangVien'])->name('handle-xoa-bai-thi');
             Route::get('/quan-ly-bai-thi-cau-hoi/{id}/{id_giang_vien}', [BaiThiController::class, 'handleCauHoiGiangVien'])->name('quan-ly-bai-thi-cau-hoi');
             Route::post('/quan-ly-bai-thi-them-cau-hoi', [BaiThiController::class, 'handleThemCauHoiGiangVien'])->name('handle-them-bai-thi-cau-hoi');
+            Route::get('/download-template', [BaiThiController::class, 'downloadTemplate'])->name('download-template');
         });
         Route::group(['prefix' => '', 'as'=>'xem-diem.'], function() {
             Route::get('/xem-diem-sinh-vien-giang-vien/{id}', [XemDiemController::class, 'indexXemDiemSinhVienGiangVien'])->name('xem-diem-sinh-vien-giang-vien');
             Route::get('/bang-diem-sinh-vien-giang-vien/{id}/{ma_lop_hoc_phan}/{ma_bai_thi}', [XemDiemController::class, 'bangDiemSinhVienGiangVien'])->name('bang-diem-sinh-vien-giang-vien');
+        });
+        Route::group(['prefix' => '', 'as'=>'xem-lich-thi.'], function() {
+            Route::get('/xem-lich-thi/{id}', [XemLichThiController::class, 'xemLichThi'])->name('xem-lich-thi-giang-vien');
         });
     });
 });
