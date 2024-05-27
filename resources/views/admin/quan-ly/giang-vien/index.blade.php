@@ -22,6 +22,7 @@
 @include('admin.quan-ly.giang-vien.update-modal')
 @include('admin.quan-ly.giang-vien.delete-modal')
 @include('admin.quan-ly.giang-vien.cac-mon-giang-day-modal')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
 @section('page-js')
      <script type="text/javascript">
     </script> 

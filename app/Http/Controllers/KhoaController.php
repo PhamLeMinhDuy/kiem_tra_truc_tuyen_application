@@ -86,45 +86,68 @@ class KhoaController extends Controller
         }
     }
     public function handleThemKhoa(Request $request) {
-        if (empty($request->ma_khoa) || empty($request->ten_khoa)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Vui lòng điền đầy đủ thông tin!'
-            ]);
-        }
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_khoa)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Mã khoa chỉ được chứa chữ cái và số.'
-            ]);
-        }
-        if (preg_match('/[^\p{L}\s]/u', $request->ten_khoa)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Tên khoa không được chứa ký tự đặc biệt và số.'
-            ]);
-        }
-        $khoa = new Khoa;
-        if ($khoa) {
-            $khoa->ma_khoa = $request->ma_khoa;
-            $khoa->ten_khoa = $request->ten_khoa;
-            $khoa->save();
-            $request->session()->flash('success_message', 'Thêm khoa thành công!');
+        $khoas = $request->data;
+        if($khoas){
+            foreach ($khoas as $khoaData) {
+                $existingKhoa = Khoa::where('ma_khoa', $khoaData['ma_khoa'])->first();
+    
+                // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu
+                if (!$existingKhoa) {
+                    $newKhoa = new Khoa;
+                    $newKhoa->ma_khoa = $khoaData['ma_khoa'];
+                    $newKhoa->ten_khoa = $khoaData['ten_khoa'];
+                    $newKhoa->save();
+                }
+            }
+    
             return response()->json([
                 'success'   => true,
                 'type'      => 'success',
                 'message'   => 'Thêm khoa thành công!',
                 'redirect'   => route('admin.quan-ly.khoa.quan-ly-khoa')
             ]);
-        } else {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
-            ]);
+        }else{
+
+            if (empty($request->ma_khoa) || empty($request->ten_khoa)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Vui lòng điền đầy đủ thông tin!'
+                ]);
+            }
+            if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_khoa)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã khoa chỉ được chứa chữ cái và số.'
+                ]);
+            }
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_khoa)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Tên khoa không được chứa ký tự đặc biệt và số.'
+                ]);
+            }
+            $khoa = new Khoa;
+            if ($khoa) {
+                $khoa->ma_khoa = $request->ma_khoa;
+                $khoa->ten_khoa = $request->ten_khoa;
+                $khoa->save();
+                $request->session()->flash('success_message', 'Thêm khoa thành công!');
+                return response()->json([
+                    'success'   => true,
+                    'type'      => 'success',
+                    'message'   => 'Thêm khoa thành công!',
+                    'redirect'   => route('admin.quan-ly.khoa.quan-ly-khoa')
+                ]);
+            } else {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
+                ]);
+            }
         }
        
     }
@@ -147,5 +170,12 @@ class KhoaController extends Controller
             'success'   => true,
             'redirect'   => route('admin.quan-ly.khoa.quan-ly-khoa')
         ]);
+    }
+
+    public function downloadTemplate()
+    {
+        $file = public_path('templates/khoa_template.xlsx'); // Đường dẫn đến tệp mẫu Excel
+
+        return response()->download($file, 'khoa_template.xlsx');
     }
 }

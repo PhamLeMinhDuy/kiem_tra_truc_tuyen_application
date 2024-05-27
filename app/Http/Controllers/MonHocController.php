@@ -86,48 +86,71 @@ class MonHocController extends Controller
         }
     }
     public function handleThemMonHoc(Request $request) {
-        if (empty($request->ma_mon_hoc) || empty($request->ten_mon_hoc) ) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Vui lòng điền đầy đủ thông tin!'
-            ]);
-        }
-
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_mon_hoc)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Mã môn học chỉ được chứa chữ cái và số.'
-            ]);
-        }
-
-        if (preg_match('/[^\p{L}\s]/u', $request->ten_mon_hoc)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Tên môn học không được chứa ký tự đặc biệt và số.'
-            ]);
-        }
-        $monHoc = new MonHoc;
-        if ($monHoc) {
-            $monHoc->ma_mon_hoc = $request->ma_mon_hoc;
-            $monHoc->ten_mon_hoc = $request->ten_mon_hoc;
-            $monHoc->save();
-            $request->session()->flash('success_message', 'Thêm môn học thành công!');
-
+        $monHocs = $request->data;
+        if($monHocs){
+            foreach ($monHocs as $monHocData) {
+                $existingMonHoc = MonHoc::where('ma_mon_hoc', $monHocData['ma_mon_hoc'])->first();
+    
+                // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu
+                if (!$existingMonHoc) {
+                    $newMonHoc = new MonHoc;
+                    $newMonHoc->ma_mon_hoc = $monHocData['ma_mon_hoc'];
+                    $newMonHoc->ten_mon_hoc = $monHocData['ten_mon_hoc'];
+                    $newMonHoc->save();
+                }
+            }
+    
             return response()->json([
                 'success'   => true,
                 'type'      => 'success',
                 'message'   => 'Thêm môn học thành công!',
                 'redirect'   => route('admin.quan-ly.mon-hoc.quan-ly-mon-hoc')
             ]);
-        } else {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
-            ]);
+        }else{
+
+            if (empty($request->ma_mon_hoc) || empty($request->ten_mon_hoc) ) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Vui lòng điền đầy đủ thông tin!'
+                ]);
+            }
+    
+            if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_mon_hoc)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã môn học chỉ được chứa chữ cái và số.'
+                ]);
+            }
+    
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_mon_hoc)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Tên môn học không được chứa ký tự đặc biệt và số.'
+                ]);
+            }
+            $monHoc = new MonHoc;
+            if ($monHoc) {
+                $monHoc->ma_mon_hoc = $request->ma_mon_hoc;
+                $monHoc->ten_mon_hoc = $request->ten_mon_hoc;
+                $monHoc->save();
+                $request->session()->flash('success_message', 'Thêm môn học thành công!');
+    
+                return response()->json([
+                    'success'   => true,
+                    'type'      => 'success',
+                    'message'   => 'Thêm môn học thành công!',
+                    'redirect'   => route('admin.quan-ly.mon-hoc.quan-ly-mon-hoc')
+                ]);
+            } else {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
+                ]);
+            }
         }
        
     }
@@ -149,5 +172,12 @@ class MonHocController extends Controller
             'success'   => true,
             'redirect'   => route('admin.quan-ly.mon-hoc.quan-ly-mon-hoc')
         ]);
+    }
+
+    public function downloadTemplate()
+    {
+        $file = public_path('templates/mon_hoc_template.xlsx'); // Đường dẫn đến tệp mẫu Excel
+
+        return response()->download($file, 'mon_hoc_template.xlsx');
     }
 }
