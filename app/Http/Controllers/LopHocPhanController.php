@@ -102,60 +102,89 @@ class LopHocPhanController extends Controller
         }
     }
     public function handleThemLopHocPhan(Request $request) {
-        if (empty($request->ma_lop_hoc_phan) || empty($request->ten_lop_hoc_phan) || empty($request->ma_mon_hoc) || empty($request->thoi_gian_bat_dau) || empty($request->thoi_gian_ket_thuc) ) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Vui lòng điền đầy đủ thông tin!'
-            ]);
-        }
-
-        if (!preg_match('/^[a-zA-Z0-9_]+$/', $request->ma_lop_hoc_phan)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Mã lớp học phần chỉ được chứa chữ cái, số và dấu _.'
-            ]);
-        }
-        
-        $existingLopHocPhan = LopHocPhan::where('ma_lop_hoc_phan', $request->ma_lop_hoc_phan)->first();
-        if ($existingLopHocPhan) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Mã lớp học phần đã tồn tại!'
-            ]);
-        }
-
-        if (preg_match('/[^\p{L}\s]/u', $request->ten_lop_hoc_phan)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Tên lớp học phần không được chứa ký tự đặc biệt và số.'
-            ]);
-        }
-
-        $lop_hoc_phan= new LopHocPhan;
-        if ($lop_hoc_phan) {
-            $lop_hoc_phan->ma_lop_hoc_phan= $request->ma_lop_hoc_phan;
-            $lop_hoc_phan->ten_lop_hoc_phan= $request->ten_lop_hoc_phan;
-            $lop_hoc_phan->ma_mon_hoc= $request->ma_mon_hoc;
-            $lop_hoc_phan->thoi_gian_bat_dau= $request->thoi_gian_bat_dau;
-            $lop_hoc_phan->thoi_gian_ket_thuc= $request->thoi_gian_ket_thuc;
-            $lop_hoc_phan->save();
-            $request->session()->flash('success_message', 'Thêm lớp học phần thành công!');
+        $lopHocPhans = $request->data;
+        if($lopHocPhans){
+            foreach ($lopHocPhans as $lopHocPhanData) {
+                $existingLopHocPhan = LopHocPhan::where('ma_lop_hoc_phan', $lopHocPhanData['ma_lop_hoc_phan'])->first();
+    
+                // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu
+                if (!$existingLopHocPhan) {
+                    $newLopHocPhan = new LopHocPhan;
+                    $newLopHocPhan->ma_lop_hoc_phan = $lopHocPhanData['ma_lop_hoc_phan'];
+                    $newLopHocPhan->ten_lop_hoc_phan = $lopHocPhanData['ten_lop_hoc_phan'];
+                    $newLopHocPhan->ma_mon_hoc = $lopHocPhanData['ma_mon_hoc'];
+                    $newLopHocPhan->thoi_gian_bat_dau = $lopHocPhanData['thoi_gian_bat_dau'];
+                    $newLopHocPhan->thoi_gian_ket_thuc = $lopHocPhanData['thoi_gian_ket_thuc'];
+                    $newLopHocPhan->danh_sach_sinh_vien = json_encode($lopHocPhanData['danh_sach_sinh_vien']);
+                    $newLopHocPhan->danh_sach_giang_vien = json_encode($lopHocPhanData['danh_sach_giang_vien']);
+                    $newLopHocPhan->danh_sach_bai_thi = json_encode($lopHocPhanData['danh_sach_bai_thi']);
+                    $newLopHocPhan->save();
+                }
+            }
+    
             return response()->json([
                 'success'   => true,
                 'type'      => 'success',
                 'message'   => 'Thêm lớp học phần thành công!',
                 'redirect'   => route('admin.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan')
             ]);
-        } else {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
-            ]);
+        }else{
+
+            if (empty($request->ma_lop_hoc_phan) || empty($request->ten_lop_hoc_phan) || empty($request->ma_mon_hoc) || empty($request->thoi_gian_bat_dau) || empty($request->thoi_gian_ket_thuc) ) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Vui lòng điền đầy đủ thông tin!'
+                ]);
+            }
+    
+            if (!preg_match('/^[a-zA-Z0-9_]+$/', $request->ma_lop_hoc_phan)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã lớp học phần chỉ được chứa chữ cái, số và dấu _.'
+                ]);
+            }
+            
+            $existingLopHocPhan = LopHocPhan::where('ma_lop_hoc_phan', $request->ma_lop_hoc_phan)->first();
+            if ($existingLopHocPhan) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã lớp học phần đã tồn tại!'
+                ]);
+            }
+    
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_lop_hoc_phan)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Tên lớp học phần không được chứa ký tự đặc biệt và số.'
+                ]);
+            }
+    
+            $lop_hoc_phan= new LopHocPhan;
+            if ($lop_hoc_phan) {
+                $lop_hoc_phan->ma_lop_hoc_phan= $request->ma_lop_hoc_phan;
+                $lop_hoc_phan->ten_lop_hoc_phan= $request->ten_lop_hoc_phan;
+                $lop_hoc_phan->ma_mon_hoc= $request->ma_mon_hoc;
+                $lop_hoc_phan->thoi_gian_bat_dau= $request->thoi_gian_bat_dau;
+                $lop_hoc_phan->thoi_gian_ket_thuc= $request->thoi_gian_ket_thuc;
+                $lop_hoc_phan->save();
+                $request->session()->flash('success_message', 'Thêm lớp học phần thành công!');
+                return response()->json([
+                    'success'   => true,
+                    'type'      => 'success',
+                    'message'   => 'Thêm lớp học phần thành công!',
+                    'redirect'   => route('admin.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan')
+                ]);
+            } else {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
+                ]);
+            }
         }
        
     }
@@ -327,6 +356,13 @@ class LopHocPhanController extends Controller
             'success'   => true,
             'redirect'   => route('giang-vien.quan-ly.lop-hoc-phan.quan-ly-lop-hoc-phan-giang-vien', ['id' => $id_giang_vien])
         ]);
+    }
+
+    public function downloadTemplate()
+    {
+        $file = public_path('templates/lop_hoc_phan_template.xlsx'); // Đường dẫn đến tệp mẫu Excel
+
+        return response()->download($file, 'lop_hoc_phan_template.xlsx');
     }
 
 }

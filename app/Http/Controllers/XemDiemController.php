@@ -70,6 +70,8 @@ class XemDiemController extends Controller
     public function handleThemDiemSinhVien(Request $request) {
         $id = $request->id;
         $sinhVien = SinhVien::find($id);
+        $sinhVien->state = 'Submitted';
+        $sinhVien->save();
         $maSinhVien = $sinhVien->ma_sinh_vien;
         $ketQua = new KetQua;
         $ketQua->ma_bai_thi = $request->ma_bai_thi;

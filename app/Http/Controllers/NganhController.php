@@ -85,44 +85,68 @@ class NganhController extends Controller
         }
     }
     public function handleThemNganh(Request $request) {
-        if (empty($request->ma_nganh) || empty($request->ten_nganh)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Vui lòng điền đầy đủ thông tin!'
-            ]);
-        }
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_nganh)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Mã ngành chỉ được chứa chữ cái và số.'
-            ]);
-        }
-        if (preg_match('/[^\p{L}\s]/u', $request->ten_nganh)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Tên ngành không được chứa ký tự đặc biệt và số.'
-            ]);
-        }
-        $nganh = new nganh;
-        if ($nganh) {
-            $nganh->ma_nganh = $request->ma_nganh;
-            $nganh->ten_nganh = $request->ten_nganh;
-            $nganh->ma_khoa = $request->ma_khoa;
-            $nganh->save();
-            $request->session()->flash('success_message', 'Thêm ngành thành công!');
+        $nganhs = $request->data;
+        if($nganhs){
+            foreach ($nganhs as $nganhData) {
+                $existingNganh = Nganh::where('ma_nganh', $nganhData['ma_nganh'])->first();
+    
+                // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu
+                if (!$existingNganh) {
+                    $newNganh = new Nganh;
+                    $newNganh->ma_nganh = $nganhData['ma_nganh'];
+                    $newNganh->ten_nganh = $nganhData['ten_nganh'];
+                    $newNganh->ma_khoa = $nganhData['ma_khoa'];
+                    $newNganh->save();
+                }
+            }
+    
             return response()->json([
                 'success'   => true,
+                'type'      => 'success',
+                'message'   => 'Thêm ngành thành công!',
                 'redirect'   => route('admin.quan-ly.nganh.quan-ly-nganh')
             ]);
-        } else {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
-            ]);
+        }else{
+
+            if (empty($request->ma_nganh) || empty($request->ten_nganh)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Vui lòng điền đầy đủ thông tin!'
+                ]);
+            }
+            if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_nganh)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã ngành chỉ được chứa chữ cái và số.'
+                ]);
+            }
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_nganh)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Tên ngành không được chứa ký tự đặc biệt và số.'
+                ]);
+            }
+            $nganh = new nganh;
+            if ($nganh) {
+                $nganh->ma_nganh = $request->ma_nganh;
+                $nganh->ten_nganh = $request->ten_nganh;
+                $nganh->ma_khoa = $request->ma_khoa;
+                $nganh->save();
+                $request->session()->flash('success_message', 'Thêm ngành thành công!');
+                return response()->json([
+                    'success'   => true,
+                    'redirect'   => route('admin.quan-ly.nganh.quan-ly-nganh')
+                ]);
+            } else {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
+                ]);
+            }
         }
        
     }
@@ -148,5 +172,11 @@ class NganhController extends Controller
             'success'   => true,
             'redirect'   => route('admin.quan-ly.nganh.quan-ly-nganh')
         ]);
+    }
+    public function downloadTemplate()
+    {
+        $file = public_path('templates/nganh_template.xlsx'); // Đường dẫn đến tệp mẫu Excel
+
+        return response()->download($file, 'nganh_template.xlsx');
     }
 }

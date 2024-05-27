@@ -2,11 +2,8 @@
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: my-laravel-app
-    container_name: my-laravel-app
+    image: minhduy07/thi_trac_nghiem_truc_tuyen:latest
+    container_name: thi-trac-nghiem
     ports:
       - "8000:8000"
     volumes:
@@ -15,7 +12,7 @@ services:
       - app-network
 
   db:
-    image: mysql:8.0
+    image: minhduy07/thi_trac_nghiem_truc_tuyen_db:latest
     container_name: mysql
     environment:
       MYSQL_DATABASE: laravel
@@ -26,6 +23,18 @@ services:
       - "3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql # Đường dẫn đến file init_db.sql
+    networks:
+      - app-network
+
+  import:
+    image: minhduy07/thi_trac_nghiem_truc_tuyen_db:latest
+    container_name: db-import
+    command: ["bash", "-c", "sleep 20 && mysql -hdb -u laravel -psecret laravel < /docker-entrypoint-initdb.d/init_db.sql"]
+    volumes:
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    depends_on:
+      - db
     networks:
       - app-network
 

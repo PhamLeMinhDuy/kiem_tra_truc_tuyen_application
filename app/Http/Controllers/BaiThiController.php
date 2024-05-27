@@ -95,51 +95,77 @@ class BaiThiController extends Controller
     }
 
     public function handleThemBaiThi(Request $request) {
-        if (empty($request->ma_bai_thi) || empty($request->ten_bai_thi) ) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Vui lòng điền đầy đủ thông tin!'
-            ]);
-        }
-
-        if (!preg_match('/^[a-zA-Z0-9_]+$/', $request->ma_bai_thi)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Mã bài thi chỉ được chứa chữ cái và số.'
-            ]);
-        }
-
-        if (preg_match('/[^\p{L}\s]/u', $request->ten_bai_thi)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Tên bài thi không được chứa ký tự đặc biệt và số.'
-            ]);
-        }
-        $baiThi = new BaiThi;
-        if ($baiThi) {
-            $baiThi->ma_bai_thi = $request->ma_bai_thi;
-            $baiThi->ten_bai_thi = $request->ten_bai_thi;
-            $baiThi->thoi_gian_bat_dau = $request->thoi_gian_bat_dau;
-            $baiThi->thoi_gian_ket_thuc = $request->thoi_gian_ket_thuc;
-            $baiThi->mo_ta = $request->mo_ta;
-            $baiThi->save();
-            $request->session()->flash('success_message', 'Thêm bài thi thành công!');
-
+        $baiThis = $request->data;
+        if($baiThis){
+            foreach ($baiThis as $baiThiData) {
+                $existingBaiThi = BaiThi::where('ma_bai_thi', $baiThiData['ma_bai_thi'])->first();
+    
+                // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu
+                if (!$existingBaiThi) {
+                    $newBaiThi = new BaiThi;
+                    $newBaiThi->ma_bai_thi = $baiThiData['ma_bai_thi'];
+                    $newBaiThi->ten_bai_thi = $baiThiData['ten_bai_thi'];
+                    $newBaiThi->thoi_gian_bat_dau = $baiThiData['thoi_gian_bat_dau'];
+                    $newBaiThi->thoi_gian_ket_thuc = $baiThiData['thoi_gian_ket_thuc'];
+                    $newBaiThi->mo_ta = $baiThiData['mo_ta'];
+                    $newBaiThi->save();
+                }
+            }
+    
             return response()->json([
                 'success'   => true,
                 'type'      => 'success',
                 'message'   => 'Thêm bài thi thành công!',
                 'redirect'   => route('admin.quan-ly.bai-thi.quan-ly-bai-thi')
             ]);
-        } else {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
-            ]);
+        }else{
+
+            if (empty($request->ma_bai_thi) || empty($request->ten_bai_thi) ) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Vui lòng điền đầy đủ thông tin!'
+                ]);
+            }
+    
+            if (!preg_match('/^[a-zA-Z0-9_]+$/', $request->ma_bai_thi)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã bài thi chỉ được chứa chữ cái và số.'
+                ]);
+            }
+    
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_bai_thi)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Tên bài thi không được chứa ký tự đặc biệt và số.'
+                ]);
+            }
+            $baiThi = new BaiThi;
+            if ($baiThi) {
+                $baiThi->ma_bai_thi = $request->ma_bai_thi;
+                $baiThi->ten_bai_thi = $request->ten_bai_thi;
+                $baiThi->thoi_gian_bat_dau = $request->thoi_gian_bat_dau;
+                $baiThi->thoi_gian_ket_thuc = $request->thoi_gian_ket_thuc;
+                $baiThi->mo_ta = $request->mo_ta;
+                $baiThi->save();
+                $request->session()->flash('success_message', 'Thêm bài thi thành công!');
+    
+                return response()->json([
+                    'success'   => true,
+                    'type'      => 'success',
+                    'message'   => 'Thêm bài thi thành công!',
+                    'redirect'   => route('admin.quan-ly.bai-thi.quan-ly-bai-thi')
+                ]);
+            } else {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
+                ]);
+            }
         }
        
     }
@@ -235,54 +261,81 @@ class BaiThiController extends Controller
 
 
     public function handleThemBaiThiGiangVien(Request $request) {
-        if (empty($request->ma_bai_thi) || empty($request->ten_bai_thi) ) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Vui lòng điền đầy đủ thông tin!'
-            ]);
-        }
-
-        if (!preg_match('/^[a-zA-Z0-9_]+$/', $request->ma_bai_thi)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Mã bài thi chỉ được chứa chữ cái và số.'
-            ]);
-        }
-
-        if (preg_match('/[^\p{L}\s]/u', $request->ten_bai_thi)) {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Tên bài thi không được chứa ký tự đặc biệt và số.'
-            ]);
-        }
         $giangVien = GiangVien::find($request->id_giang_vien);
         $maGiangVien = $giangVien->ma_giang_vien;
-        $baiThi = new BaiThi;
-        if ($baiThi) {
-            $baiThi->ma_bai_thi = $request->ma_bai_thi;
-            $baiThi->ten_bai_thi = $request->ten_bai_thi;
-            $baiThi->thoi_gian_bat_dau = $request->thoi_gian_bat_dau;
-            $baiThi->thoi_gian_ket_thuc = $request->thoi_gian_ket_thuc;
-            $baiThi->mo_ta = $request->mo_ta;
-            $baiThi->ma_nguoi_tao = $maGiangVien;
-            $baiThi->save();
-            $request->session()->flash('success_message', 'Thêm bài thi thành công!');
-
+        $baiThiGVs = $request->data;
+        if($baiThiGVs){
+            foreach ($baiThiGVs as $baiThiGVData) {
+                $existingBaiThi = BaiThi::where('ma_bai_thi', $baiThiGVData['ma_bai_thi'])->first();
+                // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu
+                if (!$existingBaiThi) {
+                    $newBaiThi = new BaiThi;
+                    $newBaiThi->ma_bai_thi = $baiThiGVData['ma_bai_thi'];
+                    $newBaiThi->ten_bai_thi = $baiThiGVData['ten_bai_thi'];
+                    $newBaiThi->thoi_gian_bat_dau = $baiThiGVData['thoi_gian_bat_dau'];
+                    $newBaiThi->thoi_gian_ket_thuc = $baiThiGVData['thoi_gian_ket_thuc'];
+                    $newBaiThi->mo_ta = $baiThiGVData['mo_ta'];
+                    $newBaiThi->ma_nguoi_tao = $maGiangVien;
+                    $newBaiThi->save();
+                }
+            }
+    
             return response()->json([
                 'success'   => true,
                 'type'      => 'success',
                 'message'   => 'Thêm bài thi thành công!',
                 'redirect'   => route('giang-vien.quan-ly.bai-thi.quan-ly-bai-thi-giang-vien', [$giangVien->id])
             ]);
-        } else {
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
-            ]);
+        }else{
+
+            if (empty($request->ma_bai_thi) || empty($request->ten_bai_thi) ) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Vui lòng điền đầy đủ thông tin!'
+                ]);
+            }
+    
+            if (!preg_match('/^[a-zA-Z0-9_]+$/', $request->ma_bai_thi)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Mã bài thi chỉ được chứa chữ cái và số.'
+                ]);
+            }
+    
+            if (preg_match('/[^\p{L}\s]/u', $request->ten_bai_thi)) {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Tên bài thi không được chứa ký tự đặc biệt và số.'
+                ]);
+            }
+            
+            $baiThi = new BaiThi;
+            if ($baiThi) {
+                $baiThi->ma_bai_thi = $request->ma_bai_thi;
+                $baiThi->ten_bai_thi = $request->ten_bai_thi;
+                $baiThi->thoi_gian_bat_dau = $request->thoi_gian_bat_dau;
+                $baiThi->thoi_gian_ket_thuc = $request->thoi_gian_ket_thuc;
+                $baiThi->mo_ta = $request->mo_ta;
+                $baiThi->ma_nguoi_tao = $maGiangVien;
+                $baiThi->save();
+                $request->session()->flash('success_message', 'Thêm bài thi thành công!');
+    
+                return response()->json([
+                    'success'   => true,
+                    'type'      => 'success',
+                    'message'   => 'Thêm bài thi thành công!',
+                    'redirect'   => route('giang-vien.quan-ly.bai-thi.quan-ly-bai-thi-giang-vien', [$giangVien->id])
+                ]);
+            } else {
+                return response()->json([
+                    'success'   => false,
+                    'type'      => 'error',
+                    'message'   => 'Có lỗi xảy ra trong quá trình thêm!'
+                ]);
+            }
         }
        
     }
@@ -409,6 +462,13 @@ class BaiThiController extends Controller
         $file = public_path('templates/template.xlsx'); // Đường dẫn đến tệp mẫu Excel
 
         return response()->download($file, 'template.xlsx');
+    }
+
+    public function downloadTemplateBaiThi()
+    {
+        $file = public_path('templates/bai_thi_template.xlsx'); // Đường dẫn đến tệp mẫu Excel
+
+        return response()->download($file, 'bai_thi_template.xlsx');
     }
 
 }

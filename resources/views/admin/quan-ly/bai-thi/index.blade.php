@@ -21,6 +21,7 @@
 @include('admin.quan-ly.bai-thi.create-modal')
 @include('admin.quan-ly.bai-thi.update-modal')
 @include('admin.quan-ly.bai-thi.delete-modal') 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
 @section('page-js')
      <script type="text/javascript">
     </script> 

@@ -47,30 +47,35 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
             Route::post('/quan-ly-giang-vien-them', [GiangVienController::class, 'handleThemGiangVien'])->name('handle-them-giang-vien');
             Route::post('/quan-ly-giang-vien-xoa', [GiangVienController::class, 'handleXoaGiangVien'])->name('handle-xoa-giang-vien');
             Route::post('/quan-ly-cac-mon-giang-day', [GiangVienController::class, 'handleCacMonGiangDay'])->name('handle-cac-mon-giang-day');
+            Route::get('/download-template-giang-vien', [GiangVienController::class, 'downloadTemplate'])->name('download-template-giang-vien');
         });
         Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
             Route::get('/quan-ly-sinh-vien', [SinhVienController::class, 'index'])->name('quan-ly-sinh-vien');
             Route::put('/quan-ly-sinh-vien-cap-nhat', [SinhVienController::class, 'handleCapNhatSinhVien'])->name('handle-cap-nhat-sinh-vien');
             Route::post('/quan-ly-sinh-vien-them', [SinhVienController::class, 'handleThemSinhVien'])->name('handle-them-sinh-vien');
             Route::post('/quan-ly-sinh-vien-xoa', [SinhVienController::class, 'handleXoaSinhVien'])->name('handle-xoa-sinh-vien');
+            Route::get('/download-template-sinh-vien', [SinhVienController::class, 'downloadTemplate'])->name('download-template-sinh-vien');
         });
         Route::group(['prefix' => 'mon-hoc', 'as'=>'mon-hoc.'], function() {
             Route::get('/quan-ly-mon-hoc', [MonHocController::class, 'index'])->name('quan-ly-mon-hoc');
             Route::put('/quan-ly-mon-hoc-cap-nhat', [MonHocController::class, 'handleCapNhatMonHoc'])->name('handle-cap-nhat-mon-hoc');
             Route::post('/quan-ly-mon-hoc-them', [MonHocController::class, 'handleThemMonHoc'])->name('handle-them-mon-hoc');
             Route::post('/quan-ly-mon-hoc-xoa', [MonHocController::class, 'handleXoaMonHoc'])->name('handle-xoa-mon-hoc');
+            Route::get('/download-template-mon-hoc', [MonHocController::class, 'downloadTemplate'])->name('download-template-mon-hoc');
         });
         Route::group(['prefix' => 'nganh', 'as'=>'nganh.'], function() {
             Route::get('/quan-ly-nganh', [NganhController::class, 'index'])->name('quan-ly-nganh');
             Route::put('/quan-ly-nganh-cap-nhat', [NganhController::class, 'handleCapNhatNganh'])->name('handle-cap-nhat-nganh');
             Route::post('/quan-ly-nganh-them', [NganhController::class, 'handleThemNganh'])->name('handle-them-nganh');
             Route::post('/quan-ly-nganh-xoa', [NganhController::class, 'handleXoaNganh'])->name('handle-xoa-nganh');
+            Route::get('/download-template-nganh', [NganhController::class, 'downloadTemplate'])->name('download-template-nganh');
         });
         Route::group(['prefix' => 'khoa', 'as'=>'khoa.'], function() {
             Route::get('/quan-ly-khoa', [KhoaController::class, 'index'])->name('quan-ly-khoa');
             Route::put('/quan-ly-khoa-cap-nhat', [KhoaController::class, 'handleCapNhatkhoa'])->name('handle-cap-nhat-khoa');
             Route::post('/quan-ly-khoa-them', [KhoaController::class, 'handleThemkhoa'])->name('handle-them-khoa');
             Route::post('/quan-ly-khoa-xoa', [KhoaController::class, 'handleXoakhoa'])->name('handle-xoa-khoa');
+            Route::get('/download-template-khoa', [KhoaController::class, 'downloadTemplate'])->name('download-template-khoa');
         });
         Route::group(['prefix' => 'lop-hoc-phan', 'as'=>'lop-hoc-phan.'], function() {
             Route::get('/quan-ly-lop-hoc-phan', [LopHocPhanController::class, 'index'])->name('quan-ly-lop-hoc-phan');
@@ -80,6 +85,7 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
             Route::put('/quan-ly-lop-hoc-phan-cap-nhat-danh-sach-bai-thi', [LopHocPhanController::class, 'handleCapNhatDanhSachBaiThiLopHocPhan'])->name('handle-cap-nhat-danh-sach-bai-thi-lop-hoc-phan');
             Route::post('/quan-ly-lop-hoc-phan-them', [LopHocPhanController::class, 'handleThemLopHocPhan'])->name('handle-them-lop-hoc-phan');
             Route::post('/quan-ly-lop-hoc-phan-xoa', [LopHocPhanController::class, 'handleXoaLopHocPhan'])->name('handle-xoa-lop-hoc-phan');
+            Route::get('/download-template-lop-hoc-phan', [LopHocPhanController::class, 'downloadTemplate'])->name('download-template-lop-hoc-phan');
         });
         Route::group(['prefix' => 'bai-thi', 'as'=>'bai-thi.'], function() {
             Route::get('/quan-ly-bai-thi', [BaiThiController::class, 'index'])->name('quan-ly-bai-thi');
@@ -89,6 +95,7 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
             Route::post('/quan-ly-bai-thi-xoa', [BaiThiController::class, 'handleXoaBaiThi'])->name('handle-xoa-bai-thi');
             Route::post('/quan-ly-bai-thi-them-cau-hoi', [BaiThiController::class, 'handleThemCauHoi'])->name('handle-them-bai-thi-cau-hoi');
             Route::get('/download-template', [BaiThiController::class, 'downloadTemplate'])->name('download-template');
+            Route::get('/download-template-bai-thi', [BaiThiController::class, 'downloadTemplateBaiThi'])->name('download-template-bai-thi');
         });
         Route::group(['prefix' => 'nguoi-dung', 'as'=>'nguoi-dung.'], function() {
             Route::get('/quan-ly-nguoi-dung', [NguoiDungController::class, 'index'])->name('quan-ly-nguoi-dung');
@@ -96,6 +103,7 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
             Route::post('/quan-ly-nguoi-dung-them', [NguoiDungController::class, 'handleThemNguoiDung'])->name('handle-them-nguoi-dung');
             Route::post('/quan-ly-nguoi-dung-xoa', [NguoiDungController::class, 'handleXoaNguoiDung'])->name('handle-xoa-nguoi-dung');
             Route::post('/quan-ly-nguoi-dung-them-van-lang', [NguoiDungController::class, 'handleThemNguoiDungEmail'])->name('handle-them-nguoi-dung-email');
+            Route::get('/download-template-nguoi-dung', [NguoiDungController::class, 'downloadTemplate'])->name('download-template-nguoi-dung');
         });
     });
 });
@@ -133,6 +141,7 @@ Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {
             Route::get('/quan-ly-bai-thi-cau-hoi/{id}/{id_giang_vien}', [BaiThiController::class, 'handleCauHoiGiangVien'])->name('quan-ly-bai-thi-cau-hoi');
             Route::post('/quan-ly-bai-thi-them-cau-hoi', [BaiThiController::class, 'handleThemCauHoiGiangVien'])->name('handle-them-bai-thi-cau-hoi');
             Route::get('/download-template', [BaiThiController::class, 'downloadTemplate'])->name('download-template');
+            Route::get('/download-template-bai-thi', [BaiThiController::class, 'downloadTemplateBaiThi'])->name('download-template-bai-thi');
         });
         Route::group(['prefix' => '', 'as'=>'xem-diem.'], function() {
             Route::get('/xem-diem-sinh-vien-giang-vien/{id}', [XemDiemController::class, 'indexXemDiemSinhVienGiangVien'])->name('xem-diem-sinh-vien-giang-vien');

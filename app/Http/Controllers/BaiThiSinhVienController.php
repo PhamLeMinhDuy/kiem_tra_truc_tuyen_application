@@ -78,7 +78,7 @@ class BaiThiSinhVienController extends Controller
         $tenSinhVien = $sinhVien->ten_sinh_vien;
         $maSinhVien = $sinhVien->ma_sinh_vien;
         $baiThi = BaiThi::where('ma_bai_thi', $maBaiThi)->first();
-
+        $sinhVienState = ($sinhVien->state == 'Inprocess') ? 'Inprocess' : null;
         // Kiểm tra xem bài thi có tồn tại hay không
         if ($baiThi) {
             // Trích xuất thông tin về bài thi
@@ -118,6 +118,7 @@ class BaiThiSinhVienController extends Controller
                 'sophut' => $sophut,
                 'maBaiThi' => $maBaiThi,
                 'coTrongDanhSach' => $coTrongDanhSach, 
+                'sinhVienState' => $sinhVienState,
             ]);
         } else {
             // Xử lý trường hợp không tìm thấy bài thi
@@ -133,6 +134,9 @@ class BaiThiSinhVienController extends Controller
         $tenBaiThi = $baiThi->ten_bai_thi;
         $thoiGianBatDau = $baiThi->thoi_gian_bat_dau;
         $thoiGianKetThuc = $baiThi->thoi_gian_ket_thuc;
+        // Cập nhật cột state của sinh viên thành 'Inprocess'
+        $sinhVien->state = 'Inprocess';
+        $sinhVien->save();
         $thoiGianBatDauThi = Carbon::parse($baiThi->thoi_gian_bat_dau);
         $thoiGianKetThucThi = Carbon::parse($baiThi->thoi_gian_ket_thuc);
             //Tính thòi gian
