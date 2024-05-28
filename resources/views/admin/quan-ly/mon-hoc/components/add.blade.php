@@ -1,7 +1,7 @@
 
 <div class="flex items-center">
     <button class="relative inline-flex items-center justify-center overflow-hidden mb-2 me-2 " title="Tải file excel mẫu">
-        <a href="{{ route('admin.quan-ly.mon-hoc.download-template-mon-hoc') }}" download="mon_hoc_template.xlsx" class="inline-block"> 
+        <a id="download-link" class="inline-block"> 
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="w-10 h-10"> 
                 <path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z" fill="#008000"/> <!-- Thay đổi fill="#008000" để đổi màu thành xanh lá cây -->
             </svg>
@@ -80,4 +80,21 @@
         }
         return url;
     }
+
+    document.getElementById('download-link').addEventListener('click', function() {
+        axios.get(secureUrl("{{ route('admin.quan-ly.mon-hoc.download-template-mon-hoc') }}"), { responseType: 'blob' })
+            .then(function(response) {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'mon_hoc_template.xlsx');
+                document.body.appendChild(link);
+                link.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(function(error) {
+                console.error('Error downloading file:', error);
+                // Xử lý lỗi nếu cần
+            });
+    });
 </script>
