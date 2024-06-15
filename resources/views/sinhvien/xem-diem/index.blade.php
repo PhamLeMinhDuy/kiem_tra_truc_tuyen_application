@@ -14,12 +14,12 @@
 
 @section('content')
     <div class="flex space-x-4 my-4">
-        <!-- Button chuyển sang chế độ xem đồ thị -->
-        <button id="chartModeBtn" onclick="switchToNormalView()"  class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-teal-200 rounded-md shadow-sm hover:bg-teal-50 focus:outline-none focus:shadow-none">
+       <!-- Button chuyển sang chế độ xem đồ thị -->
+        <button id="chartModeBtn" onclick="switchToNormalView();" class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-teal-200 rounded-md shadow-sm hover:bg-teal-50 focus:outline-none focus:shadow-none">
             Thẻ điểm 
         </button>
         <!-- Button chuyển sang chế độ xem bình thường -->
-        <button id="normalModeBtn" onclick="switchToChartView()"  class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-rose-200 rounded-md shadow-sm hover:bg-rose-50 focus:outline-none focus:shadow-none">
+        <button id="normalModeBtn" onclick="switchToChartView();" class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-rose-200 rounded-md shadow-sm hover:bg-rose-50 focus:outline-none focus:shadow-none">
             Đồ thị
         </button>
     </div>
@@ -29,7 +29,7 @@
             $labels = [];
             $data = [];
         @endphp
-        @if (count($ketQuas) > 0)
+        @if (isset($ketQuas) && count($ketQuas) > 0)
             @foreach ($ketQuas as $ketQua)
                 @if ($ketQua['maLopHocPhan'] !== $previousMaLopHocPhan)
                     <div class="flex items-center justify-between font-bold text-xl">
@@ -54,9 +54,11 @@
                 @endphp
             @endforeach
         @else
-            <div class="text-red-600 font-bold">
-                Sinh viên chưa có điểm.
-            </div>
+            @if (isset($message))
+                <div class="text-red-600 font-bold">
+                    {{ $message }}
+                </div>
+            @endif
         @endif
     </div>
     <div id="chartMode" class="mt-8 hidden">
@@ -69,42 +71,94 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="text/javascript">
-    // Chuyển sang chế độ xem bình thường (normal view)
-    function switchToNormalView() {
-        document.getElementById('normalMode').classList.remove('hidden');
-        document.getElementById('chartMode').classList.add('hidden');
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
+        }
+        return url;
     }
+        // var sessionId = "{ $sessionId }";
+        // // function checkSession() {
+            
+        //     var currentSessionId = "{{ session()->getId() }}";
+        //     var state = currentSessionId === sessionId;
+        //     if (currentSessionId === sessionId) {
+        //         console.log('Phiên đăng nhập chưa hết hạn');
+                
+        //     } else {
+        //         axios.post(secureUrl("{{ route('check-session') }}"),{
+        //                 id: "{{ $id }}",
+        //                 state: state,
+        //         })
+        //         .then(function(response) {
+        //             if (response.data.success) {
+        //                 window.location.replace(response.data.redirect);
+        //                 return;
+        //             }
+        //             Swal.fire({
+        //                 icon: response.data.type,
+        //                 title: response.data.message,
+        //                 showConfirmButton: false,
+        //                 timer: 1500
+        //             })
+        //         })
+        //         .catch(function(error) {
+        //             console.error(error);
+        //         });
+        //     }
+        // }
 
-    // Chuyển sang chế độ xem đồ thị (chart view)
-    function switchToChartView() {
-        document.getElementById('normalMode').classList.add('hidden');
-        document.getElementById('chartMode').classList.remove('hidden');
+        function switchToNormalView() {
+            // checkSession() 
+            document.getElementById('normalMode').classList.remove('hidden');
+            document.getElementById('chartMode').classList.add('hidden');
+        }
 
-        // Vẽ biểu đồ Chart.js khi chuyển sang chế độ xem đồ thị
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($labels) !!}, // Sử dụng tên bài thi làm nhãn
-                datasets: [{
-                    label: 'Điểm số',
-                    data: {!! json_encode($data) !!}, // Sử dụng điểm số làm dữ liệu
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMax: 10
+        // Chuyển sang chế độ xem đồ thị (chart view)
+        function switchToChartView() {
+            // checkSession();
+            document.getElementById('normalMode').classList.add('hidden');
+            document.getElementById('chartMode').classList.remove('hidden');
+
+            // Kiểm tra nếu biến myChart đã được khởi tạo trước đó và không phải là null
+            if (window.myChart && typeof window.myChart.destroy === 'function') {
+                window.myChart.destroy();
+            }
+
+            // Vẽ biểu đồ Chart.js khi chuyển sang chế độ xem đồ thị
+            var ctx = document.getElementById('myChart').getContext('2d');
+            window.myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($labels) !!},
+                    datasets: [{
+                        label: 'Điểm số',
+                        data: {!! json_encode($data) !!},
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 10
+                        }
                     }
                 }
-            }
-        });
-    }
+            });
+        }
+
+
+        // var buttons = document.querySelectorAll('button');
+        // buttons.forEach(function(button) {
+        //     button.addEventListener('click', function(event) {
+        //         checkSession(); // Kiểm tra session khi một nút button được click
+        //     });
+        // });  // Chuyển sang chế độ xem bình thường (normal view)
+    
 </script>
 

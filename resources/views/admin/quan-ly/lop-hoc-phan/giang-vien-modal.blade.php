@@ -312,8 +312,10 @@
         })
         .then(function (response) {
             if (response.data.success) {
-                window.location.replace(response.data.redirect);
-                return;
+                if (!response.data.is_last_page) {
+                    window.location.reload();
+                    return;
+                }
             }
             Swal.fire({
                 icon: response.data.type,
@@ -332,6 +334,7 @@
         });
     })
     $('#btn-huy-giang-vien').on('click', function(event){
+        event.preventDefault();
         document.getElementById('modal-giang-vien').style.display = 'none';
     })
 

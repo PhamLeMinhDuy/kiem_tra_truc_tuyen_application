@@ -12,7 +12,7 @@
 @section('content')
     <div class="p-2">
         @if ($dataType = 'xem_diem_sinh_vien_giang_vien')
-            @include('components.datatable', [$danhSachCot, $danhSachDuLieu, $danhSachMon])    
+            @include('components.datatable', [$danhSachCot, $danhSachDuLieu, $danhSachMon,  $thongTinLanThi])    
         @else 
             @include('components.datatable', [$danhSachCot, $danhSachDuLieu, $danhSachMon])    
         @endif

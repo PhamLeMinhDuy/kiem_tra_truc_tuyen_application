@@ -6,7 +6,6 @@
     <div class="flex items-center justify-between">
         <div class="mr-5">
             Danh sách lớp học phần
-
         </div> 
     </div>
 @endsection

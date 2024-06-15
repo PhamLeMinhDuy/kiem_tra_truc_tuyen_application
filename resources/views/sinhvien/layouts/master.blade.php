@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.js"></script>
     <title>@yield('title')</title>
 </head>
 <body class="bg-white">
@@ -54,34 +52,41 @@
         window.addEventListener('resize', handleResize);
         handleResize(); // Xử lý ban đầu khi tải trang
     });
-    let tabVisible = true; // Biến để theo dõi trạng thái của tab
+    // let tabVisible = true; // Biến để theo dõi trạng thái của tab
 
-    document.addEventListener("visibilitychange", function() {
-        if (document.visibilityState === 'hidden') {
-            // Tab hiện tại đã ẩn đi, có thể là do đóng tab
-            tabVisible = false;
-        } else {
-            // Tab hiện tại đã được hiển thị lại
-            tabVisible = true;
-        }
-    });
+    // document.addEventListener("visibilitychange", function() {
+    //     if (document.visibilityState === 'hidden') {
+    //         // Tab hiện tại đã ẩn đi, có thể là do đóng tab
+    //         tabVisible = false;
+    //     } else {
+    //         // Tab hiện tại đã được hiển thị lại
+    //         tabVisible = true;
+    //     }
+    // });
 
-    window.addEventListener("beforeunload", function(event) {
-        if (!tabVisible || !document.hidden) {
-            // Nếu tab đang ẩn và trình duyệt đang chuẩn bị đóng, thực hiện logout
-            fetch('/logout-session', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Các headers khác nếu cần
-                },
-            })
-            .then(response => {
-                // Xử lý phản hồi từ máy chủ nếu cần
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+    // window.addEventListener("beforeunload", function(event) {
+    //     if (!tabVisible || !document.hidden) {
+    //         // Nếu tab đang ẩn và trình duyệt đang chuẩn bị đóng, thực hiện logout
+    //         fetch('/logout-session', {
+    //             method: 'GET',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 // Các headers khác nếu cần
+    //             },
+    //         })
+    //         .then(response => {
+    //             // Xử lý phản hồi từ máy chủ nếu cần
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //         });
+    //     }
+    // });
+    function secureUrl(url) {
+        if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+            return url.replace('http:', 'https:');
         }
-    });
+        return url;
+    }
+
 </script>

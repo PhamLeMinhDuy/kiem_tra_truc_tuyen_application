@@ -7,8 +7,10 @@ use App\Http\Controllers\KhoaController;
 use App\Http\Controllers\NganhController;
 use App\Http\Controllers\BaiThiController;
 use App\Http\Controllers\MonHocController;
+use App\Http\Controllers\SessionController;
 use App\Http\Controllers\XemDiemController;
 use App\Http\Controllers\SinhVienController;
+use App\Http\Controllers\ThongBaoController;
 use App\Http\Controllers\GiangVienController;
 use App\Http\Controllers\HomeAdminController;
 use App\Http\Controllers\NguoiDungController;
@@ -37,8 +39,9 @@ Route::get('/dang-nhap-van-lang/{userEmail}/{userName}', [AuthController::class,
 Route::get('/microsoft-oauth', [MicrosoftAuthController::class, 'microsoftOAuthLogin'])->name('microsoft-login');
 Route::get('/microsoft-oauth-callback', [MicrosoftAuthController::class, 'microsoftOAuthCallback'])->name('microsoft-callback');
 Route::get('/microsoft-logout', [MicrosoftAuthController::class, 'microsoftLogout'])->name('microsoft-logout');
-Route::get('/logout-session', [MicrosoftAuthController::class, 'logoutSession']);
-
+Route::get('/logout-other-device', [AuthController::class, 'logoutOtherDevice'])->name('logout-other-device');
+Route::get('/thong-bao/{id}', [ThongBaoController::class, 'index'])->name('thong-bao');
+Route::post('/check-session', [ThongBaoController::class, 'checkSession'])->name('check-session');
 Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
     Route::group(['prefix' => 'quan-ly', 'as'=>'quan-ly.'], function() {
         Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {
@@ -96,6 +99,10 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
             Route::post('/quan-ly-bai-thi-them-cau-hoi', [BaiThiController::class, 'handleThemCauHoi'])->name('handle-them-bai-thi-cau-hoi');
             Route::get('/download-template', [BaiThiController::class, 'downloadTemplate'])->name('download-template');
             Route::get('/download-template-bai-thi', [BaiThiController::class, 'downloadTemplateBaiThi'])->name('download-template-bai-thi');
+            Route::get('/phan-cong-bai-thi/{maLopHocPhan}', [BaiThiController::class, 'indexPhanCong'])->name('phan-cong-bai-thi');
+            Route::get('/quan-ly-bai-thi-phan-cong-giang-vien/{maLopHocPhan}/{maBaiThi}/{lanThi}', [BaiThiController::class, 'indexPhanCongGiangVien'])->name('bang-phan-cong-giang-vien');
+            Route::post('/quan-ly-bai-thi-them-phan-cong-giang-vien', [BaiThiController::class, 'handleThemGiangVienPhanCong'])->name('handle-them-phan-cong-giang-vien');
+            Route::post('/quan-ly-bai-thi-xoa-phan-cong-giang-vien', [BaiThiController::class, 'handleXoaGiangVienPhanCong'])->name('handle-xoa-phan-cong-giang-vien');
         });
         Route::group(['prefix' => 'nguoi-dung', 'as'=>'nguoi-dung.'], function() {
             Route::get('/quan-ly-nguoi-dung', [NguoiDungController::class, 'index'])->name('quan-ly-nguoi-dung');
@@ -115,8 +122,8 @@ Route::group(['prefix' => 'sinh-vien', 'as'=>'sinh-vien.'], function() {
         });
         Route::group(['prefix' => '', 'as'=>'bai-thi.'], function() {
             Route::get('/quan-ly-bai-thi-sinh-vien/{id}/{maLop}', [BaiThiSinhVienController::class, 'index'])->name('quan-ly-bai-thi-sinh-vien');
-            Route::get('/quan-ly-lam-bai-thi-sinh-vien/{id}/{maBaiThi}', [BaiThiSinhVienController::class, 'lamBaiThi'])->name('quan-ly-lam-bai-thi-sinh-vien');
-            Route::get('/quan-ly-lam-bai-thi-trac-nghiem-sinh-vien/{id}/{maBaiThi}', [BaiThiSinhVienController::class, 'lamBaiThiTracNghiem'])->name('quan-ly-lam-bai-thi-trac-nghiem-sinh-vien');
+            Route::get('/quan-ly-lam-bai-thi-sinh-vien/{id}/{maLopHocPhan}/{maBaiThi}/{lanThi}', [BaiThiSinhVienController::class, 'lamBaiThi'])->name('quan-ly-lam-bai-thi-sinh-vien');
+            Route::get('/quan-ly-lam-bai-thi-trac-nghiem-sinh-vien/{id}/{maLopHocPhan}/{maBaiThi}/{lanThi}', [BaiThiSinhVienController::class, 'lamBaiThiTracNghiem'])->name('quan-ly-lam-bai-thi-trac-nghiem-sinh-vien');
         });
         Route::group(['prefix' => '', 'as'=>'xem-diem.'], function() {
             Route::get('/xem-diem-sinh-vien/{id}', [XemDiemController::class, 'index'])->name('xem-diem-sinh-vien');
@@ -134,7 +141,7 @@ Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {
             Route::put('/quan-ly-lop-hoc-phan-giang-vien-cap-nhat-danh-sach-bai-thi', [LopHocPhanController::class, 'handleCapNhatDanhSachBaiThiLopHocPhanGiangVien'])->name('handle-cap-nhat-danh-sach-bai-thi-lop-hoc-phan-giang-vien');
         });
         Route::group(['prefix' => 'bai-thi', 'as'=>'bai-thi.'], function() {
-            Route::get('/quan-ly-bai-thi-giang-vien/{id}', [BaiThiController::class, 'indexBaiThiGiangVien'])->name('quan-ly-bai-thi-giang-vien');
+            Route::get('/quan-ly-bai-thi-giang-vien/{id}/{maLopHocPhan}', [BaiThiController::class, 'indexBaiThiGiangVien'])->name('quan-ly-bai-thi-giang-vien');
             Route::post('/quan-ly-bai-thi-them', [BaiThiController::class, 'handleThemBaiThiGiangVien'])->name('handle-them-bai-thi');
             Route::put('/quan-ly-bai-thi-cap-nhat', [BaiThiController::class, 'handleCapNhatBaiThiGiangVien'])->name('handle-cap-nhat-bai-thi');
             Route::post('/quan-ly-bai-thi-xoa', [BaiThiController::class, 'handleXoaBaiThiGiangVien'])->name('handle-xoa-bai-thi');
@@ -145,10 +152,19 @@ Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {
         });
         Route::group(['prefix' => '', 'as'=>'xem-diem.'], function() {
             Route::get('/xem-diem-sinh-vien-giang-vien/{id}', [XemDiemController::class, 'indexXemDiemSinhVienGiangVien'])->name('xem-diem-sinh-vien-giang-vien');
-            Route::get('/bang-diem-sinh-vien-giang-vien/{id}/{ma_lop_hoc_phan}/{ma_bai_thi}', [XemDiemController::class, 'bangDiemSinhVienGiangVien'])->name('bang-diem-sinh-vien-giang-vien');
+            Route::get('/bang-diem-sinh-vien-giang-vien/{id}/{ma_lop_hoc_phan}/{ma_bai_thi}/{lan_thi}', [XemDiemController::class, 'bangDiemSinhVienGiangVien'])->name('bang-diem-sinh-vien-giang-vien');
+            Route::post('/public-diem', [XemDiemController::class, 'publicDiem'])->name('publicDiem');
+            Route::post('/unpublic-diem', [XemDiemController::class, 'unpublicDiem'])->name('unpublicDiem');
+            Route::get('/chi-tiet-bai-thi', [GiangVienController::class, 'chiTietBaiThi'])->name('chi-tiet-bai-thi');
         });
         Route::group(['prefix' => '', 'as'=>'xem-lich-thi.'], function() {
             Route::get('/xem-lich-thi/{id}', [XemLichThiController::class, 'xemLichThi'])->name('xem-lich-thi-giang-vien');
+        });
+        Route::group(['prefix' => '', 'as'=>'theo-doi.'], function() {
+            Route::get('/lop-hoc-phan/{id}', [GiangVienController::class, 'indexGiamSat'])->name('lop-hoc-phan');
+            Route::get('/bai-thi/{id}/{maLop}', [GiangVienController::class, 'indexBaiThiTheoDoi'])->name('theo-doi-bai-thi');
+            Route::get('/bang-theo-doi/{id}/{maLopHocPhan}/{maBaiThi}/{lanThi}', [GiangVienController::class, 'bangTheoDoi'])->name('bang-theo-doi');
+            Route::get('/cap-nhat-quyen/{id}/{maLopHocPhan}/{maBaiThi}/{maSinhVien}/{lanThi}', [GiangVienController::class, 'capNhatQuyen'])->name('cap-nhat-quyen');
         });
     });
 });

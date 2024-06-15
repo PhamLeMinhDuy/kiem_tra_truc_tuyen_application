@@ -88,6 +88,22 @@ class NganhController extends Controller
         $nganhs = $request->data;
         if($nganhs){
             foreach ($nganhs as $nganhData) {
+                if (!isset($nganhData['ma_nganh']) || !isset($nganhData['ten_nganh']) || !isset($nganhData['ma_khoa'])) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Dữ liệu không đúng định dạng.'
+                    ]);
+                }
+    
+                // Kiểm tra mã ngành chỉ chứa chữ cái và số
+                if (!preg_match('/^[a-zA-Z0-9]+$/', $nganhData['ma_nganh'])) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Mã ngành chỉ được chứa chữ cái và số.'
+                    ]);
+                }
                 $existingNganh = Nganh::where('ma_nganh', $nganhData['ma_nganh'])->first();
     
                 // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu

@@ -13,7 +13,7 @@
               Bạn chắc chắn muốn xóa người dùng này?
             </div>
             <div class="flex justify-end mt-8">
-                <button onclick="xoa()" type="submit" class="mr-3 border border-emerald-400 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
+                <button onclick="xoa()"class="mr-3 border border-emerald-400 py-2 px-4 rounded inline-flex items-center hover:bg-emerald-500 font-bold hover:text-white">
                 Xác nhận
               </button>
               <button onclick="tatModal()" class="mr-3 border border-rose-400 py-2 px-4 rounded inline-flex items-center hover:bg-rose-500 font-bold hover:text-white">
@@ -35,32 +35,47 @@
       return url;
   }
   function xoa() {
-      $('#form-xoa-nguoi-dung').on('submit', function(event){
-          event.preventDefault();
-          var url = "{{ route('admin.quan-ly.nguoi-dung.handle-xoa-nguoi-dung') }}";
-          axios.post(secureUrl(url), {
-              id_nguoi_dung: $('#data-id').val(),
-          })
-          .then(function (response) {
-              if (response.data.success) {
-                  window.location.replace(response.data.redirect);
-                  return;
-              }
-              Swal.fire({
-                  icon: response.data.type,
-                  title: response.data.message,
-                  showConfirmButton: false,
-                  timer: 1000
-              })
-          })
-          .catch(function (error) {
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
-                  showConfirmButton: false,
-                  timer: 1500
-              })
-          });
-      })
-  }
+    $('#form-xoa-nguoi-dung').on('submit', function(event){
+        event.preventDefault();
+        var url = "{{ route('admin.quan-ly.nguoi-dung.handle-xoa-nguoi-dung') }}";
+        axios.post(secureUrl(url), {
+            id_nguoi_dung: $('#data-id').val(),
+        })
+        .then(function (response) {
+            if (response.data.success) {
+                // Kiểm tra nếu không phải trang cuối cùng, load lại trang hiện tại
+                if (!response.data.is_last_page) {
+                    window.location.reload();
+                    return;
+                }
+                // Nếu là trang cuối cùng, không cần thực hiện gì
+                // Hoặc có thể hiển thị thông báo thành công mà không chuyển hướng
+                // window.location.replace(response.data.redirect);
+                // hoặc hiển thị thông báo
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: 'Xóa thành công!',
+                //     showConfirmButton: false,
+                //     timer: 1500
+                // });
+            } else {
+                Swal.fire({
+                    icon: response.data.type,
+                    title: response.data.message,
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }
+        })
+        .catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        });
+    });
+}
+
 </script>

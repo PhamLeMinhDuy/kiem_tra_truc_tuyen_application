@@ -40,11 +40,14 @@
         axios.post(secureUrl("{{ route('giang-vien.quan-ly.bai-thi.handle-xoa-bai-thi') }}"), {
             id_bai_thi: $('#data-id').val(),
             id_giang_vien: {{ $id }},
+            ma_lop_hoc_phan: '{{ $ma_lop_hoc_phan }}',
         })
         .then(function (response) {
             if (response.data.success) {
-                window.location.replace(response.data.redirect);
-                return;
+              if (!response.data.is_last_page) {
+                    window.location.reload();
+                    return;
+                }
             }
             Swal.fire({
                 icon: response.data.type,

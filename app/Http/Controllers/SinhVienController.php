@@ -138,6 +138,32 @@ class SinhVienController extends Controller
         $sinhViens = $request->data;
         if($sinhViens){
             foreach ($sinhViens as $sinhVienData) {
+                // Kiểm tra cấu trúc của dữ liệu import từ file
+                if (!isset($sinhVienData['ma_sinh_vien']) || !isset($sinhVienData['ten_sinh_vien']) || !isset($sinhVienData['so_dien_thoai']) || !isset($sinhVienData['email']) || !isset($sinhVienData['ngay_sinh']) || !isset($sinhVienData['ma_khoa']) || !isset($sinhVienData['ma_nganh'])) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Dữ liệu không đúng định dạng.'
+                    ]);
+                }
+
+                // Kiểm tra mã sinh viên chỉ chứa chữ cái và số
+                if (!preg_match('/^[a-zA-Z0-9]+$/', $sinhVienData['ma_sinh_vien'])) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Mã sinh viên chỉ được chứa chữ cái và số.'
+                    ]);
+                }
+
+                // Kiểm tra ngày sinh có đúng định dạng YYYY-MM-DD
+                if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/', $sinhVienData['ngay_sinh'])) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Ngày sinh phải có định dạng YYYY-MM-DD.'
+                    ]);
+                }
                 $existingSinhVien = SinhVien::where('ma_sinh_vien', $sinhVienData['ma_sinh_vien'])->first();
     
                 // Nếu sinh viên chưa tồn tại, thêm mới vào cơ sở dữ liệu

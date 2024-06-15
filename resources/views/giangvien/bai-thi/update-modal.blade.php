@@ -17,12 +17,27 @@
                     <input id="input-ten-bai-thi-cap-nhat" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-bai-thi" type="text">
                 </div>
                 <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label class="col-span-1" for="">Môn học:</label>
+                    <select id="input-mon-hoc-cap-nhat" class="input-cap-nhat-bai-thi col-span-2 border rounded-sm px-2 py-1 overflow-y-auto max-h-40">
+                        @foreach ($danhSachMon as $mon)
+                            <option value="{{ $mon->ma_mon_hoc }}">{{ $mon->ten_mon_hoc }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
                     <label class="col-span-1" for="">Thời gian bắt đầu:</label>
                     <input id="input-thoi-gian-bat-dau-bai-thi-cap-nhat" class="input-cap-nhat-bai-thi col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian bắt đầu">
                 </div>
                 <div class="form-group grid grid-cols-3 gap-4 mb-2">
                     <label class="col-span-1" for="">Thời gian kết thúc:</label>
                     <input id="input-thoi-gian-ket-thuc-bai-thi-cap-nhat" class="input-cap-nhat-bai-thi col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian kết thúc">
+                </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label for="input-lan-thi-cap-nhat" class="col-span-1">Lần thi:</label>
+                    <select id="input-lan-thi-cap-nhat" class="input-cap-nhat-bai-thi col-span-2 border rounded-sm px-2 py-1">
+                        <option value="1">Lần 1</option>
+                        <option value="2">Lần 2</option>
+                    </select>
                 </div>
                 <div class="form-group grid grid-cols-3 gap-4 mb-2">
                     <label for="input-mo-ta-bai-thi-cap-nhat" class="col-span-1">Mô tả:</label>
@@ -63,25 +78,33 @@
       // Kiểm tra các trường nhập liệu
       var ma_bai_thi = $('#input-ma-bai-thi-cap-nhat').val();
       var ten_bai_thi = $('#input-ten-bai-thi-cap-nhat').val();
+      var mon_hoc = $('#input-mon-hoc-cap-nhat').val();
       var thoi_gian_bat_dau = $('#input-thoi-gian-bat-dau-bai-thi-cap-nhat').val();
       var thoi_gian_ket_thuc = $('#input-thoi-gian-ket-thuc-bai-thi-cap-nhat').val();
       var  mo_ta = $('#input-mo-ta-bai-thi-cap-nhat').val();
+      var lan_thi = $('#input-lan-thi-cap-nhat').val();
       var id_giang_vien = {{ $id }};
+      var ma_lop_hoc_phan = $('#input-lop-hoc-phan-cap-nhat').val();
       if (ma_bai_thi && ten_bai_thi) {
         // Nếu tất cả các trường đã được nhập, gửi form đi
         axios.put(secureUrl("{{ route('giang-vien.quan-ly.bai-thi.handle-cap-nhat-bai-thi') }}"), {
             id_bai_thi: $('#data-id').val(),
             ma_bai_thi: ma_bai_thi,
             ten_bai_thi: ten_bai_thi,
+            mon_hoc: mon_hoc,
             thoi_gian_bat_dau: thoi_gian_bat_dau,
             thoi_gian_ket_thuc: thoi_gian_ket_thuc,
+            lan_thi: lan_thi,
             mo_ta: mo_ta,
             id_giang_vien: id_giang_vien,
+            ma_lop_hoc_phan: ma_lop_hoc_phan,
         })
         .then(function (response) {
             if (response.data.success) {
-                window.location.replace(response.data.redirect);
-                return;
+                if (!response.data.is_last_page) {
+                    window.location.reload();
+                    return;
+                }
             }
             Swal.fire({
                 icon: response.data.type,

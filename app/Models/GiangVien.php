@@ -21,6 +21,7 @@ class GiangVien extends Model
         'ma_khoa',
         'ma_nganh',
         'cac_mon_giang_day',
+        'phan_cong',
 
     ];
 }

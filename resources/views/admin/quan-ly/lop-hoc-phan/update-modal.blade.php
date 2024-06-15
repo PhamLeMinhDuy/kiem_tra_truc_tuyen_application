@@ -2,7 +2,7 @@
     <div class="bg-white rounded p-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div class="modal-title mb-6">
           <h4 class="text-lg font-semibold">
-              Chi tiết môn học
+              Chi tiết lớp học phần
           </h4>
           <input type="hidden" id="data-id">
         </div>
@@ -18,7 +18,11 @@
               </div>
               <div class="form-group grid grid-cols-3 gap-4 mb-2">
                 <label class="col-span-1" for="">Môn học:</label>
-                <input id="input-mon-hoc-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" type="text">
+                <select name="" id="input-mon-hoc-lop-hoc-phan-cap-nhat" class="input-cap-nhat-lop-hoc-phan col-span-2 border rounded-sm px-2 py-1" >
+                    @foreach ($danhSachMon as $mon_hoc)
+                        <option value="{{ $mon_hoc->ma_mon_hoc }}">{{ $mon_hoc->ten_mon_hoc }}</option>
+                    @endforeach
+                  </select>
             </div>
             <div class="form-group grid grid-cols-3 gap-4 mb-2">
                 <label class="col-span-1" for="">Thời gian bắt đầu:</label>
@@ -43,6 +47,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
     $('#btn-huy-cap-nhat').on('click', function(event){
+        event.preventDefault();
         document.getElementById('modal-cap-nhat-lop-hoc-phan').style.display = 'none';
         var inputList = document.querySelectorAll('.input-cap-nhat-lop-hoc-phan')
         for (let i = 0; i<inputList.length; i++) { 
@@ -81,8 +86,10 @@
         })
         .then(function (response) {
             if (response.data.success) {
-                window.location.replace(response.data.redirect);
-                return;
+                if (!response.data.is_last_page) {
+                    window.location.reload();
+                    return;
+                }
             }
             Swal.fire({
                 icon: response.data.type,

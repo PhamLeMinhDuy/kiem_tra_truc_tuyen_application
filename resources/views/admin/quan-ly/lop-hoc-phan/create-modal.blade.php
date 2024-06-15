@@ -47,6 +47,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
    $('#btn-huy-them').on('click', function(event){
+        event.preventDefault();
         document.getElementById('modal-them-lop-hoc-phan').style.display = 'none';
         var inputList = document.querySelectorAll('.input-them-lop-hoc-phan')
         for (let i = 0; i<inputList.length; i++) { 
@@ -72,8 +73,10 @@
         })
         .then(function (response) {
             if (response.data.success) {
-                window.location.replace(response.data.redirect);
-                return;
+                if (!response.data.is_last_page) {
+                    window.location.reload();
+                    return;
+                }
             }
             Swal.fire({
                 icon: response.data.type,
