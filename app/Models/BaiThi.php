@@ -20,6 +20,7 @@ class BaiThi extends Model
         'mo_ta',
         'danh_sach_cau_hoi',
         'ma_nguoi_tao',
+        'lan_thi',
 
     ];
 }

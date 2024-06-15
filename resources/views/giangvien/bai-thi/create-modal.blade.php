@@ -16,12 +16,23 @@
                   <input id="input-ten-bai-thi-them" class="input-them-bai-thi col-span-2 border rounded-sm px-2 py-1" type="text">
                 </div>
                 <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label class="col-span-1" for="">Môn học:</label>
+                    <input type="text" id="input-mon-hoc-them" class="col-span-2 border rounded-sm px-2 py-1 input-cap-nhat-bai-thi bg-gray-300 opacity-50 cursor-not-allowed" value="{{ $ma_mon_hoc }}" readonly>
+                </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
                     <label class="col-span-1" for="">Thời gian bắt đầu:</label>
                     <input id="input-thoi-gian-bat-dau-bai-thi-them" class="input-them-bai-thi col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian bắt đầu">
                 </div>
                 <div class="form-group grid grid-cols-3 gap-4 mb-2">
                     <label class="col-span-1" for="">Thời gian kết thúc:</label>
                     <input id="input-thoi-gian-ket-thuc-bai-thi-them" class="input-them-bai-thi col-span-2 border rounded-sm px-2 py-1" type="datetime-local" placeholder="Chọn thời gian kết thúc">
+                </div>
+                <div class="form-group grid grid-cols-3 gap-4 mb-2">
+                    <label for="input-lan-thi-them" class="col-span-1">Lần thi:</label>
+                    <select id="input-lan-thi-them" class="input-them-bai-thi col-span-2 border rounded-sm px-2 py-1">
+                        <option value="1">Lần 1</option>
+                        <option value="2">Lần 2</option>
+                    </select>
                 </div>
                 <div class="form-group grid grid-cols-3 gap-4 mb-2">
                     <label for="input-mo-ta-bai-thi-them" class="col-span-1">Mô tả:</label>
@@ -61,15 +72,20 @@
         axios.post(secureUrl("{{ route('giang-vien.quan-ly.bai-thi.handle-them-bai-thi') }}"), {
             ma_bai_thi: $('#input-ma-bai-thi-them').val(),
             ten_bai_thi: $('#input-ten-bai-thi-them').val(),
+            mon_hoc: $('#input-mon-hoc-them').val(),
             thoi_gian_bat_dau: $('#input-thoi-gian-bat-dau-bai-thi-them').val(),
             thoi_gian_ket_thuc: $('#input-thoi-gian-ket-thuc-bai-thi-them').val(),
             mo_ta: $('#input-mo-ta-bai-thi-them').val(),
+            lan_thi: $('#input-lan-thi-them').val(),
             id_giang_vien: {{ $id }},
+            ma_lop_hoc_phan: '{{ $ma_lop_hoc_phan }}',
         })
         .then(function (response) {
             if (response.data.success) {
-                window.location.replace(response.data.redirect);
-                return;
+                if (!response.data.is_last_page) {
+                    window.location.reload();
+                    return;
+                }
             }
             Swal.fire({
                 icon: response.data.type,

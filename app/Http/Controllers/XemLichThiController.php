@@ -11,19 +11,19 @@ class XemLichThiController extends Controller
 {
     public function xemLichThi($id)
     {
-        
+        // Tìm giảng viên dựa trên id
         $giangVien = GiangVien::findOrFail($id);
-        $maGiangVien = $giangVien->ma_giang_vien;
-        // Tìm lớp học phần mà giảng viên tham gia
-        $lopHocPhan = LopHocPhan::whereJsonContains('danh_sach_giang_vien', ['ma_giang_vien' => $maGiangVien])->first();
         
-        // Kiểm tra xem lớp học phần có tồn tại không
-        if ($lopHocPhan) {
-            // Lấy ra danh sách mã bài thi từ cột danh_sach_bai_thi của lớp học phần
-            $danhSachBaiThi = json_decode($lopHocPhan->danh_sach_bai_thi, true);
+        // Lấy danh sách phân công từ cột phan_cong của giảng viên
+        $phanCong = json_decode($giangVien->phan_cong, true);
+        
+        // Kiểm tra xem phân công có tồn tại và không rỗng
+        if (!empty($phanCong)) {
+            // Lấy ra danh sách mã bài thi từ phân công
+            $danhSachBaiThi = array_column($phanCong, 'ma_bai_thi');
             
             // Tìm các bài thi dựa trên mã bài thi từ danh sách mã bài thi
-            $danhSachBaiThiGv = BaiThi::whereIn('ma_bai_thi', array_column($danhSachBaiThi, 'ma_bai_thi'))->get();
+            $danhSachBaiThiGv = BaiThi::whereIn('ma_bai_thi', $danhSachBaiThi)->get();
             
             // Truyền danh sách bài thi dưới dạng biến trong hàm view()
             return view('giangvien.lich-thi.index', [
@@ -32,7 +32,15 @@ class XemLichThiController extends Controller
                 'giangVien' => $giangVien
             ]);
         } else {
-            // Trường hợp không tìm thấy lớp học phần, xử lý tùy thuộc vào logic của bạn, ví dụ redirect hoặc trả về view thông báo lỗi
+            // Trường hợp không tìm thấy phân công
+            return view('giangvien.lich-thi.index', [
+                'title' => 'Xem lịch thi',
+                'danh_sach_bai_thi' => [],
+                'giangVien' => $giangVien,
+                'message' => 'Giảng viên chưa có lịch gác thi'
+            ]);
         }
     }
+    
+
 }

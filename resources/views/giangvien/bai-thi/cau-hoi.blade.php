@@ -4,8 +4,13 @@
 @endsection
 @section('page-title')
     <div class="flex items-center justify-between sticky top-0">
-        <div class="mr-5">
-            {{ $title }}
+        <div class="flex items-center">
+            <button onclick="window.history.back()" class=" text-gray-700 px-2 py-2 rounded mr-2">
+                &lt;
+            </button>
+            <div class="mr-5">
+                {{ $title }}
+            </div>
         </div>
     </div>
 @endsection

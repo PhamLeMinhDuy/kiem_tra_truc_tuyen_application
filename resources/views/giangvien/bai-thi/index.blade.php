@@ -4,12 +4,18 @@
 @endsection
 @section('page-title')
     <div class="flex items-center justify-between">
-        <div class="mr-5">
-            Danh sách bài thi
+        <div class="flex items-center">
+            <button onclick="window.history.back()" class=" text-gray-700 px-2 py-2 rounded mr-2">
+                &lt;
+            </button>
+            <div class="mr-5">
+                Danh sách bài thi
+            </div>
         </div>
         <div class="font-normal text-sm mr-5 mt-6">
             @include('giangvien.bai-thi.components.add')
         </div> 
+        
     </div>
 @endsection
 

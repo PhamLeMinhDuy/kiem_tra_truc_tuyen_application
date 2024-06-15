@@ -89,6 +89,22 @@ class MonHocController extends Controller
         $monHocs = $request->data;
         if($monHocs){
             foreach ($monHocs as $monHocData) {
+                if (!isset($monHocData['ma_mon_hoc']) || !isset($monHocData['ten_mon_hoc'])) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Dữ liệu không đúng định dạng.'
+                    ]);
+                }
+    
+                // Kiểm tra mã môn học chỉ chứa chữ cái và số
+                if (!preg_match('/^[a-zA-Z0-9]+$/', $monHocData['ma_mon_hoc'])) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Mã môn học chỉ được chứa chữ cái và số.'
+                    ]);
+                }
                 $existingMonHoc = MonHoc::where('ma_mon_hoc', $monHocData['ma_mon_hoc'])->first();
     
                 // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu

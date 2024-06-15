@@ -89,6 +89,21 @@ class KhoaController extends Controller
         $khoas = $request->data;
         if($khoas){
             foreach ($khoas as $khoaData) {
+                if (!isset($khoaData['ma_khoa']) || !isset($khoaData['ten_khoa'])) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Dữ liệu không đúng định dạng.'
+                    ]);
+                }
+                // Kiểm tra mã khoa chỉ chứa chữ cái và số
+                if (!preg_match('/^[a-zA-Z0-9]+$/', $khoaData['ma_khoa'])) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Mã khoa chỉ được chứa chữ cái và số.'
+                    ]);
+                }
                 $existingKhoa = Khoa::where('ma_khoa', $khoaData['ma_khoa'])->first();
     
                 // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu

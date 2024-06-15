@@ -335,8 +335,14 @@
             return diemTongCong;
         }
 
+        // Chuyển đổi danh sách câu hỏi từ PHP sang JavaScript
+        const danhSachCauHoi = {!! json_encode($danhSachCauHoi) !!};
+
+        // Hàm tính số câu trả lời đúng
         function tinhSoCauTraLoiDung(cauTraLoiNguoiDung, dapAnDung) {
-            let soCauTraLoiDung = 0;
+            let ketQua = {
+                cauTraLoi: []
+            };
             const soCauHoi = Object.keys(dapAnDung).length; // Tổng số câu hỏi
 
             // Duyệt qua từng câu hỏi
@@ -344,55 +350,58 @@
                 const dapAnDungCuaCauHoi = dapAnDung["Câu " + i];
                 const cauTraLoiNguoiDungCuaCauHoi = cauTraLoiNguoiDung["Câu " + i];
 
-                // Kiểm tra nếu câu trả lời của người dùng trùng với đáp án đúng
-                if (Array.isArray(cauTraLoiNguoiDungCuaCauHoi)) {
-                    // Multiple choice
-                    let isAllCorrect = true;
-                    dapAnDungCuaCauHoi.forEach(dapAn => {
-                        if (!cauTraLoiNguoiDungCuaCauHoi.includes(dapAn)) {
-                            isAllCorrect = false;
-                        }
-                    });
-                    if (isAllCorrect) {
-                        // Tăng số câu trả lời đúng
-                        soCauTraLoiDung++;
-                    }
-                } else {
-                    // Single choice
-                    if (JSON.stringify(cauTraLoiNguoiDungCuaCauHoi) === JSON.stringify(dapAnDungCuaCauHoi)) {
-                        // Tăng số câu trả lời đúng
-                        soCauTraLoiDung++;
-                    }
-                }
+                // Lấy thông tin của câu hỏi từ danh sách câu hỏi
+                const cauHoi = danhSachCauHoi[i - 1]; // Trừ 1 vì JS bắt đầu từ 0
+
+                // Khởi tạo biến để lưu trữ chi tiết câu hỏi và đáp án
+                let chiTietCauHoi = {
+                    cauHoi: cauHoi,
+                    dapAnDung: dapAnDungCuaCauHoi,
+                    dapAnChon: cauTraLoiNguoiDungCuaCauHoi,
+                    dungSai: JSON.stringify(cauTraLoiNguoiDungCuaCauHoi) === JSON.stringify(dapAnDungCuaCauHoi)
+                };
+
+                // Thêm chi tiết câu hỏi vào danh sách câu trả lời
+                ketQua.cauTraLoi.push(chiTietCauHoi);
             }
 
-            return soCauTraLoiDung;
+            return ketQua;
         }
+
+
 
         let submitted = false; 
         function submitAnswers() {
-            if (!submitted) { // Kiểm tra đã submit hay chưa
+            if (!submitted) {
                 submitted = true; 
                 document.getElementById("submitBtn").style.display = "none"; 
             }
 
-            // Lấy danh sách đáp án đúng và danh sách câu trả lời của người dùng
             const dapAnDung = layDapAnDungTuInputHidden();
             const cauTraLoiNguoiDung = getSelectedAnswers();
-            const diem = tinhDiem(cauTraLoiNguoiDung,dapAnDung);
-            const soCauTraLoiDung = tinhSoCauTraLoiDung(cauTraLoiNguoiDung,dapAnDung);
-            // Gửi yêu cầu Axios
+            const diem = tinhDiem(cauTraLoiNguoiDung, dapAnDung);
+            const ketQua = tinhSoCauTraLoiDung(cauTraLoiNguoiDung, dapAnDung);
+
+            const soCauTraLoiDung = {
+                lan_thi: '{{ $lanThi }}',
+                ma_lop_hoc_phan: '{{ $maLopHocPhan }}',
+                cauTraLoi: ketQua.cauTraLoi, // Thay đổi ở đây
+                so_cau_dung: ketQua.cauTraLoi.filter(cau => cau.dungSai).length // Đếm số câu trả lời đúng
+            };
+
             let url = "{{ route('sinh-vien.quan-ly.xem-diem.handle-them-diem-sinh-vien') }}";
             if (window.location.protocol === 'https:' && url.startsWith('http:')) {
                 url = url.replace('http:', 'https:');
             }
+
             axios.post(url, {
                 ma_bai_thi: '{{ $maBaiThi }}',
                 ten_bai_thi: '{{ $tenBaiThi }}',
                 ma_lop_hoc_phan: '{{ $maLopHocPhan }}',
                 id: '{{ $id }}',
                 diem: diem,
-                so_cau_tra_loi_dung: soCauTraLoiDung ,
+                so_cau_tra_loi_dung: soCauTraLoiDung,
+                lan_thi: '{{ $lanThi }}'
             })
             .then(function (response) {
                 if (response.data.success) {
@@ -407,9 +416,10 @@
                     title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
                     showConfirmButton: false,
                     timer: 1500
-                })
+                });
             });
         }
+
 
         document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
             input.addEventListener('change', function() {

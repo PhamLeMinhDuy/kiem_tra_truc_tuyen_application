@@ -28,54 +28,68 @@
             var parentTr = button.closest('tr');
         }
 
-    function importData(event) {
-        const file = event.target.files[0];
-        if (file) {
-            if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel') {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+        function importData(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel') {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
 
-                    // Xử lý dữ liệu
-                    const baiThis = jsonData.slice(1).map(row => ({
-                        ma_bai_thi: row[0],
-                        ten_bai_thi: row[1],
-                        thoi_gian_bat_dau: row[2],
-                        thoi_gian_ket_thuc: row[3],
-                        mo_ta: row[4],
-                    }));
-                    // Gửi dữ liệu lên máy chủ
-                    axios.post(secureUrl("{{ route('admin.quan-ly.bai-thi.handle-them-bai-thi') }}"), { data: baiThis })
-                        .then(function (response) {
-                            if (response.data.success) {
-                                window.location.replace(response.data.redirect);
-                                return;
-                            }
-                            Swal.fire({
-                                icon: response.data.type,
-                                title: response.data.message,
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-                        })
-                        .catch(function (error) {
+                        // Kiểm tra cấu trúc dữ liệu
+                        if (jsonData.length < 2 || jsonData[0].length !== 7) {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: 'Cấu trúc dữ liệu không đúng!',
+                                text: 'Vui lòng kiểm tra lại cấu trúc dữ liệu trong file Excel.',
+                                showConfirmButton: true,
+                            });
+                            return;
+                        }
+
+                        // Xử lý dữ liệu
+                        const baiThis = jsonData.slice(1).map(row => ({
+                            ma_lop_hoc_phan: row[0],
+                            ma_bai_thi: row[1],
+                            ten_bai_thi: row[2],
+                            thoi_gian_bat_dau: row[3],
+                            thoi_gian_ket_thuc: row[4],
+                            lan_thi: row[5],
+                            mo_ta: row[6],
+                        }));
+                        // Gửi dữ liệu lên máy chủ
+                        axios.post(secureUrl("{{ route('admin.quan-ly.bai-thi.handle-them-bai-thi') }}"), { data: baiThis })
+                            .then(function (response) {
+                                if (response.data.success) {
+                                    window.location.replace(response.data.redirect);
+                                    return;
+                                }
+                                Swal.fire({
+                                    icon: response.data.type,
+                                    title: response.data.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
                             })
-                        });
-                };
-                reader.readAsArrayBuffer(file);
-            } else {
-                alert('Please select a valid Excel file.');
+                            .catch(function (error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Có lỗi hệ thống! Xin lỗi bạn vì sự bất tiện này!',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            });
+                    };
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    alert('Please select a valid Excel file.');
+                }
             }
-        }
-    }
+}
+
 
     function secureUrl(url) {
         if (window.location.protocol === 'https:' && url.startsWith('http:')) {

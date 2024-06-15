@@ -11,6 +11,7 @@
     </div>
 @endsection
 @section('content')
+    
     <div class="mt-4">
         <button id="showLopHocPhan" class="border border-blue-500 hover:bg-blue-500 hover:text-white text-blue-500 font-bold py-2 px-4 rounded mr-2">
             Lớp học phần
@@ -27,6 +28,8 @@
                         <div class="border border-gray-300 rounded-md shadow bg-white">
                             <div class="text-gray-500 pb-2">
                                 <h2 class="text-lg font-bold border-b p-2 bg-blue-200">{{ $lopHocPhan['ten_lop_hoc_phan'] }}</h2>
+                                <h2 class="mt-2 text-base font-semibold px-2 text-green-400">Bắt đầu: {{ $lopHocPhan['thoi_gian_bat_dau'] }}</h2>
+                                <h2 class="mt-2 text-base font-semibold px-2 text-red-400">Kết thúc: {{ $lopHocPhan['thoi_gian_ket_thuc'] }}</h2>
                                 <p class="mt-2 text-base font-semibold px-2">Số bài thi đã làm: <span class="font-normal">{{ $lopHocPhan['so_luong_bai_thi_da_lam'] }}</span></p>
                                 <p class="mt-2 text-base font-semibold px-2">Đang có: <span class="text-red-400">{{ $lopHocPhan['so_luong_bai_thi'] }}</span></p>
                             </div>
@@ -38,7 +41,6 @@
         <div id="lichThiCalendar" style="display: none;"></div>
     </div>
 @endsection
-<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.css" rel="stylesheet" />
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
@@ -78,24 +80,7 @@
 
             calendar.render();
         }
-    });
 
-    function displayToken(token) {
-        const tokenDisplayElement = document.getElementById('device-token');
-        if (tokenDisplayElement) {
-            tokenDisplayElement.textContent = token;
-        }
-    }
-
-    messaging.getToken().then((token) => {
-        if (token) {
-            console.log('Device Token:', token);
-            displayToken(token);
-        } else {
-            console.log('No Instance ID token available. Request permission to generate one.');
-        }
-    }).catch((error) => {
-        console.log('An error occurred while retrieving token. ', error);
     });
     
 </script>

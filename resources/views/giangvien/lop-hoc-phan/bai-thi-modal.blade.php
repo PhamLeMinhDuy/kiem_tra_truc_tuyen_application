@@ -3,6 +3,7 @@
         <div class="modal-title mb-6">
           <input type="hidden" id="lop-hoc-phan-id--danh-sach-bai-thi">
           <input type="hidden" id="danh-sach-bai-thi-hien-tai-data--lop-hoc-phan">
+          <input type="hidden" id="ma_mon_hoc--lop-hoc-phan">
         </div>
         <form id="form-danh-sach-bai-thi-lop-hoc-phan" class="p-6 mb-0">
             <h3>Danh sách bài thi</h3>
@@ -50,7 +51,7 @@
     
     function handleTimKiem() {
         var searchValue = document.querySelector("#input-search-bai-thi--lop-hoc-phan").value;
-
+        var maMonHocLopHocPhan = document.getElementById('ma_mon_hoc--lop-hoc-phan').value;
         var danhSachBaiThiHienTaiString = document.getElementById('danh-sach-bai-thi-hien-tai-data--lop-hoc-phan').value
         var danhSachBaiThiHienTai = JSON.parse(danhSachBaiThiHienTaiString.length > 0 ? danhSachBaiThiHienTaiString : '[]');
         danhSachBaiThiHienTai.map(item => {
@@ -63,15 +64,18 @@
             innerHTMl += `
             <div class="border w-full h-fit flex items-center p-2 mb-1">
                 <div class="w-5/6">
-                    <p class="">
-                        ${item.ten_bai_thi}
-                    </p>
-                    <p class="">
-                        ${item.ma_bai_thi}
-                    </p>
+                   <p class="">
+                                Tên bài thi: ${item.ten_bai_thi}
+                                </p>
+                                <p class="">
+                                    Mã bài thi: ${item.ma_bai_thi}
+                                </p>
+                                <p class="">
+                                    Lần thi: ${item.lan_thi}
+                                </p>
                 </div>
                 <div class="w-1/6">
-                    <button onclick="xoaBaiThi('${item.ma_bai_thi}')"  type="button" class=" hover:border">
+                    <button onclick="xoaBaiThi('${item.ma_bai_thi}', ${item.lan_thi})"  type="button" class=" hover:border">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
@@ -84,45 +88,53 @@
         var danhSachBaiThiAllBlock = document.getElementById('danh-sach-bai-thi--lop-hoc-phan')
         var innerHTMl = ``;
         danhSachBaiThiAll.map(item => {
-            if((item.ma_bai_thi).includes(searchValue)){
-                if(danhSachBaiThiHienTai.findIndex(element => element.ma_bai_thi == item.ma_bai_thi) != -1) {
-                    innerHTMl += `
-                    <div class="border w-full h-fit flex items-center p-2 mb-1 bg-gray-200">
-                        <div class="w-5/6">
-                            <p class="">
-                                ${item.ten_bai_thi}
-                            </p>
-                            <p class="">
-                                ${item.ma_bai_thi}
-                            </p>
-                        </div>
-                        <div class="w-1/6">
-                            <button class="hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>`
-                } else {
-                    innerHTMl += `
-                    <div class="border w-full h-fit flex items-center p-2 mb-1">
-                        <div class="w-5/6">
-                            <p class="">
-                                ${item.ten_bai_thi}
-                            </p>
-                            <p class="">
-                                ${item.ma_bai_thi}
-                            </p>
-                        </div>
-                        <div class="w-1/6">
-                            <button onclick="themBaiThi('${item.ma_bai_thi}')" type="button" class=" hover:border">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>`
+            if (item.mon_hoc === maMonHocLopHocPhan) {
+                if((item.ma_bai_thi).includes(searchValue)){
+                    if(danhSachBaiThiHienTai.findIndex(element => element.ma_bai_thi == item.ma_bai_thi && element.lan_thi == item.lan_thi) != -1) {
+                        innerHTMl += `
+                        <div class="border w-full h-fit flex items-center p-2 mb-1 bg-gray-200">
+                            <div class="w-5/6">
+                                <p class="">
+                                    Tên bài thi: ${item.ten_bai_thi}
+                                    </p>
+                                    <p class="">
+                                        Mã bài thi: ${item.ma_bai_thi}
+                                    </p>
+                                    <p class="">
+                                        Lần thi: ${item.lan_thi}
+                                    </p>
+                            </div>
+                            <div class="w-1/6">
+                                <button class="hidden">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>`
+                    } else {
+                        innerHTMl += `
+                        <div class="border w-full h-fit flex items-center p-2 mb-1">
+                            <div class="w-5/6">
+                                <p class="">
+                                    Tên bài thi: ${item.ten_bai_thi}
+                                    </p>
+                                    <p class="">
+                                        Mã bài thi: ${item.ma_bai_thi}
+                                    </p>
+                                    <p class="">
+                                        Lần thi: ${item.lan_thi}
+                                    </p>
+                            </div>
+                            <div class="w-1/6">
+                                <button onclick="themBaiThi('${item.ma_bai_thi}', ${item.lan_thi})" type="button" class=" hover:border">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>`
+                    }
                 }
             }
         })
@@ -135,12 +147,14 @@
     // Gán sự kiện input và hàm xử lý handleTimKiem
     inputSearch.addEventListener('input', handleTimKiem);
 
-    function themBaiThi(maBaiThi){
+    function themBaiThi(maBaiThi, lanThi){
         var searchValue = document.querySelector("#input-search-bai-thi--lop-hoc-phan").value;
         var danhSachBaiThiHienTaiString = document.getElementById('danh-sach-bai-thi-hien-tai-data--lop-hoc-phan').value
+        var maMonHocLopHocPhan = document.getElementById('ma_mon_hoc--lop-hoc-phan').value;
         var danhSachBaiThiHienTai = JSON.parse(danhSachBaiThiHienTaiString.length > 0 ? danhSachBaiThiHienTaiString : '[]');
         danhSachBaiThiHienTai.push({
             ma_bai_thi: maBaiThi,
+            lan_thi: lanThi
         })
         document.getElementById('danh-sach-bai-thi-hien-tai-data--lop-hoc-phan').value = JSON.stringify(danhSachBaiThiHienTai);
         danhSachBaiThiHienTai.map(item => {
@@ -154,15 +168,18 @@
             innerHTMl += `
             <div class="border w-full h-fit flex items-center p-2 mb-1">
                 <div class="w-5/6">
-                    <p class="">
-                        ${item.ten_bai_thi}
-                    </p>
-                    <p class="">
-                        ${item.ma_bai_thi}
-                    </p>
+                   <p class="">
+                                Tên bài thi: ${item.ten_bai_thi}
+                                </p>
+                                <p class="">
+                                    Mã bài thi: ${item.ma_bai_thi}
+                                </p>
+                                <p class="">
+                                    Lần thi: ${item.lan_thi}
+                                </p>
                 </div>
                 <div class="w-1/6">
-                    <button onclick="xoaBaiThi('${item.ma_bai_thi}')" type="button" class=" hover:border">
+                    <button onclick="xoaBaiThi('${item.ma_bai_thi}', ${item.lan_thi})" type="button" class=" hover:border">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
@@ -175,45 +192,54 @@
         var danhSachBaiThiAllBlock = document.getElementById('danh-sach-bai-thi--lop-hoc-phan')
         var innerHTMl = ``;
         danhSachBaiThiAll.map(item => {
-            if((item.ma_bai_thi).includes(searchValue)){
-                if(danhSachBaiThiHienTai.findIndex(element => element.ma_bai_thi == item.ma_bai_thi) != -1) {
-                    innerHTMl += `
-                    <div class="border w-full h-fit flex items-center p-2 mb-1 bg-gray-200">
-                        <div class="w-5/6">
-                            <p class="">
-                                ${item.ten_bai_thi}
-                            </p>
-                            <p class="">
-                                ${item.ma_bai_thi}
-                            </p>
-                        </div>
-                        <div class="w-1/6">
-                            <button class="hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>`
-                } else {
-                    innerHTMl += `
-                    <div class="border w-full h-fit flex items-center p-2 mb-1">
-                        <div class="w-5/6">
-                            <p class="">
-                                ${item.ten_bai_thi}
-                            </p>
-                            <p class="">
-                                ${item.ma_bai_thi}
-                            </p>
-                        </div>
-                        <div class="w-1/6">
-                            <button onclick="themBaiThi('${item.ma_bai_thi}')" type="button" class=" hover:border">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>`
+            if (item.mon_hoc === maMonHocLopHocPhan) {
+
+                if((item.ma_bai_thi).includes(searchValue)){
+                    if(danhSachBaiThiHienTai.findIndex(element => element.ma_bai_thi == item.ma_bai_thi && element.lan_thi == item.lan_thi) != -1) {
+                        innerHTMl += `
+                        <div class="border w-full h-fit flex items-center p-2 mb-1 bg-gray-200">
+                            <div class="w-5/6">
+                               <p class="">
+                                Tên bài thi: ${item.ten_bai_thi}
+                                </p>
+                                <p class="">
+                                    Mã bài thi: ${item.ma_bai_thi}
+                                </p>
+                                <p class="">
+                                    Lần thi: ${item.lan_thi}
+                                </p>
+                            </div>
+                            <div class="w-1/6">
+                                <button class="hidden">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>`
+                    } else {
+                        innerHTMl += `
+                        <div class="border w-full h-fit flex items-center p-2 mb-1">
+                            <div class="w-5/6">
+                               <p class="">
+                                Tên bài thi: ${item.ten_bai_thi}
+                                </p>
+                                <p class="">
+                                    Mã bài thi: ${item.ma_bai_thi}
+                                </p>
+                                <p class="">
+                                    Lần thi: ${item.lan_thi}
+                                </p>
+                            </div>
+                            <div class="w-1/6">
+                                <button onclick="themBaiThi('${item.ma_bai_thi}', ${item.lan_thi})" type="button" class=" hover:border">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>`
+                    }
                 }
             }
         })
@@ -222,11 +248,11 @@
 
 
 
-    function xoaBaiThi(maBaiThi){
+    function xoaBaiThi(maBaiThi, lanThi){
         var searchValue = document.querySelector("#input-search-bai-thi--lop-hoc-phan").value;
         var danhSachBaiThiHienTaiString = document.getElementById('danh-sach-bai-thi-hien-tai-data--lop-hoc-phan').value
         var danhSachBaiThiHienTai = JSON.parse(danhSachBaiThiHienTaiString.length > 0 ? danhSachBaiThiHienTaiString : '[]');
-        danhSachBaiThiHienTai = danhSachBaiThiHienTai.filter(item => item.ma_bai_thi !== maBaiThi);
+        danhSachBaiThiHienTai = danhSachBaiThiHienTai.filter(item => item.ma_bai_thi !== maBaiThi  || item.lan_thi !== lanThi);
         document.getElementById('danh-sach-bai-thi-hien-tai-data--lop-hoc-phan').value = JSON.stringify(danhSachBaiThiHienTai);
         danhSachBaiThiHienTai.map(item => {
             var index = danhSachBaiThiAll.findIndex(element => element.ma_bai_thi == item.ma_bai_thi)
@@ -239,15 +265,18 @@
             innerHTMl += `
             <div class="border w-full h-fit flex items-center p-2 mb-1">
                 <div class="w-5/6">
-                    <p class="">
-                        ${item.ten_bai_thi}
-                    </p>
-                    <p class="">
-                        ${item.ma_bai_thi}
-                    </p>
+                   <p class="">
+                                Tên bài thi: ${item.ten_bai_thi}
+                                </p>
+                                <p class="">
+                                    Mã bài thi: ${item.ma_bai_thi}
+                                </p>
+                                <p class="">
+                                    Lần thi: ${item.lan_thi}
+                                </p>
                 </div>
                 <div class="w-1/6">
-                    <button onclick="xoaBaiThi('${item.ma_bai_thi}')" type="button" class=" hover:border">
+                    <button onclick="xoaBaiThi('${item.ma_bai_thi}', ${item.lan_thi})" type="button" class=" hover:border">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
@@ -260,45 +289,53 @@
         var danhSachBaiThiAllBlock = document.getElementById('danh-sach-bai-thi--lop-hoc-phan')
         var innerHTMl = ``;
         danhSachBaiThiAll.map(item => {
-            if((item.ma_bai_thi).includes(searchValue)){
-                if(danhSachBaiThiHienTai.findIndex(element => element.ma_bai_thi == item.ma_bai_thi) != -1) {
-                    innerHTMl += `
-                    <div class="border w-full h-fit flex items-center p-2 mb-1 bg-gray-200">
-                        <div class="w-5/6">
-                            <p class="">
-                                ${item.ten_bai_thi}
-                            </p>
-                            <p class="">
-                                ${item.ma_bai_thi}
-                            </p>
-                        </div>
-                        <div class="w-1/6">
-                            <button class="hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>`
-                } else {
-                    innerHTMl += `
-                    <div class="border w-full h-fit flex items-center p-2 mb-1">
-                        <div class="w-5/6">
-                            <p class="">
-                                ${item.ten_bai_thi}
-                            </p>
-                            <p class="">
-                                ${item.ma_bai_thi}
-                            </p>
-                        </div>
-                        <div class="w-1/6">
-                            <button onclick="themBaiThi('${item.ma_bai_thi}')" type="button" class=" hover:border">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>`
+            if (item.mon_hoc === maMonHocLopHocPhan) {
+                if((item.ma_bai_thi).includes(searchValue)){
+                    if(danhSachBaiThiHienTai.findIndex(element => element.ma_bai_thi == item.ma_bai_thi && element.lan_thi == item.lan_thi) != -1) {
+                        innerHTMl += `
+                        <div class="border w-full h-fit flex items-center p-2 mb-1 bg-gray-200">
+                            <div class="w-5/6">
+                               <p class="">
+                                Tên bài thi: ${item.ten_bai_thi}
+                                </p>
+                                <p class="">
+                                    Mã bài thi: ${item.ma_bai_thi}
+                                </p>
+                                <p class="">
+                                    Lần thi: ${item.lan_thi}
+                                </p>
+                            </div>
+                            <div class="w-1/6">
+                                <button class="hidden">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>`
+                    } else {
+                        innerHTMl += `
+                        <div class="border w-full h-fit flex items-center p-2 mb-1">
+                            <div class="w-5/6">
+                               <p class="">
+                                Tên bài thi: ${item.ten_bai_thi}
+                                </p>
+                                <p class="">
+                                    Mã bài thi: ${item.ma_bai_thi}
+                                </p>
+                                <p class="">
+                                    Lần thi: ${item.lan_thi}
+                                </p>
+                            </div>
+                            <div class="w-1/6">
+                                <button onclick="themBaiThi('${item.ma_bai_thi}', ${item.lan_thi})" type="button" class=" hover:border">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>`
+                    }
                 }
             }
         })
@@ -306,6 +343,7 @@
     }
 
     $('#btn-huy-bai-thi').on('click', function(event){
+        event.preventDefault();
         document.getElementById('modal-bai-thi').style.display = 'none';
     })
 
@@ -325,8 +363,10 @@
         })
         .then(function (response) {
             if (response.data.success) {
-                window.location.replace(response.data.redirect);
-                return;
+                if (!response.data.is_last_page) {
+                    window.location.reload();
+                    return;
+                }
             }
             Swal.fire({
                 icon: response.data.type,

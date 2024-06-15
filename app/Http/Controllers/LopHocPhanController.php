@@ -49,27 +49,12 @@ class LopHocPhanController extends Controller
             'modalGiangVien' => 'modal-giang-vien',
             'modalBaiThi' => 'modal-bai-thi',
             'dataType' => 'lop_hoc_phan',
+            
         ]);
     }
     public function handleCapNhatLopHocPhan(Request $request) {
         $id = (int)$request->id_lop_hoc_phan;
         $lop_hoc_phan= LopHocPhan::find($id);
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $request->ma_lop_hoc_phan) || $request->ma_lop_hoc_phan !== $lop_hoc_phan->ma_lop_hoc_phan) {
-            $existingMaGiangVien = GiangVien::where('ma_lop_hoc_phan', $request->ma_lop_hoc_phan)->first();
-            if ($existingMaGiangVien) {
-                return response()->json([
-                    'success'   => false,
-                    'type'      => 'error',
-                    'message'   => 'Mã lóp học phần đã tồn tại!'
-                ]);
-            }
-        
-            return response()->json([
-                'success'   => false,
-                'type'      => 'error',
-                'message'   => 'Mã lớp học phần chỉ được chứa chữ cái và số.'
-            ]);
-        }
 
         if ($request->ten_lop_hoc_phan !== $lop_hoc_phan->ten_lop_hoc_phan) {
             if (preg_match('/[^\p{L}\s]/u', $request->ten_lop_hoc_phan)) {
@@ -105,6 +90,22 @@ class LopHocPhanController extends Controller
         $lopHocPhans = $request->data;
         if($lopHocPhans){
             foreach ($lopHocPhans as $lopHocPhanData) {
+                if (!isset($lopHocPhanData['ma_lop_hoc_phan']) || !isset($lopHocPhanData['ten_lop_hoc_phan']) || !isset($lopHocPhanData['ma_mon_hoc']) || !isset($lopHocPhanData['thoi_gian_bat_dau']) || !isset($lopHocPhanData['thoi_gian_ket_thuc']) ) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Dữ liệu không đúng định dạng.'
+                    ]);
+                }
+    
+                // Kiểm tra mã lớp học phần chỉ chứa chữ cái, số và dấu _
+                if (!preg_match('/^[a-zA-Z0-9_]+$/', $lopHocPhanData['ma_lop_hoc_phan'])) {
+                    return response()->json([
+                        'success'   => false,
+                        'type'      => 'error',
+                        'message'   => 'Mã lớp học phần chỉ được chứa chữ cái, số và dấu _.'
+                    ]);
+                }
                 $existingLopHocPhan = LopHocPhan::where('ma_lop_hoc_phan', $lopHocPhanData['ma_lop_hoc_phan'])->first();
     
                 // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu

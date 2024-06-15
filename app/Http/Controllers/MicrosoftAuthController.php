@@ -83,31 +83,33 @@ class MicrosoftAuthController extends Controller
         return redirect()->route('/')->withErrors('Authentication failed.');
     }
 
-    public function logoutSession(Request $request)
-    {
-        // Lấy thông tin người dùng từ session
+
+    public function microsoftLogout(Request $request){
+        // Trích xuất thông tin người dùng từ session
         $userData = session('user');
         if ($userData) {
-            // Xóa session_id của người dùng từ bảng NguoiDung
-            NguoiDung::where('email', $userData['preferred_username'])->update(['session_id' => null]);
+            // Lấy thông tin người dùng từ cơ sở dữ liệu
+            $nguoiDung = NguoiDung::where('email', $userData['preferred_username'])->first();
+            
+            if ($nguoiDung && $nguoiDung->session_id) {
+                $sessions = json_decode($nguoiDung->session_id, true) ?? [];
+                
+                foreach ($sessions as $session) {
+                    if (isset($session['session_id'])) {
+                        // Đóng phiên làm việc của session trước đó
+                        Session::setId($session['session_id']);
+                        Session::invalidate();
+                    }
+                }
+                
+                // Xóa session_id của người dùng từ bảng NguoiDung
+                $nguoiDung->session_id = null;
+                $nguoiDung->save();
+            }
+
             // Xóa session của người dùng
             $request->session()->forget('user');
         }
-        return response()->json(['success' => true]);
-    }
-
-    public function microsoftLogout(Request $request)
-    {
-        $user = Auth::user();
-        if ($user && $user->nguoiDung) {
-            $user->nguoiDung->session_id = null;
-            $user->nguoiDung->save();
-        }
-
-        // Xóa thông tin người dùng khỏi session
-        $request->session()->forget('microsoft_token');
-        $request->session()->forget('user'); // Xóa luôn thông tin người dùng
-        Auth::logout();
 
         // URL đăng xuất của Microsoft
         $logoutUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=" . urlencode(env('APP_URL'));
@@ -115,5 +117,8 @@ class MicrosoftAuthController extends Controller
         // Chuyển hướng đến trang đăng xuất của Microsoft
         return redirect($logoutUrl);
     }
+
+
+    
 
 }

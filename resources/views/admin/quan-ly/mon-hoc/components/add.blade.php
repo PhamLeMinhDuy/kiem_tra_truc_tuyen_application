@@ -38,6 +38,15 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                    if (jsonData.length < 2 || jsonData[0].length !== 2) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Cấu trúc dữ liệu không đúng!',
+                                text: 'Vui lòng kiểm tra lại cấu trúc dữ liệu trong file Excel.',
+                                showConfirmButton: true,
+                            });
+                            return;
+                        }
 
                     // Xử lý dữ liệu
                     const monhocs = jsonData.slice(1).map(row => ({

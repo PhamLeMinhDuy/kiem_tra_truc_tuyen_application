@@ -4,17 +4,23 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\SinhVien;
+use App\Models\NguoiDung;
 use App\Models\LopHocPhan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 class DashboardSinhVienController extends Controller
 {
     public function index($id){
         $sinhVien = SinhVien::find($id);
         $tenSinhVien = $sinhVien->ten_sinh_vien;
         $maSinhVien = $sinhVien->ma_sinh_vien;
+        $emailSinhVien = $sinhVien->email;
         $danhSachLopHocPhan = LopHocPhan::all();
         $thongTinLopHocPhan = [];
+        // Lấy thông tin người dùng từ bảng NguoiDung dựa trên email của sinh viên
+        $nguoiDung = NguoiDung::where('email', $emailSinhVien)->first();
+        $sessionData = json_decode($nguoiDung->session_id, true);
 
         foreach ($danhSachLopHocPhan as $lopHocPhan) {
             $danhSachSinhVien = json_decode($lopHocPhan->danh_sach_sinh_vien, true);
@@ -45,6 +51,7 @@ class DashboardSinhVienController extends Controller
             'tenSinhVien' => $tenSinhVien,
             'id' => $id,
             'thongTinLopHocPhan' => $thongTinLopHocPhan,
+            
         ]);
     }
 
