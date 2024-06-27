@@ -38,7 +38,7 @@
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
                     // Kiểm tra cấu trúc dữ liệu
-                    if (jsonData.length < 2 || jsonData[0].length !== 6) {
+                    if (jsonData.length < 2 || jsonData[0].length !== 3) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Cấu trúc dữ liệu không đúng!',

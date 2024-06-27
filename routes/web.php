@@ -18,6 +18,7 @@ use App\Http\Controllers\LopHocPhanController;
 use App\Http\Controllers\XemLichThiController;
 use App\Http\Controllers\MicrosoftAuthController;
 use App\Http\Controllers\BaiThiSinhVienController;
+use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardSinhVienController;
 
 
@@ -44,6 +45,9 @@ Route::get('/thong-bao/{id}', [ThongBaoController::class, 'index'])->name('thong
 Route::post('/check-session', [ThongBaoController::class, 'checkSession'])->name('check-session');
 Route::group(['prefix' => 'admin', 'as'=>'admin.'], function() {
     Route::group(['prefix' => 'quan-ly', 'as'=>'quan-ly.'], function() {
+        Route::group(['prefix' => 'dashboard', 'as'=>'dashboard.'], function() {
+            Route::get('/quan-ly-admin-dashboard', [DashboardAdminController::class, 'index'])->name('admin-dashboard');
+        });
         Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {
             Route::get('/quan-ly-giang-vien', [GiangVienController::class, 'index'])->name('quan-ly-giang-vien');
             Route::put('/quan-ly-giang-vien-cap-nhat', [GiangVienController::class, 'handleCapNhatGiangVien'])->name('handle-cap-nhat-giang-vien');
@@ -148,7 +152,7 @@ Route::group(['prefix' => 'giang-vien', 'as'=>'giang-vien.'], function() {
             Route::get('/quan-ly-bai-thi-cau-hoi/{id}/{id_giang_vien}', [BaiThiController::class, 'handleCauHoiGiangVien'])->name('quan-ly-bai-thi-cau-hoi');
             Route::post('/quan-ly-bai-thi-them-cau-hoi', [BaiThiController::class, 'handleThemCauHoiGiangVien'])->name('handle-them-bai-thi-cau-hoi');
             Route::get('/download-template', [BaiThiController::class, 'downloadTemplate'])->name('download-template');
-            Route::get('/download-template-bai-thi', [BaiThiController::class, 'downloadTemplateBaiThi'])->name('download-template-bai-thi');
+            Route::get('/download-template-bai-thi-giang-vien', [BaiThiController::class, 'downloadTemplateBaiThiGiangVien'])->name('download-template-bai-thi-giang-vien');
         });
         Route::group(['prefix' => '', 'as'=>'xem-diem.'], function() {
             Route::get('/xem-diem-sinh-vien-giang-vien/{id}', [XemDiemController::class, 'indexXemDiemSinhVienGiangVien'])->name('xem-diem-sinh-vien-giang-vien');

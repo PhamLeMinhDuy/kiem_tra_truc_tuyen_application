@@ -40,7 +40,7 @@
                         const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
 
                         // Kiểm tra cấu trúc dữ liệu
-                        if (jsonData.length < 2 || jsonData[0].length !== 7) {
+                        if (jsonData.length < 2 || jsonData[0].length !== 8) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Cấu trúc dữ liệu không đúng!',
@@ -54,11 +54,12 @@
                         const baiThis = jsonData.slice(1).map(row => ({
                             ma_lop_hoc_phan: row[0],
                             ma_bai_thi: row[1],
-                            ten_bai_thi: row[2],
-                            thoi_gian_bat_dau: row[3],
-                            thoi_gian_ket_thuc: row[4],
-                            lan_thi: row[5],
-                            mo_ta: row[6],
+                            mon_hoc: row[2],
+                            ten_bai_thi: row[3],
+                            thoi_gian_bat_dau: row[4],
+                            thoi_gian_ket_thuc: row[5],
+                            lan_thi: row[6],
+                            mo_ta: row[7],
                         }));
                         // Gửi dữ liệu lên máy chủ
                         axios.post(secureUrl("{{ route('admin.quan-ly.bai-thi.handle-them-bai-thi') }}"), { data: baiThis })

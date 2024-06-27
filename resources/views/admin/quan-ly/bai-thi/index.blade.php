@@ -5,7 +5,7 @@
 @section('page-title')
     <div class="flex items-center justify-between">
         <div class="mr-5">
-            Danh bài thi
+            Danh sách bài thi
         </div>
         <div class="font-normal text-sm mr-5 mt-6">
             @include('admin.quan-ly.bai-thi.components.add')

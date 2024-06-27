@@ -4,9 +4,14 @@
 @endsection
 @section('page-title')
     <div class="flex items-center justify-between">
-        <div class="mr-5">
-            Điểm sinh viên
-        </div> 
+        <div class="flex items-center">
+            <button onclick="window.history.back()" class=" text-gray-700 px-2 py-2 rounded mr-2">
+                &lt;
+            </button>
+            <div class="mr-5">
+                Điểm sinh viên
+            </div> 
+        </div>
         <div class="font-normal text-sm mr-5 mt-6">
             <button id="publicScoresBtn" class="px-4 py-2 rounded-md focus:outline-none border border-red-500 hover:bg-red-500 hover:text-white transition duration-300 ease-in-out">Public điểm</button>
             <button id="unpublicScoresBtn" class="ml-2 px-4 py-2 rounded-md focus:outline-none border border-gray-500 hover:bg-gray-500 hover:text-white transition duration-300 ease-in-out">Xóa Public</button>

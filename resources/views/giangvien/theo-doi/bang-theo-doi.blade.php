@@ -4,7 +4,10 @@
 
 @section('content')
 <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Bảng Theo Dõi</h1>
+    
+    <h1 class="text-2xl font-bold mb-4"><button onclick="window.history.back()" class=" text-gray-700 rounded mr-2">
+        &lt;
+    </button>Bảng Theo Dõi</h1>
     <h2 class="text-lg font-semibold mb-2">Tên bài thi: {{ $tenBaiThi }}</h2>
     <h2 class="text-lg font-semibold mb-2">Lần thi: {{ $lanThi }}</h2>
 

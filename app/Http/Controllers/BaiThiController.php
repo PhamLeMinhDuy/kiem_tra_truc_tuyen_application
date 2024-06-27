@@ -545,7 +545,7 @@ class BaiThiController extends Controller
                 // Nếu  chưa tồn tại, thêm mới vào cơ sở dữ liệu
                 if (!$existingBaiThi) {
                     $newBaiThi = new BaiThi;
-                    $newBaiThi->ma_lop_hoc_phan = $baiThiGVData['ma_lop_hoc_phan'];
+                    $newBaiThi->ma_lop_hoc_phan = $request->ma_lop_hoc_phan;
                     $newBaiThi->ma_bai_thi = $baiThiGVData['ma_bai_thi'];
                     $newBaiThi->ten_bai_thi = $baiThiGVData['ten_bai_thi'];
                     $newBaiThi->mon_hoc = $baiThiData['mon_hoc'];
@@ -571,7 +571,7 @@ class BaiThiController extends Controller
                 'success'   => true,
                 'type'      => 'success',
                 'message'   => 'Thêm bài thi thành công!',
-                'redirect'   => route('giang-vien.quan-ly.bai-thi.quan-ly-bai-thi-giang-vien', [$giangVien->id])
+                'redirect'   => route('giang-vien.quan-ly.bai-thi.quan-ly-bai-thi-giang-vien', [$giangVien->id, $request->ma_lop_hoc_phan])
             ]);
         }else{
 
@@ -723,7 +723,6 @@ class BaiThiController extends Controller
 
     public function handleThemCauHoiGiangVien(Request $request) {
         $cauHoi = BaiThi::find((int)$request->cauHoiId);
-        
         // Check if danh_sach_cau_hoi is null and assign an empty array if it is
         $danhSachCauHoi = $cauHoi->danh_sach_cau_hoi ?? [];
         
@@ -738,7 +737,7 @@ class BaiThiController extends Controller
         $giangVien = GiangVien::find($request->id_giang_vien);
         return response()->json([
             'success'   => true,
-            'redirect'   => route('giang-vien.quan-ly.bai-thi.quan-ly-bai-thi-giang-vien', [$giangVien->id])
+            'redirect'   => route('giang-vien.quan-ly.bai-thi.quan-ly-bai-thi-giang-vien', [$giangVien->id,$cauHoi->ma_lop_hoc_phan])
         ]);
     }
 
@@ -754,6 +753,12 @@ class BaiThiController extends Controller
         $file = public_path('templates/bai_thi_template.xlsx'); // Đường dẫn đến tệp mẫu Excel
 
         return response()->download($file, 'bai_thi_template.xlsx');
+    }
+    public function downloadTemplateBaiThiGiangVien()
+    {
+        $file = public_path('templates/bai_thi_giang_vien_template.xlsx'); // Đường dẫn đến tệp mẫu Excel
+
+        return response()->download($file, 'bai_thi_giang_vien_template.xlsx');
     }
 
     public function indexPhanCong($maLopHocPhan){

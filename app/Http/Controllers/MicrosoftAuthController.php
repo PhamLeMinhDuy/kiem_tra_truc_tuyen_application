@@ -35,7 +35,6 @@ class MicrosoftAuthController extends Controller
     {
         if ($request->filled('code')) {
             $code = $request->input('code');
-    
             // Gọi API để trao đổi code lấy access token và id token
             $tokenEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
             $tokenResponse = Http::asForm()->post($tokenEndpoint, [
@@ -46,26 +45,19 @@ class MicrosoftAuthController extends Controller
                 'grant_type' => 'authorization_code',
                 'scope' => 'openid profile', // Scope yêu cầu cho token
             ]);
-    
             if ($tokenResponse->successful()) {
                 $tokens = $tokenResponse->json();
                 // Lưu token vào session
-                
                 $microsoftToken = $tokens['access_token'];
                 $request->session()->put('microsoft_token', $microsoftToken);
-
                 $idToken = $tokens['id_token'];
-                // Không cần lấy access_token trong trường hợp này
-    
                 // Giải mã id_token để lấy thông tin người dùng
                 $decodedToken = base64_decode(explode('.', $idToken)[1]);
                 $tokenData = json_decode($decodedToken, true);
-                
                 // Kiểm tra email có đúng định dạng @vanlanguni.vn không
                 $userEmail = $tokenData['preferred_username'];
                 $userName = $tokenData['name'];
                 $domain = '@vanlanguni.vn';
-                
                 if (Str::endsWith($userEmail, $domain)) {
                     // Lưu thông tin người dùng vào session
                     session(['user' => $tokenData]);
@@ -78,7 +70,6 @@ class MicrosoftAuthController extends Controller
                 }
             }
         }
-    
         // Xử lý khi đăng nhập không thành công
         return redirect()->route('/')->withErrors('Authentication failed.');
     }

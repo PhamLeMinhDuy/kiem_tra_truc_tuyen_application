@@ -37,7 +37,7 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-                    if (jsonData.length < 2 || jsonData[0].length !== 5) {
+                    if (jsonData.length < 2 || jsonData[0].length !== 7) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Cấu trúc dữ liệu không đúng!',
@@ -49,14 +49,16 @@
                     // Xử lý dữ liệu
                     const baiThiGVs = jsonData.slice(1).map(row => ({
                         ma_bai_thi: row[0],
-                        ten_bai_thi: row[1],
-                        thoi_gian_bat_dau: row[2],
-                        thoi_gian_ket_thuc: row[3],
-                        mo_ta: row[4],
+                        mon_hoc: row[1],
+                        ten_bai_thi: row[2],
+                        thoi_gian_bat_dau: row[3],
+                        thoi_gian_ket_thuc: row[4],
+                        lan_thi: row[5],
+                        mo_ta: row[6],
                     }));
 
                     // Gửi dữ liệu lên máy chủ
-                    axios.post(secureUrl("{{ route('giang-vien.quan-ly.bai-thi.handle-them-bai-thi') }}"), { data: baiThiGVs, id_giang_vien: {{ $id }}})
+                    axios.post(secureUrl("{{ route('giang-vien.quan-ly.bai-thi.handle-them-bai-thi') }}"), { data: baiThiGVs, id_giang_vien: {{ $id }}, ma_lop_hoc_phan: '{{ $ma_lop_hoc_phan }}'})
                         .then(function (response) {
                             if (response.data.success) {
                                 window.location.replace(response.data.redirect);
@@ -93,12 +95,12 @@
     }
 
     document.getElementById('download-link').addEventListener('click', function() {
-        axios.get(secureUrl("{{ route('giang-vien.quan-ly.bai-thi.download-template-bai-thi') }}"), { responseType: 'blob' })
+        axios.get(secureUrl("{{ route('giang-vien.quan-ly.bai-thi.download-template-bai-thi-giang-vien') }}"), { responseType: 'blob' })
             .then(function(response) {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'bai_thi_template.xlsx');
+                link.setAttribute('download', 'bai_thi_giang_vien_template.xlsx');
                 document.body.appendChild(link);
                 link.click();
                 window.URL.revokeObjectURL(url);

@@ -233,6 +233,7 @@
     </div>
 
 @endsection
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
 @section('page-js')
      <script type="text/javascript">
         function themCauTraLoiCuoiDanhSach(parentElement, newDiv) {

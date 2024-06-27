@@ -41,7 +41,7 @@
                         $previousMaLopHocPhan = $ketQua['maLopHocPhan'];
                     @endphp
                 @endif
-                <div class="border p-4 mb-4 bg-white">
+                <div class="border p-4 mb-4 mr-6 bg-white">
                     <p class="font-semibold text-xl text-red-600 mb-2">Tên bài thi: {{ $ketQua['tenBaiThi'] }}</p>
                     <p class="text-gray-600">Mã bài thi: {{ $ketQua['maBaiThi'] }}</p>
                     <p class="text-green-600">Số câu đúng: {{ $ketQua['soCauDung'] }}</p>

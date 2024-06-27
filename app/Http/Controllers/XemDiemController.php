@@ -44,14 +44,15 @@ class XemDiemController extends Controller
                 $maBaiThi = $ketQua->ma_bai_thi;
                 
                 // Lấy thông tin từ cột bai_thi của bảng SinhVien
-                $sinhVienBaiThi = SinhVien::whereJsonContains('bai_thi', ['ma_bai_thi' => $maBaiThi])->first();
+                $sinhVienBaiThi = SinhVien::whereJsonContains('state', ['ma_bai_thi' => $maBaiThi])->first();
                
                 if ($sinhVienBaiThi) {
                     // Trích xuất thông tin bài thi từ cột bai_thi nếu tồn tại
-                    $baiThiData = json_decode($sinhVienBaiThi->bai_thi, true);
+                    $baiThiData = json_decode($sinhVienBaiThi->state, true);
                     
                     foreach ($baiThiData as $baiThi) {
                         // Kiểm tra xem ma_bai_thi từ bảng KetQua có tồn tại trong bai_thi của sinh viên
+                        
                         if ($baiThi['ma_bai_thi'] === $maBaiThi) {
                             $maLopHocPhan = $baiThi['ma_lop_hoc_phan'];
                             
@@ -61,13 +62,17 @@ class XemDiemController extends Controller
                             // Kiểm tra xem lớp học phần có tồn tại không trước khi thêm vào mảng kết quả
                             if ($lopHocPhan) {
                                 // Decode dữ liệu JSON trong cột so_cau_tra_loi_dung và truy cập vào so_cau_dung
-                                $soCauDung = json_decode($ketQua->so_cau_tra_loi_dung)->so_cau_dung ?? 0;
-        
+                                $ketQuaJson = json_decode($ketQua->so_cau_tra_loi_dung, true); // Decode JSON to associative array
+                                $soCauDung = $ketQuaJson[0]['so_cau_dung'] ?? 0;
+                                
+                                $diemJson = json_decode($ketQua->diem, true); // Decode JSON to associative array
+                                $diem = $diemJson[0]['diem'] ?? 0;
+                                
                                 // Thêm thông tin kết quả vào mảng
                                 $ketQuaArray[] = [
                                     'maBaiThi' => $ketQua->ma_bai_thi,
                                     'tenBaiThi' => $ketQua->ten_bai_thi,
-                                    'diem' => $ketQua->diem,
+                                    'diem' => $diem,
                                     'soCauDung' => $soCauDung,
                                     'maLopHocPhan' => $maLopHocPhan,
                                     'tenLopHocPhan' => $lopHocPhan->ten_lop_hoc_phan, // Thêm tên lớp học phần vào mảng
@@ -85,7 +90,6 @@ class XemDiemController extends Controller
                 ]);
             }
         }
-        
         $nguoiDung = NguoiDung::where('email', $emailSinhVien)->first();
         $sessionData = json_decode($nguoiDung->session_id, true);
         
@@ -154,57 +158,66 @@ class XemDiemController extends Controller
         $maGiangVien = $giangVien->ma_giang_vien;
     
         // Lấy danh sách lớp học phần chứa giảng viên đó
-        $danhSachLopHocPhanGiangVien = LopHocPhan::whereJsonContains('danh_sach_giang_vien',  ['ma_giang_vien' => $maGiangVien])->paginate(10);
+        $danhSachLopHocPhanGiangVien = LopHocPhan::whereJsonContains('danh_sach_giang_vien', ['ma_giang_vien' => $maGiangVien])->paginate(10);
     
         // Khởi tạo mảng danhSachDuLieu để chứa thông tin cần hiển thị
         $danhSachDuLieu = [];
-       // Khởi tạo mảng để lưu lại số lần thi cho mỗi mã bài thi
+        // Khởi tạo mảng để lưu lại số lần thi cho mỗi mã bài thi
         $thongTinLanThi = [];
-
+    
         // Biến để kiểm tra xem mã bài thi đã được hiển thị hay chưa
         $daHienThiMaBaiThi = [];
-
+    
         // Lấy danh sách bài thi từ các lớp học phần
         foreach ($danhSachLopHocPhanGiangVien as $lopHocPhan) {
             $danhSachBaiThiLopHocPhan = json_decode($lopHocPhan->danh_sach_bai_thi, true);
-
+    
             if (is_array($danhSachBaiThiLopHocPhan)) {
                 foreach ($danhSachBaiThiLopHocPhan as $baiThi) {
-                    // Lấy thông tin về bài thi từ bảng BaiThi
-                    $thongTinBaiThi = BaiThi::where('ma_bai_thi', $baiThi['ma_bai_thi'])->first();
-
-                    if ($thongTinBaiThi) {
-                        // Nếu mã bài thi chưa được hiển thị
-                        if (!isset($daHienThiMaBaiThi[$baiThi['ma_bai_thi']])) {
-                            // Tạo một mảng chứa thông tin của mỗi bài thi
-                            $duLieu = [
-                                'id' => $lopHocPhan->id,
-                                'ma_lop_hoc_phan' => $lopHocPhan->ma_lop_hoc_phan,
-                                'ten_lop_hoc_phan' => $lopHocPhan->ten_lop_hoc_phan,
-                                'ma_bai_thi' => $baiThi['ma_bai_thi'],
-                                'ten_bai_thi' => $thongTinBaiThi->ten_bai_thi,
-                                'lan_thi' => $baiThi['lan_thi']
-                            ];
-
-                            // Thêm mảng dữ liệu vào mảng danh sách dữ liệu
-                            $danhSachDuLieu[] = $duLieu;
-
-                            // Đặt biến đã hiển thị mã bài thi thành true
-                            $daHienThiMaBaiThi[$baiThi['ma_bai_thi']] = true;
+                    // Ensure 'ma_bai_thi' exists in $baiThi
+                    if (isset($baiThi['ma_bai_thi'])) {
+                        // Lấy thông tin về bài thi từ bảng BaiThi
+                        $thongTinBaiThi = BaiThi::where('ma_bai_thi', $baiThi['ma_bai_thi'])->first();
+    
+                        if ($thongTinBaiThi) {
+                            // Ensure 'lan_thi' exists in $baiThi
+                            $lanThi = $baiThi['lan_thi'] ?? null;
+    
+                            // Nếu mã bài thi chưa được hiển thị
+                            if (!isset($daHienThiMaBaiThi[$baiThi['ma_bai_thi']])) {
+                                // Tạo một mảng chứa thông tin của mỗi bài thi
+                                $duLieu = [
+                                    'id' => $lopHocPhan->id,
+                                    'ma_lop_hoc_phan' => $lopHocPhan->ma_lop_hoc_phan,
+                                    'ten_lop_hoc_phan' => $lopHocPhan->ten_lop_hoc_phan,
+                                    'ma_bai_thi' => $baiThi['ma_bai_thi'],
+                                    'ten_bai_thi' => $thongTinBaiThi->ten_bai_thi,
+                                    'lan_thi' => $lanThi
+                                ];
+    
+                                // Thêm mảng dữ liệu vào mảng danh sách dữ liệu
+                                $danhSachDuLieu[] = $duLieu;
+    
+                                // Đặt biến đã hiển thị mã bài thi thành true
+                                $daHienThiMaBaiThi[$baiThi['ma_bai_thi']] = true;
+                            }
+                            
+                            // Kiểm tra nếu mã bài thi đã tồn tại trong mảng thì chỉ cần thêm lần thi mới vào mảng
+                            if (!isset($thongTinLanThi[$baiThi['ma_bai_thi']])) {
+                                // Nếu mã bài thi chưa tồn tại, thêm mới vào mảng và thêm lần thi đầu tiên
+                                $thongTinLanThi[$baiThi['ma_bai_thi']] = [];
+                            }
+    
+                            // Thêm lần thi vào mảng nếu it exists
+                            if ($lanThi !== null) {
+                                $thongTinLanThi[$baiThi['ma_bai_thi']][] = $lanThi;
+                            }
                         }
-                        
-                        // Kiểm tra nếu mã bài thi đã tồn tại trong mảng thì chỉ cần thêm lần thi mới vào mảng
-                        if (!isset($thongTinLanThi[$baiThi['ma_bai_thi']])) {
-                            // Nếu mã bài thi chưa tồn tại, thêm mới vào mảng và thêm lần thi đầu tiên
-                            $thongTinLanThi[$baiThi['ma_bai_thi']] = [];
-                        }
-
-                        // Thêm lần thi vào mảng
-                        $thongTinLanThi[$baiThi['ma_bai_thi']][] = $baiThi['lan_thi'];
                     }
                 }
             }
         }
+    
         $danhSachDuLieu = collect($danhSachDuLieu);
         // Tạo một đối tượng LengthAwarePaginator từ đối tượng Collection
         $perPage = 10; // Số lượng mục trên mỗi trang
@@ -216,6 +229,7 @@ class XemDiemController extends Controller
             $page, // Trang hiện tại
             ['path' => request()->url(), 'query' => request()->query()] // Các tham số yêu cầu khác
         );
+    
         $danhSachMon = MonHoc::all();
         // Khởi tạo mảng chứa tên cột
         $danhSachTenCot = ['Mã lớp học phần', 'Tên lớp học phần', 'Mã bài thi', 'Tên bài thi', 'Lần thi '];
@@ -233,6 +247,7 @@ class XemDiemController extends Controller
             'thongTinLanThi' => $thongTinLanThi,
         ]);
     }
+    
 
     public function bangDiemSinhVienGiangVien($id, $maLopHocPhan, $maBaiThi, $lanThi)
     {
